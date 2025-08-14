@@ -1,0 +1,8 @@
+{
+  "welcome": "Chào mừng đến với OurLittleNest",
+  "greeting": "Xin chào, {{name}}!",
+  "noTrips": "Chưa có chuyến đi nào được lên kế hoạch",
+  "planTrip": "Lên kế hoạch chuyến đi",
+  "upcomingTrips": "Chuyến đi sắp tới",
+  "pastTrips": "Chuyến đi đã qua"
+}

@@ -1,0 +1,11 @@
+{
+  "notifications": "Thông báo",
+  "noNotifications": "Không có thông báo",
+  "markAllRead": "Đánh dấu tất cả đã đọc",
+  "permission": {
+    "title": "Bật thông báo",
+    "message": "Cho phép OurLittleNest gửi thông báo về cập nhật chuyến đi và tin nhắn.",
+    "allow": "Cho phép",
+    "deny": "Không cho phép"
+  }
+}

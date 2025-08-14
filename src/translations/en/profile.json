@@ -1,0 +1,8 @@
+{
+  "profile": "Hồ sơ",
+  "editProfile": "Chỉnh sửa hồ sơ",
+  "settings": "Cài đặt",
+  "about": "Giới thiệu",
+  "version": "Phiên bản {{version}}",
+  "build": "Build {{build}}"
+}
