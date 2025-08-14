@@ -10,7 +10,7 @@ export type RootStackParamList = {
   Loading: undefined;
   Home: undefined;
   Articles: undefined;
-  ArticleDetail: { newsItem: any };
+  ArticleDetail: { id: string };
   ArticleSearch: { initialTag?: string };
   ArticleChannel: {
     channelName: string;

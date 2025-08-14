@@ -56,12 +56,12 @@ const ChannelScreen: React.FC<ChannelScreenProps> = ({ route }) => {
       navigation.navigate('ArticleDetail', {
         newsItem: {
           id: item.id,
-          title: item.title,
+          title: item.name,
           excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit...',
           image: item.image,
           source: channelName,
-          category: item.category || 'General',
-          timeAgo: item.timeAgo,
+          category: item.name || 'General',
+          timeAgo: '',
           readTime: '5 min',
         },
       });
@@ -79,59 +79,60 @@ const ChannelScreen: React.FC<ChannelScreenProps> = ({ route }) => {
 
   // Mock data for different sections
   const sections: CategorySection[] = useMemo(
-    () => [
-      {
-        title: 'World',
-        items: [
-          {
-            id: 'w1',
-            title: 'Tim denounced for firing Hong Kong staff',
-            image: 'https://picsum.photos/400/300?random=30',
-            timeAgo: '1h ago',
-          },
-          {
-            id: 'w2',
-            title: 'Understanding US Catholics belief in the Eucharist',
-            image: 'https://picsum.photos/400/300?random=31',
-            timeAgo: '3h ago',
-          },
-        ],
-      },
-      {
-        title: 'Lifestyle',
-        items: [
-          {
-            id: 'l1',
-            title: 'Indoor plant sales boom, design trends 2024',
-            image: 'https://picsum.photos/400/300?random=32',
-            timeAgo: '2h ago',
-          },
-          {
-            id: 'l2',
-            title: 'Fashion fixes in pictures for the week ahead',
-            image: 'https://picsum.photos/400/300?random=33',
-            timeAgo: '4h ago',
-          },
-        ],
-      },
-      {
-        title: 'Technology',
-        items: [
-          {
-            id: 't1',
-            title: "Google's smart facial-recognition video doorbell",
-            image: 'https://picsum.photos/400/300?random=34',
-            timeAgo: '1h ago',
-          },
-          {
-            id: 't2',
-            title: 'Tech gift guide: 10 ideas for last-minute presents',
-            image: 'https://picsum.photos/400/300?random=35',
-            timeAgo: '5h ago',
-          },
-        ],
-      },
-    ],
+    () =>
+      [
+        {
+          title: 'World',
+          items: [
+            {
+              id: 'w1',
+              name: 'Tim denounced for firing Hong Kong staff',
+              image: 'https://picsum.photos/400/300?random=30',
+              // timeAgo: '1h ago',
+            },
+            {
+              id: 'w2',
+              name: 'Understanding US Catholics belief in the Eucharist',
+              image: 'https://picsum.photos/400/300?random=31',
+              // timeAgo: '3h ago',
+            },
+          ],
+        },
+        {
+          title: 'Lifestyle',
+          items: [
+            {
+              id: 'l1',
+              name: 'Indoor plant sales boom, design trends 2024',
+              image: 'https://picsum.photos/400/300?random=32',
+              // timeAgo: '2h ago',
+            },
+            {
+              id: 'l2',
+              name: 'Fashion fixes in pictures for the week ahead',
+              image: 'https://picsum.photos/400/300?random=33',
+              // timeAgo: '4h ago',
+            },
+          ],
+        },
+        {
+          title: 'Technology',
+          items: [
+            {
+              id: 't1',
+              name: "Google's smart facial-recognition video doorbell",
+              image: 'https://picsum.photos/400/300?random=34',
+              // timeAgo: '1h ago',
+            },
+            {
+              id: 't2',
+              name: 'Tech gift guide: 10 ideas for last-minute presents',
+              image: 'https://picsum.photos/400/300?random=35',
+              // timeAgo: '5h ago',
+            },
+          ],
+        },
+      ] as CategorySection[],
     [],
   );
 
@@ -168,7 +169,7 @@ const ChannelScreen: React.FC<ChannelScreenProps> = ({ route }) => {
           elevation: 5,
         }}
       >
-        <View className='flex-row items-center justify-between px-6 py-3 border-b border-grey-light'>
+        <View className='flex-row items-center justify-between px-4 py-3 border-b border-grey-light'>
           <TouchableOpacity
             onPress={handleBack}
             className='mr-3'
@@ -185,7 +186,7 @@ const ChannelScreen: React.FC<ChannelScreenProps> = ({ route }) => {
 
       {/* Main Header */}
       <View className='pt-16'>
-        <View className='px-6 py-3 flex-row items-center justify-between border-b border-grey-light'>
+        <View className='px-4 py-3 flex-row items-center justify-between border-b border-grey-light'>
           <TouchableOpacity
             onPress={handleBack}
             className='mr-3'
@@ -213,7 +214,7 @@ const ChannelScreen: React.FC<ChannelScreenProps> = ({ route }) => {
             <ActivityIndicator size='large' color='#ff6464' />
           </View>
         ) : (
-          <View className='px-6 py-4'>
+          <View className='px-4 py-4'>
             {sections.map((section) => (
               <View key={section.title} className='mb-5'>
                 <SectionHeader title={section.title} onShowAll={() => handleShowAll(section.title)} />

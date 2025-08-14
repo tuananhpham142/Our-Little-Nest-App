@@ -87,7 +87,7 @@ const OnboardingSlider: React.FC<AppIntroScreensProps> = (props: AppIntroScreens
   const renderItem = ({ item }: { item: (typeof slides)[0] }) => {
     const IconComponent = item.image;
     return (
-      <View className='flex-1 items-center justify-start pt-28 px-6'>
+      <View className='flex-1 items-center justify-start pt-28 px-4'>
         <View className='w-full h-80 flex items-center justify-center'>
           <IconComponent />
         </View>

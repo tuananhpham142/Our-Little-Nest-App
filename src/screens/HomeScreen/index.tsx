@@ -106,7 +106,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({
   };
 
   return (
-    <View className='flex-1 px-6 pt-16'>
+    <View className='flex-1 px-4 pt-16'>
       {/* Scrollable Content */}
       <ScrollView
         className='flex-1'

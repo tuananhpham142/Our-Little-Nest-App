@@ -22,7 +22,7 @@ const TabNavigation: React.FC<TabNavigationProps> = ({ activeTab, onTabPress, ta
             <TouchableOpacity
               key={tab.id}
               onPress={() => onTabPress(tab.id)}
-              className={`px-6 py-3 rounded-2xl border-2 active:scale-95 ${
+              className={`px-4 py-3 rounded-2xl border-2 active:scale-95 ${
                 activeTab === tab.id ? 'bg-gray-800 border-gray-800 shadow-lg' : 'bg-white border-gray-200 shadow-sm'
               }`}
               style={

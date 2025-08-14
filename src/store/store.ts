@@ -2,11 +2,15 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import { persistReducer, persistStore } from 'redux-persist';
 
+import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import { authApi } from '../services/auth/authApi';
 import { userApi } from '../services/user/userApi';
 import appSlice from './slices/appSlice';
+import articleSlice from './slices/articleSlice';
 import authSlice from './slices/authSlice';
+import categorySlice from './slices/categorySlice';
 import languageSlice from './slices/languageSlice';
+import tagSlice from './slices/tagSlice';
 import themeSlice from './slices/themeSlice';
 
 const persistConfig = {
@@ -20,6 +24,9 @@ const rootReducer = combineReducers({
   app: appSlice,
   theme: themeSlice,
   language: languageSlice,
+  articles: articleSlice,
+  category: categorySlice,
+  tag: tagSlice,
   [authApi.reducerPath]: authApi.reducer,
   [userApi.reducerPath]: userApi.reducer,
 });
@@ -43,3 +50,6 @@ export const persistor = persistStore(store);
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
+
+export const useAppDispatch = () => useDispatch<AppDispatch>();
+export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;

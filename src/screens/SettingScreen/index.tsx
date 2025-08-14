@@ -39,7 +39,7 @@ const SettingsScreen: React.FC = () => {
     rightElement?: React.ReactNode;
   }> = ({ title, subtitle, onPress, rightElement }) => (
     <TouchableOpacity
-      className='px-6 py-4 border-b'
+      className='px-4 py-4 border-b'
       style={{ borderBottomColor: colors.border }}
       onPress={onPress}
       disabled={!onPress}
@@ -64,7 +64,7 @@ const SettingsScreen: React.FC = () => {
     <SafeAreaView className='flex-1' style={{ backgroundColor: colors.background }}>
       <ScrollView className='flex-1'>
         {/* User Info */}
-        <View className='px-6 py-6 border-b' style={{ borderBottomColor: colors.border }}>
+        <View className='px-4 py-6 border-b' style={{ borderBottomColor: colors.border }}>
           <Text className='text-xl font-bold' style={{ color: colors.text }}>
             {user?.name || 'User'}
           </Text>
@@ -74,7 +74,7 @@ const SettingsScreen: React.FC = () => {
         {/* Appearance Section */}
         <View className='mt-6'>
           <Text
-            className='px-6 py-2 text-sm font-medium uppercase tracking-wide'
+            className='px-4 py-2 text-sm font-medium uppercase tracking-wide'
             style={{ color: colors.textSecondary }}
           >
             {t('settings.appearance')}
@@ -97,7 +97,7 @@ const SettingsScreen: React.FC = () => {
         {/* Language Section */}
         <View className='mt-6'>
           <Text
-            className='px-6 py-2 text-sm font-medium uppercase tracking-wide'
+            className='px-4 py-2 text-sm font-medium uppercase tracking-wide'
             style={{ color: colors.textSecondary }}
           >
             {t('settings.language')}
@@ -119,7 +119,7 @@ const SettingsScreen: React.FC = () => {
         {/* General Section */}
         <View className='mt-6'>
           <Text
-            className='px-6 py-2 text-sm font-medium uppercase tracking-wide'
+            className='px-4 py-2 text-sm font-medium uppercase tracking-wide'
             style={{ color: colors.textSecondary }}
           >
             General

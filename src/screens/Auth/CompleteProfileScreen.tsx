@@ -2,15 +2,15 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import {
-  Alert,
-  Dimensions,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
+    Alert,
+    Dimensions,
+    KeyboardAvoidingView,
+    Platform,
+    ScrollView,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
 } from 'react-native';
 
 interface ProfileFormData {
@@ -99,7 +99,7 @@ const CompleteProfileScreen: React.FC<CompleteProfileScreenProps> = ({ onComplet
   };
 
   return (
-    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} className='flex-1 px-6 pt-16'>
+    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} className='flex-1 px-4 pt-16'>
       <ScrollView
         // eslint-disable-next-line react-native/no-inline-styles
         contentContainerStyle={{ flexGrow: 1 }}
@@ -225,7 +225,7 @@ const CompleteProfileScreen: React.FC<CompleteProfileScreenProps> = ({ onComplet
                 {/* Male Option */}
                 <TouchableOpacity
                   onPress={() => handleGenderSelect('male')}
-                  className={`flex-1 py-4 px-6 rounded-2xl border-2 flex-row items-center justify-center active:scale-95 ${
+                  className={`flex-1 py-4 px-4 rounded-2xl border-2 flex-row items-center justify-center active:scale-95 ${
                     formData.gender === 'male'
                       ? 'bg-blue-600 border-blue-600 shadow-lg'
                       : 'bg-white border-gray-200 shadow-sm'
@@ -252,7 +252,7 @@ const CompleteProfileScreen: React.FC<CompleteProfileScreenProps> = ({ onComplet
                 {/* Female Option */}
                 <TouchableOpacity
                   onPress={() => handleGenderSelect('female')}
-                  className={`flex-1 py-4 px-6 rounded-2xl border-2 flex-row items-center justify-center active:scale-95 ${
+                  className={`flex-1 py-4 px-4 rounded-2xl border-2 flex-row items-center justify-center active:scale-95 ${
                     formData.gender === 'female'
                       ? 'bg-pink-500 border-pink-500 shadow-lg'
                       : 'bg-white border-gray-200 shadow-sm'

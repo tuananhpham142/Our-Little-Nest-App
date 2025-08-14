@@ -1,10 +1,11 @@
-import { ArticleModel } from '@/models/Article/ArticleModel';
+import { Article } from '@/models/Article/ArticleModel';
+import { articleTimeHelpers } from '@/utils/timeUtils';
 import React, { memo, useCallback, useRef } from 'react';
-import { Animated, Image, InteractionManager, Platform, Text, TouchableOpacity, View } from 'react-native';
+import { Animated, Image, InteractionManager, Text, TouchableOpacity, View } from 'react-native';
 
 // Memoized NewsCard Component
 export const NewsCard = memo<{
-  item: ArticleModel;
+  item: Article;
   onPress: () => void;
   index: number;
 }>(({ item, onPress, index }) => {
@@ -42,7 +43,25 @@ export const NewsCard = memo<{
         transform: [{ translateY }],
       }}
     >
-      <TouchableOpacity
+      <TouchableOpacity onPress={onPress} className='bg-white flex-row items-start p-2'>
+        <Image src={item.image} className='w-24 h-24 rounded-lg bg-slate-200' />
+        <View className='flex-1 ml-4'>
+          <Text className='text-base font-bold text-slate-800 leading-snug' numberOfLines={3}>
+            {item.title}
+          </Text>
+          <Text className='text-sm font-semibold text-primary mt-2'>{item.category.name}</Text>
+          <View className='flex-row items-center mt-2 justify-between'>
+            <View className='flex-row items-center'>
+              <Text className='text-sm font-semibold text-info'>
+                {articleTimeHelpers.getReadingTime(item.content.length).text}
+              </Text>
+              <Text className='text-sm text-dark mx-1'>•</Text>
+              <Text className='text-sm text-dark'>{articleTimeHelpers.getCreatedTimeAgo(item.createdAt)} ago</Text>
+            </View>
+          </View>
+        </View>
+      </TouchableOpacity>
+      {/* <TouchableOpacity
         onPress={onPress}
         className='bg-white mb-3 mx-6 rounded-xl overflow-hidden'
         activeOpacity={0.9}
@@ -79,17 +98,11 @@ export const NewsCard = memo<{
                 <Text className='text-xs text-grey mx-1'>•</Text>
                 <Text className='text-xs text-grey'>{item.readTime}</Text>
               </View>
-              {/* <TouchableOpacity onPress={handleBookmark} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-                <Bookmark
-                  size={14}
-                  color={item.isBookmarked ? '#ff6464' : '#9c9c9c'}
-                  fill={item.isBookmarked ? '#ff6464' : 'none'}
-                />
-              </TouchableOpacity> */}
+        
             </View>
           </View>
         </View>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
     </Animated.View>
   );
 });

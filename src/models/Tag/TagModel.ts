@@ -1,15 +1,19 @@
-export interface CategoryItem {
+// src/models/Tag/TagModel.ts
+
+export interface TagModel {
   id: string;
   name: string;
-  image: string;
   slug: string;
   description?: string;
+  color: string; // Default: '#3B82F6'
   isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
-export interface CategoryState {
-  categories: CategoryItem[];
-  currentCategory: CategoryItem | null;
+export interface TagState {
+  tags: TagModel[];
+  currentTag: TagModel | null;
   isLoading: boolean;
   isLoadingMore: boolean;
   error: string | null;
