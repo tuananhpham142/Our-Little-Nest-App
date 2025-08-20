@@ -9,6 +9,7 @@ export type RootStackParamList = {
   Main: undefined;
   Loading: undefined;
   Home: undefined;
+  // Articles
   Articles: undefined;
   ArticleDetail: { id: string };
   ArticleSearch: { initialTag?: string };
@@ -16,6 +17,18 @@ export type RootStackParamList = {
     channelName: string;
     channelLogo?: string;
   };
+  // Babies
+  BabyList: undefined;
+  BabyTabs: { babyId: string; initialTab?: string };
+  CreateBaby: undefined;
+  EditBaby: { babyId: string };
+  InviteFamilyMember: { babyId: string };
+  ManageFamilyMember: { babyId: string };
+  FamilyMemberDetail: { babyId: string; userId: string };
+  BabyProfile: { babyId: string };
+  BabyInfo: { babyId: string };
+  BabyFamily: { babyId: string };
+  BabyHealth: { babyId: string };
 };
 
 export type RootScreenProps<S extends keyof RootStackParamList = keyof RootStackParamList> = NativeStackScreenProps<

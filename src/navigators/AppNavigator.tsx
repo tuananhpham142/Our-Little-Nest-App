@@ -45,7 +45,7 @@ export const AppNavigator: React.FC = () => {
         ) : (
           <Stack.Screen name='Auth' component={AuthNavigator} />
         )}
-
+        {/* Articles */}
         <Stack.Screen name='Home' component={HomeScreen} />
         <Stack.Screen name='Articles' component={ArticlesScreen} />
         <Stack.Screen
@@ -76,6 +76,121 @@ export const AppNavigator: React.FC = () => {
             animation: 'slide_from_right',
           }}
         />
+
+        {/* Babies */}
+        {/* <Stack.Screen
+          name='Profile'
+          component={BabyMainScreen}
+          initialParams={{ babyId }}
+          options={{
+            tabBarLabel: '👶 Profile',
+            tabBarIcon: ({ focused }) => null, // Icons are in label
+          }}
+        />
+        <Stack.Screen
+          name='Info'
+          component={BabyInfoScreen}
+          initialParams={{ babyId }}
+          options={{
+            tabBarLabel: 'ℹ️ Info',
+          }}
+        />
+        <Stack.Screen
+          name='Family'
+          component={ManageFamilyMemberScreen}
+          initialParams={{ babyId }}
+          options={{
+            tabBarLabel: '👨‍👩‍👧‍👦 Family',
+          }}
+        />
+        <Stack.Screen
+          name='Health'
+          component={BabyHealthScreen}
+          initialParams={{ babyId }}
+          options={{
+            tabBarLabel: '🏥 Health',
+          }}
+        />
+
+        <Stack.Screen
+          name='BabyList'
+          component={BabyMainScreen}
+          options={{
+            title: 'My Babies',
+            headerStyle: {
+              backgroundColor: '#007AFF',
+            },
+          }}
+        />
+
+        <Stack.Screen
+          name='BabyTabs'
+          component={BabyTabNavigator}
+          options={({ route }: any) => ({
+            title: 'Baby Profile',
+            headerShown: true,
+            ...slideFromRight,
+          })}
+        />
+
+        <Stack.Screen
+          name='CreateBaby'
+          component={CreateBabyScreen}
+          options={{
+            title: 'Add New Baby',
+            presentation: 'modal',
+            ...slideFromBottom,
+            headerStyle: {
+              backgroundColor: '#4CAF50',
+            },
+          }}
+        />
+
+        <Stack.Screen
+          name='EditBaby'
+          component={EditBabyScreen}
+          options={{
+            title: 'Edit Baby Info',
+            ...slideFromRight,
+            headerStyle: {
+              backgroundColor: '#FF9800',
+            },
+          }}
+        />
+
+        <Stack.Screen
+          name='InviteFamilyMember'
+          component={InviteFamilyMemberScreen}
+          options={{
+            title: 'Invite Family Member',
+            presentation: 'modal',
+            ...slideFromBottom,
+            headerStyle: {
+              backgroundColor: '#9C27B0',
+            },
+          }}
+        />
+
+        <Stack.Screen
+          name='FamilyMemberDetail'
+          component={FamilyMemberDetailScreen}
+          options={({ route }: any) => ({
+            title: 'Family Member',
+            ...slideFromRight,
+          })}
+        />
+
+        <Stack.Screen
+          name='BabyHealth'
+          component={BabyHealthScreen}
+          options={{
+            title: 'Health Information',
+            ...slideFromRight,
+            headerStyle: {
+              backgroundColor: '#F44336',
+            },
+          }}
+        /> */}
       </Stack.Navigator>
     </NavigationContainer>
   );

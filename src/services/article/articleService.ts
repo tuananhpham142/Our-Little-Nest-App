@@ -1,15 +1,10 @@
-// src/services/article/articleService.ts
-
 import { Article, ArticleFilters } from '@/models/Article/ArticleModel';
+import { DEFAULT_ARTICLE_PARAMS, GetArticlesRequest } from '@/models/Article/ArticleRequest';
 import {
-    DEFAULT_ARTICLE_PARAMS,
-    GetArticlesRequest
-} from '@/models/Article/ArticleRequest';
-import {
-    ApiErrorResponse,
-    ArticleDetailResponse,
-    ArticleListResponse,
-    ArticlesBySlugResponse,
+  ApiErrorResponse,
+  ArticleDetailResponse,
+  ArticleListResponse,
+  ArticlesBySlugResponse,
 } from '@/models/Article/ArticleResponse';
 import { ApiResponse } from '@/types/api';
 import { baseApi } from '../baseApi';

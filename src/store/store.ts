@@ -8,7 +8,9 @@ import { userApi } from '../services/user/userApi';
 import appSlice from './slices/appSlice';
 import articleSlice from './slices/articleSlice';
 import authSlice from './slices/authSlice';
+import babySlice from './slices/babySlice';
 import categorySlice from './slices/categorySlice';
+import familyMemberSlice from './slices/familyMemberSlice';
 import languageSlice from './slices/languageSlice';
 import tagSlice from './slices/tagSlice';
 import themeSlice from './slices/themeSlice';
@@ -27,6 +29,8 @@ const rootReducer = combineReducers({
   articles: articleSlice,
   category: categorySlice,
   tag: tagSlice,
+  baby: babySlice,
+  familyMember: familyMemberSlice,
   [authApi.reducerPath]: authApi.reducer,
   [userApi.reducerPath]: userApi.reducer,
 });
