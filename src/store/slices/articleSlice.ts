@@ -30,7 +30,8 @@ export const fetchArticles = createAsyncThunk(
   async (params: GetArticlesRequest = {}, { rejectWithValue }) => {
     try {
       const response = await ArticleService.getArticles(params);
-      return { ...response, params };
+      console.log(response);
+      return response;
     } catch (error: any) {
       return rejectWithValue(error.message || 'Failed to fetch articles');
     }
@@ -238,8 +239,8 @@ const articleSlice = createSlice({
         state.isLoading = false;
         state.articles = action.payload.data;
         state.pagination = {
-          page: action.payload.params?.page || 1,
-          limit: action.payload.params?.limit || 10,
+          page: action.payload?.page || 1,
+          limit: action.payload?.limit || 10,
           total: action.payload.total,
           hasNextPage: action.payload.hasNextPage,
         };

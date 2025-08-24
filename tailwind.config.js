@@ -1,4 +1,7 @@
 /** @type {import('tailwindcss').Config} */
+
+// const { rf } = require('./src/utils/responsiveFont');
+
 module.exports = {
   // NOTE: Update this to include the paths to all files that contain Nativewind classes.
   content: ['./src/App.tsx', './src/**/*.{js,jsx,ts,tsx}'],
@@ -49,15 +52,23 @@ module.exports = {
       },
     },
     fontSize: {
-      xs: '0.6875rem',
-      sm: '0.75rem',
-      base: '0.875rem',
-      lg: '1rem',
-      xl: '1.25rem',
-      '2xl': '1.5rem',
-      '3xl': '1.75rem',
-      '4xl': '2rem',
-      '5xl': '3rem',
+      // xs: '0.75rem',
+      // sm: '0.875rem',
+      // base: '1rem',
+      // lg: '1.25rem',
+      // xl: '1.5rem',
+      // '2xl': '1.75rem',
+      // '3xl': '2rem',
+      // '4xl': '3rem',
+      // '5xl': '4rem',
+      // xs: rf(10),
+      // sm: rf(12),
+      // md: rf(14),
+      // base: rf(16),
+      // lg: rf(18),
+      // xl: rf(20),
+      // '2xl': rf(24),
+      // '3xl': rf(28),
     },
   },
   plugins: [],

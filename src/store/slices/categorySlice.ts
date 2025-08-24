@@ -25,7 +25,7 @@ export const fetchCategories = createAsyncThunk(
   async (params: GetCategoriesRequest = {}, { rejectWithValue }) => {
     try {
       const response = await CategoryService.getCategories(params);
-      return { ...response, params };
+      return response;
     } catch (error: any) {
       return rejectWithValue(error.message || 'Failed to fetch categories');
     }
@@ -176,8 +176,8 @@ const categorySlice = createSlice({
         state.isLoading = false;
         state.categories = action.payload.data;
         state.pagination = {
-          page: action.payload.params?.page || 1,
-          limit: action.payload.params?.limit || 10,
+          page: action.payload?.page || 1,
+          limit: action.payload?.limit || 10,
           total: action.payload.total,
           hasNextPage: action.payload.hasNextPage,
         };

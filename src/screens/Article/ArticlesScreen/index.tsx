@@ -2,10 +2,11 @@ import Header from '@/components/Header';
 import { ArticleListItemSkeleton } from '@/components/Skeletons';
 import { Article } from '@/models/Article/ArticleModel';
 import { fetchArticles, loadMoreArticles } from '@/store/slices/articleSlice';
+import { fetchCategories } from '@/store/slices/categorySlice';
 import { useAppDispatch, useAppSelector } from '@/store/store';
 import { useNavigation } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
-import React, { memo, useCallback, useMemo, useState } from 'react';
+import React, { memo, useCallback, useState } from 'react';
 import { RefreshControl, View } from 'react-native';
 import Categories from './components/Categories';
 import { NewsCard } from './components/NewsCard';
@@ -22,19 +23,27 @@ const ArticlesScreen: React.FC<ArticlesScreenProps> = ({ route }) => {
   const dispatch = useAppDispatch();
   const { articles, isLoading, isLoadingMore, pagination } = useAppSelector((state) => state.articles);
 
-  const navigation = useNavigation();
+  const {
+    categories,
+    isLoading: isLoadingCategories,
+    error: errorCategories,
+  } = useAppSelector((state) => state.category);
 
-  const categories = useMemo(() => ['Latest', 'World', 'Business', 'Sports', 'Life', 'Technology'], []);
+  console.log(categories);
+  const navigation = useNavigation();
 
   // Mock data generator
 
+  const handleFetchCategories = () => {
+    dispatch(fetchCategories({ page: 1, limit: 10 }));
+  };
   const handleLoadMore = () => {
     if (pagination.hasNextPage && !isLoadingMore) {
       dispatch(loadMoreArticles({ page: pagination.page + 1 }));
     }
   };
   const handleFetchArticles = useCallback(async (page: number) => {
-    dispatch(fetchArticles({ page, limit: pagination.limit || 10, category: selectedCategory }));
+    dispatch(fetchArticles({ page, limit: pagination.limit || 10 }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -47,7 +56,7 @@ const ArticlesScreen: React.FC<ArticlesScreenProps> = ({ route }) => {
   const loadInitialData = useCallback(async () => {
     try {
       // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      handleFetchCategories();
       handleFetchArticles(1);
     } catch (error) {
       console.error('Error loading news:', error);

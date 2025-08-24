@@ -17,8 +17,8 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({ activeTab, onTabPre
 
   const tabs: TabItem[] = [
     { id: 'home', icon: '🏠', label: 'Home' },
-    { id: 'message', icon: '💬', label: 'Message' },
-    { id: 'social', icon: '👥', label: 'Social' },
+    { id: 'Articles', icon: '💬', label: 'Message' },
+    { id: 'PregnancyJournal', icon: '👥', label: 'PregnancyJournal' },
     { id: 'settings', icon: '⚙️', label: 'Settings' },
     { id: 'profile', icon: '👤', label: 'Profile' },
   ];

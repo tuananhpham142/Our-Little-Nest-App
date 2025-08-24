@@ -12,6 +12,8 @@ import babySlice from './slices/babySlice';
 import categorySlice from './slices/categorySlice';
 import familyMemberSlice from './slices/familyMemberSlice';
 import languageSlice from './slices/languageSlice';
+import pregnancyCareReducer from './slices/pregnancyCareSlice';
+import pregnancyJournalReducer from './slices/pregnancyJournalSlice';
 import tagSlice from './slices/tagSlice';
 import themeSlice from './slices/themeSlice';
 
@@ -31,6 +33,8 @@ const rootReducer = combineReducers({
   tag: tagSlice,
   baby: babySlice,
   familyMember: familyMemberSlice,
+  pregnancyJournals: pregnancyJournalReducer,
+  pregnancyCares: pregnancyCareReducer,
   [authApi.reducerPath]: authApi.reducer,
   [userApi.reducerPath]: userApi.reducer,
 });

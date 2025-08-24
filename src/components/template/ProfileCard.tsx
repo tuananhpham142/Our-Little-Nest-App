@@ -101,8 +101,8 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
                 shadowRadius: 4,
               }}
             >
-              <Text className='text-gray-700 font-semibold text-xs'>Ranking</Text>
-              <Text className='text-gray-500 text-xs'>Track progress</Text>
+              <Text className='text-gray-700 font-semibold text-sm'>Ranking</Text>
+              <Text className='text-gray-500 text-sm'>Track progress</Text>
             </TouchableOpacity>
 
             {/* Booster Button */}
@@ -116,8 +116,8 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
                 shadowRadius: 4,
               }}
             >
-              <Text className='text-gray-700 font-semibold text-xs'>Booster</Text>
-              <Text className='text-gray-500 text-xs'>Power up</Text>
+              <Text className='text-gray-700 font-semibold text-sm'>Booster</Text>
+              <Text className='text-gray-500 text-sm'>Power up</Text>
             </TouchableOpacity>
           </View>
         </View>

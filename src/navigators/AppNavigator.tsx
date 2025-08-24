@@ -5,6 +5,7 @@ import ArticlesScreen from '@/screens/Article/ArticlesScreen';
 import ChannelScreen from '@/screens/Article/ChannelScreen';
 import SearchScreen from '@/screens/Article/SearchScreen';
 import HomeScreen from '@/screens/HomeScreen';
+import { PregnancyJournalScreen } from '@/screens/PregnancyJournal/PregnancyJournalScreen';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
@@ -191,6 +192,9 @@ export const AppNavigator: React.FC = () => {
             },
           }}
         /> */}
+        {/* Pregnancy Journal */}
+
+        <Stack.Screen name='PregnancyJournal' component={PregnancyJournalScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

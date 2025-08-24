@@ -3,10 +3,10 @@
 import { CategoryItem } from '@/models/Category/CategoryModel';
 import { DEFAULT_CATEGORY_PARAMS, GetCategoriesRequest } from '@/models/Category/CategoryRequest';
 import {
-    ApiErrorResponse,
-    CategoryBySlugResponse,
-    CategoryDetailResponse,
-    CategoryListResponse,
+  ApiErrorResponse,
+  CategoryBySlugResponse,
+  CategoryDetailResponse,
+  CategoryListResponse,
 } from '@/models/Category/CategoryResponse';
 import { ApiResponse } from '@/types/api';
 import { baseApi } from '../baseApi';
@@ -24,11 +24,9 @@ export class CategoryService {
         ...params,
       });
 
-      const response = await baseApi.get<ApiResponse<CategoryListResponse>>(
-        `${this.BASE_PATH}?${queryParams.toString()}`,
-      );
+      const response = await baseApi.get<CategoryListResponse>(`${this.BASE_PATH}?${queryParams.toString()}`);
 
-      return response.data.data;
+      return response.data;
     } catch (error) {
       throw this.handleError(error);
     }

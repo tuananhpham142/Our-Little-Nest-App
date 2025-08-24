@@ -1,5 +1,6 @@
 // src/models/Article/ArticleResponse.ts
 
+import { ApiGetByPageResponse } from '@/types/api';
 import { Article } from './ArticleModel';
 
 export interface ApiResponse<T> {
@@ -23,11 +24,7 @@ export interface InfinityPaginationResponse<T> {
   total: number;
 }
 
-export interface ArticleListResponse {
-  data: Article[];
-  hasNextPage: boolean;
-  total: number;
-}
+export interface ArticleListResponse extends ApiGetByPageResponse<Article> {}
 
 export interface ArticleDetailResponse {
   data: Article;

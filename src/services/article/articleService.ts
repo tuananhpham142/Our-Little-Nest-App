@@ -22,11 +22,9 @@ export class ArticleService {
         ...params,
       });
 
-      const response = await baseApi.get<ApiResponse<ArticleListResponse>>(
-        `${this.BASE_PATH}?${queryParams.toString()}`,
-      );
+      const response = await baseApi.get<ArticleListResponse>(`${this.BASE_PATH}?${queryParams.toString()}`);
 
-      return response.data.data;
+      return response.data;
     } catch (error) {
       throw this.handleError(error);
     }
@@ -41,9 +39,9 @@ export class ArticleService {
         throw new Error('Article ID is required');
       }
 
-      const response = await baseApi.get<ApiResponse<ArticleDetailResponse>>(`${this.BASE_PATH}/${id}`);
+      const response = await baseApi.get<ArticleDetailResponse>(`${this.BASE_PATH}/${id}`);
 
-      return response.data.data.data;
+      return response.data.data;
     } catch (error) {
       throw this.handleError(error);
     }

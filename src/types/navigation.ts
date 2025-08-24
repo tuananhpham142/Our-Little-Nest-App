@@ -29,6 +29,8 @@ export type RootStackParamList = {
   BabyInfo: { babyId: string };
   BabyFamily: { babyId: string };
   BabyHealth: { babyId: string };
+  // Pregnancy Journal
+  PregnancyJournal: undefined;
 };
 
 export type RootScreenProps<S extends keyof RootStackParamList = keyof RootStackParamList> = NativeStackScreenProps<

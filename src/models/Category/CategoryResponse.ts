@@ -1,5 +1,6 @@
 // src/models/Category/CategoryResponse.ts
 
+import { ApiGetByPageResponse } from '@/types/api';
 import { CategoryItem } from './CategoryModel';
 
 export interface ApiResponse<T> {
@@ -14,11 +15,7 @@ export interface InfinityPaginationResponse<T> {
   total: number;
 }
 
-export interface CategoryListResponse {
-  data: CategoryItem[];
-  hasNextPage: boolean;
-  total: number;
-}
+export interface CategoryListResponse extends ApiGetByPageResponse<CategoryItem> {}
 
 export interface CategoryDetailResponse {
   data: CategoryItem;

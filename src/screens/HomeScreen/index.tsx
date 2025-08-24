@@ -135,7 +135,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({
         </View>
       </ScrollView>
 
-      <BottomNavigation activeTab='home' onTabPress={() => navigation.navigate('Articles' as never)} />
+      <BottomNavigation activeTab='home' onTabPress={(screen) => navigation.navigate(screen as never)} />
     </View>
   );
 };

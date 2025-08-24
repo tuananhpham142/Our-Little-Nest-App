@@ -3,8 +3,9 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
+    "release:android": "react-native build-android --mode=release",
     "android": "react-native run-android",
-    "ios": "react-native run-ios",
+    "ios": "react-native run-ios --port 9988",
     "lint": "eslint .",
     "start": "react-native start",
     "test": "jest"
@@ -22,6 +23,7 @@
     "@react-native-firebase/messaging": "^22.4.0",
     "@react-native-google-signin/google-signin": "^15.0.0",
     "@react-native-masked-view/masked-view": "^0.3.2",
+    "@react-native-picker/picker": "^2.11.1",
     "@react-native-vector-icons/fontawesome6": "^12.0.1",
     "@react-native/new-app-screen": "0.80.2",
     "@react-navigation/bottom-tabs": "^7.4.4",
