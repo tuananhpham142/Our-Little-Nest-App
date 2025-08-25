@@ -1,4 +1,4 @@
-package com.sc.digilog
+package com.oln.ourlittlenest
 
 import android.app.Application
 import com.facebook.react.PackageList

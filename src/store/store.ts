@@ -9,13 +9,15 @@ import appSlice from './slices/appSlice';
 import articleSlice from './slices/articleSlice';
 import authSlice from './slices/authSlice';
 import babySlice from './slices/babySlice';
+import badgeCollectionReducer from './slices/badgeCollectionSlice';
+import badgeReducer from './slices/badgeSlice';
 import categorySlice from './slices/categorySlice';
 import familyMemberSlice from './slices/familyMemberSlice';
 import languageSlice from './slices/languageSlice';
 import pregnancyCareReducer from './slices/pregnancyCareSlice';
 import pregnancyJournalReducer from './slices/pregnancyJournalSlice';
-import tagSlice from './slices/tagSlice';
-import themeSlice from './slices/themeSlice';
+import tagReducer from './slices/tagSlice';
+import themeReducer from './slices/themeSlice';
 
 const persistConfig = {
   key: 'root',
@@ -26,15 +28,17 @@ const persistConfig = {
 const rootReducer = combineReducers({
   auth: authSlice,
   app: appSlice,
-  theme: themeSlice,
+  theme: themeReducer,
   language: languageSlice,
   articles: articleSlice,
   category: categorySlice,
-  tag: tagSlice,
+  tag: tagReducer,
   baby: babySlice,
   familyMember: familyMemberSlice,
   pregnancyJournals: pregnancyJournalReducer,
   pregnancyCares: pregnancyCareReducer,
+  badges: badgeReducer,
+  badgeCollections: badgeCollectionReducer,
   [authApi.reducerPath]: authApi.reducer,
   [userApi.reducerPath]: userApi.reducer,
 });

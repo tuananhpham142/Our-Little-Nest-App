@@ -114,7 +114,7 @@ function App() {
           backgroundColor='#FFFFFF'
           logoSize={120}
           animationDuration={2000}
-          appName='Your App Name'
+          appName='Our Little Nest'
           version='1.0.0'
         />
       </SafeAreaProvider>
