@@ -36,7 +36,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
       <View className='mb-6'>
         {icon ? (
           <View className='w-20 h-20 bg-gray-100 rounded-full items-center justify-center'>
-            <Icon name={icon as unknown as any} size={40} color='#9CA3AF' />
+            <Icon name={icon as unknown as any} size={40} color='#9CA3AF' iconStyle='solid' />
           </View>
         ) : (
           <Text className='text-6xl'>{emoji}</Text>

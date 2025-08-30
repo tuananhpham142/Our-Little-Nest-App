@@ -4,6 +4,9 @@ import ArticleDetailScreen from '@/screens/Article/ArticleDetailScreen';
 import ArticlesScreen from '@/screens/Article/ArticlesScreen';
 import ChannelScreen from '@/screens/Article/ChannelScreen';
 import SearchScreen from '@/screens/Article/SearchScreen';
+import BadgeCollectionScreen from '@/screens/Badge/BadgeCollectionScreen';
+import BadgesScreen from '@/screens/Badge/BadgesScreen';
+import AwardBadgeScreen from '@/screens/Badge/components/AwardBadgeScreen';
 import HomeScreen from '@/screens/HomeScreen';
 import { PregnancyJournalScreen } from '@/screens/PregnancyJournal/PregnancyJournalScreen';
 import { NavigationContainer } from '@react-navigation/native';
@@ -77,7 +80,6 @@ export const AppNavigator: React.FC = () => {
             animation: 'slide_from_right',
           }}
         />
-
         {/* Babies */}
         {/* <Stack.Screen
           name='Profile'
@@ -193,8 +195,55 @@ export const AppNavigator: React.FC = () => {
           }}
         /> */}
         {/* Pregnancy Journal */}
-
         <Stack.Screen name='PregnancyJournal' component={PregnancyJournalScreen} />
+        {/* Badge */}
+        <Stack.Screen
+          name='BadgeList'
+          component={BadgesScreen}
+          options={{
+            title: 'Badges',
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name='BadgeCollection'
+          component={BadgeCollectionScreen}
+          options={{
+            title: 'Badge Collection',
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name='AwardBadge'
+          component={AwardBadgeScreen}
+          options={{
+            title: 'Award Badge',
+            headerShown: false,
+            presentation: 'modal',
+            animation: 'slide_from_bottom',
+          }}
+        />
+        {/* <Stack.Screen
+          name='CreateBadge'
+          component={CreateBadgeScreen}
+          options={{
+            title: 'Create Badge',
+            headerShown: false,
+            presentation: 'modal',
+            animation: 'slide_from_bottom',
+          }}
+        />
+        <Stack.Screen
+          name='EditBadgeCollection'
+          component={EditBadgeCollectionScreen}
+          options={{
+            title: 'Edit Achievement',
+            headerShown: false,
+            presentation: 'modal',
+            animation: 'slide_from_bottom',
+          }}
+        /> */}
+        {/* Badge */}
       </Stack.Navigator>
     </NavigationContainer>
   );

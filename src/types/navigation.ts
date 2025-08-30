@@ -31,6 +31,23 @@ export type RootStackParamList = {
   BabyHealth: { babyId: string };
   // Pregnancy Journal
   PregnancyJournal: undefined;
+  // Badge
+  BadgeList: undefined;
+  BadgeCollection: {
+    babyId: string;
+    babyName?: string;
+  };
+  AwardBadge: {
+    babyId?: string;
+    badgeId?: string;
+  };
+  CreateBadge: undefined;
+  EditBadgeCollection: {
+    collectionId: string;
+  };
+  BadgeDetail: {
+    badgeId: string;
+  };
 };
 
 export type RootScreenProps<S extends keyof RootStackParamList = keyof RootStackParamList> = NativeStackScreenProps<
