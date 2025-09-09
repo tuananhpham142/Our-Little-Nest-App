@@ -14,6 +14,7 @@ import badgeReducer from './slices/badgeSlice';
 import categorySlice from './slices/categorySlice';
 import familyMemberSlice from './slices/familyMemberSlice';
 import languageSlice from './slices/languageSlice';
+import notificationReducer from './slices/notificationSlice';
 import pregnancyCareReducer from './slices/pregnancyCareSlice';
 import pregnancyJournalReducer from './slices/pregnancyJournalSlice';
 import tagReducer from './slices/tagSlice';
@@ -39,6 +40,7 @@ const rootReducer = combineReducers({
   pregnancyCares: pregnancyCareReducer,
   badges: badgeReducer,
   badgeCollections: badgeCollectionReducer,
+  notifications: notificationReducer,
   [authApi.reducerPath]: authApi.reducer,
   [userApi.reducerPath]: userApi.reducer,
 });

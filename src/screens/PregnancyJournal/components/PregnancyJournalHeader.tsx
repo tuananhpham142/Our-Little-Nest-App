@@ -1,7 +1,7 @@
 // screens/PregnancyJournal/components/PregnancyJournalHeader.tsx
 import Icon from '@react-native-vector-icons/fontawesome6';
 import React from 'react';
-import { SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 
 interface PregnancyJournalHeaderProps {
   onCreatePress: () => void;
@@ -27,7 +27,7 @@ export const PregnancyJournalHeader: React.FC<PregnancyJournalHeaderProps> = ({
   };
 
   return (
-    <SafeAreaView className='bg-white/90 backdrop-blur-md border-b border-gray-100'>
+    <View className='bg-white/90 backdrop-blur-md border-b border-gray-100'>
       <View className='px-4 py-3'>
         {/* Top Row */}
         <View className='flex-row items-center justify-between mb-4'>
@@ -98,6 +98,6 @@ export const PregnancyJournalHeader: React.FC<PregnancyJournalHeaderProps> = ({
           </TouchableOpacity>
         </View>
       </View>
-    </SafeAreaView>
+    </View>
   );
 };

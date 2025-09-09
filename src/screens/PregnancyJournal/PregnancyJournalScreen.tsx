@@ -205,7 +205,7 @@ export const PregnancyJournalScreen: React.FC<PregnancyJournalScreenProps> = ({ 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <BottomSheetModalProvider>
-        <View className='flex-1 bg-gradient-to-b from-purple-100 to-pink-100'>
+        <View className='flex-1 bg-gradient-to-b from-purple-100 to-pink-100 pt-16'>
           <StatusBar barStyle='dark-content' backgroundColor='transparent' translucent />
 
           {/* Header */}

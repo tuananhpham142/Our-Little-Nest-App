@@ -48,6 +48,8 @@ export type RootStackParamList = {
   BadgeDetail: {
     badgeId: string;
   };
+  // Notifications
+  Notifications: undefined;
 };
 
 export type RootScreenProps<S extends keyof RootStackParamList = keyof RootStackParamList> = NativeStackScreenProps<
@@ -68,8 +70,10 @@ export type AuthStackParamList = {
 export type MainTabParamList = {
   Home: undefined;
   Profile: undefined;
-  Settings: undefined;
+  Articles: undefined;
   Notifications: undefined;
+  Babies: undefined;
+  PregnancyJournal: undefined;
 };
 
 export type RootStackNavigationProp = StackNavigationProp<RootStackParamList>;

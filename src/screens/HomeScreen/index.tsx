@@ -1,4 +1,3 @@
-import BottomNavigation from '@/components/template/Navigations/BottomNavigation';
 import ProfileCard from '@/components/template/ProfileCard';
 import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
@@ -106,7 +105,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({
   };
 
   return (
-    <View className='flex-1 px-4 pt-16'>
+    <View className='flex-1 pt-16'>
       {/* Scrollable Content */}
       <ScrollView
         className='flex-1'
@@ -134,8 +133,6 @@ const HomeScreen: React.FC<HomeScreenProps> = ({
           ))}
         </View>
       </ScrollView>
-
-      <BottomNavigation activeTab='home' onTabPress={(screen) => navigation.navigate(screen as never)} />
     </View>
   );
 };
