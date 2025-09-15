@@ -1,4 +1,5 @@
 // screens/PregnancyJournal/PregnancyJournalScreen.tsx
+import AppLayout from '@/components/layout/AppLayout';
 import { EmptyState } from '@/components/template/EmptyState';
 import {
   GenderType,
@@ -10,11 +11,10 @@ import { PregnancyJournal } from '@/models/PregnancyJournal/PregnancyJournalMode
 import { pregnancyCareSelectors } from '@/store/slices/pregnancyCareSlice';
 import { pregnancyJournalSelectors, setCurrentJournal } from '@/store/slices/pregnancyJournalSlice';
 import { AppDispatch } from '@/store/store';
-import BottomSheet, { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import BottomSheet from '@gorhom/bottom-sheet';
 import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useRef, useState } from 'react';
-import { Alert, RefreshControl, ScrollView, StatusBar, View } from 'react-native';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { Alert, RefreshControl, ScrollView, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { CreateJournalBottomSheet } from './components/CreateJournalBottomSheet';
 import { EditJournalBottomSheet } from './components/EditJournalBottomSheet';
@@ -203,72 +203,64 @@ export const PregnancyJournalScreen: React.FC<PregnancyJournalScreenProps> = ({ 
   }
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <BottomSheetModalProvider>
-        <View className='flex-1 bg-gradient-to-b from-purple-100 to-pink-100 pt-16'>
-          <StatusBar barStyle='dark-content' backgroundColor='transparent' translucent />
+    <AppLayout>
+      <View className='flex-1'>
+        {/* Header */}
+        <PregnancyJournalHeader
+          onCreatePress={handleCreateJournal}
+          onSettingsPress={() => navigation.navigate('Settings')}
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+        />
 
-          {/* Header */}
-          <PregnancyJournalHeader
-            onCreatePress={handleCreateJournal}
-            onSettingsPress={() => navigation.navigate('Settings')}
-            activeTab={activeTab}
-            onTabChange={setActiveTab}
+        {journals.length === 0 ? (
+          <EmptyState
+            title='Chưa có nhật ký nào'
+            subtitle='Hãy tạo nhật ký đầu tiên để bắt đầu hành trình thai kỳ'
+            buttonText='Tạo nhật ký'
+            onButtonPress={handleCreateJournal}
           />
+        ) : (
+          <ScrollView
+            className='flex-1'
+            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+            showsVerticalScrollIndicator={false}
+          >
+            {/* Week Progress Card */}
+            {activeJournal && (
+              <WeekProgressCard journal={activeJournal} onEditPress={handleEditJournal} onCarePress={handleViewCare} />
+            )}
 
-          {journals.length === 0 ? (
-            <EmptyState
-              title='Chưa có nhật ký nào'
-              subtitle='Hãy tạo nhật ký đầu tiên để bắt đầu hành trình thai kỳ'
-              buttonText='Tạo nhật ký'
-              onButtonPress={handleCreateJournal}
-            />
-          ) : (
-            <ScrollView
-              className='flex-1'
-              refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
-              showsVerticalScrollIndicator={false}
-            >
-              {/* Week Progress Card */}
-              {activeJournal && (
-                <WeekProgressCard
-                  journal={activeJournal}
-                  onEditPress={handleEditJournal}
-                  onCarePress={handleViewCare}
-                />
-              )}
+            {/* Timeline Content */}
+            {activeTab === 'timeline' && activeJournal && (
+              <TimelineView
+                journal={activeJournal}
+                onEmotionPress={handleAddEmotion}
+                onDeletePress={handleDeleteJournal}
+              />
+            )}
 
-              {/* Timeline Content */}
-              {activeTab === 'timeline' && activeJournal && (
-                <TimelineView
-                  journal={activeJournal}
-                  onEmotionPress={handleAddEmotion}
-                  onDeletePress={handleDeleteJournal}
-                />
-              )}
+            {/* Care Content */}
+            {activeTab === 'care' && activeJournal && (
+              <View className='px-4 pb-20'>{/* Care recommendations will be shown here */}</View>
+            )}
 
-              {/* Care Content */}
-              {activeTab === 'care' && activeJournal && (
-                <View className='px-4 pb-20'>{/* Care recommendations will be shown here */}</View>
-              )}
+            {/* Bottom spacing */}
+            <View className='h-20' />
+          </ScrollView>
+        )}
 
-              {/* Bottom spacing */}
-              <View className='h-20' />
-            </ScrollView>
-          )}
+        {/* Floating Action Button */}
 
-          {/* Floating Action Button */}
+        {/* Bottom Sheets */}
+        <CreateJournalBottomSheet ref={createJournalRef} onSuccess={loadData} />
 
-          {/* Bottom Sheets */}
-          <CreateJournalBottomSheet ref={createJournalRef} onSuccess={loadData} />
+        <EditJournalBottomSheet ref={editJournalRef} journal={activeJournal} onSuccess={loadData} />
 
-          <EditJournalBottomSheet ref={editJournalRef} journal={activeJournal} onSuccess={loadData} />
+        <EmotionEntryBottomSheet ref={emotionEntryRef} journal={activeJournal} onSuccess={loadData} />
 
-          <EmotionEntryBottomSheet ref={emotionEntryRef} journal={activeJournal} onSuccess={loadData} />
-
-          <PregnancyCareBottomSheet ref={pregnancyCareRef} week={activeJournal?.babyInfo.currentWeek} />
-        </View>
-      </BottomSheetModalProvider>
-    </GestureHandlerRootView>
+        <PregnancyCareBottomSheet ref={pregnancyCareRef} week={activeJournal?.babyInfo.currentWeek} />
+      </View>
+    </AppLayout>
   );
 };

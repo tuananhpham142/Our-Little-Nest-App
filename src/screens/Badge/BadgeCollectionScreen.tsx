@@ -1,33 +1,33 @@
 // src/screens/Badge/BadgeCollectionScreen.tsx
-import { BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import Icon from '@react-native-vector-icons/fontawesome6';
 import React, { useCallback, useMemo, useState } from 'react';
 import {
-    ActivityIndicator,
-    Dimensions,
-    FlatList,
-    RefreshControl,
-    ScrollView,
-    Text,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  Dimensions,
+  FlatList,
+  RefreshControl,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import Animated, {
-    FadeInDown,
-    FadeInUp,
-    useAnimatedStyle,
-    useSharedValue,
-    withSpring,
-    withTiming,
+  FadeInDown,
+  FadeInUp,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  withTiming,
 } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useBabyBadges, useBadgeCollectionTabs } from '@/hooks/useBadgeCollection';
 import { BadgeCollection } from '@/models/BadgeCollection/BadgeCollectionModel';
 import {
-    formatCompletionDate,
-    formatVerificationStatus,
-    getVerificationStatusColor,
+  formatCompletionDate,
+  formatVerificationStatus,
+  getVerificationStatusColor,
 } from '@/models/BadgeCollection/BadgeCollectionUIForm';
 
 const { width } = Dimensions.get('window');
@@ -275,176 +275,174 @@ const BadgeCollectionScreen: React.FC<Props> = ({ navigation, route }) => {
   );
 
   return (
-    <BottomSheetModalProvider>
-      <SafeAreaView className='flex-1 bg-gray-50'>
-        {/* Header with Stats */}
-        <Animated.View style={animatedHeaderStyle} className='bg-white shadow-sm'>
-          <View className='px-4 py-4'>
-            <View className='flex-row items-center justify-between mb-4'>
-              <View className='flex-1'>
-                <Text className='text-2xl font-bold text-gray-800'>{babyName || 'Baby'}'s Collection</Text>
-                <Text className='text-gray-500 mt-1'>Track achievements and milestones</Text>
-              </View>
-
-              <TouchableOpacity
-                onPress={() => navigation.navigate('AwardBadge', { babyId })}
-                className='bg-blue-500 px-4 py-2 rounded-full flex-row items-center'
-              >
-                <Icon name='plus' iconStyle='solid' size={14} color='white' />
-                <Text className='text-white font-medium ml-2'>Award</Text>
-              </TouchableOpacity>
+    <SafeAreaView className='flex-1 bg-gray-50'>
+      {/* Header with Stats */}
+      <Animated.View style={animatedHeaderStyle} className='bg-white shadow-sm'>
+        <View className='px-4 py-4'>
+          <View className='flex-row items-center justify-between mb-4'>
+            <View className='flex-1'>
+              <Text className='text-2xl font-bold text-gray-800'>{babyName || 'Baby'}'s Collection</Text>
+              <Text className='text-gray-500 mt-1'>Track achievements and milestones</Text>
             </View>
 
-            {/* Progress Circle and Stats */}
-            {statistics && (
-              <View className='flex-row items-center mb-4'>
-                <View className='relative mr-6'>
-                  <View className='w-16 h-16 rounded-full border-4 border-gray-200'>
-                    <Animated.View
-                      style={[
-                        progressStyle,
-                        {
-                          position: 'absolute',
-                          width: 64,
-                          height: 64,
-                          borderRadius: 32,
-                          borderWidth: 4,
-                          borderColor: '#3B82F6',
-                          borderTopColor: 'transparent',
-                          borderRightColor: 'transparent',
-                        },
-                      ]}
-                    />
-                  </View>
-                  <View className='absolute inset-0 items-center justify-center'>
-                    <Text className='text-lg font-bold text-gray-800'>{progressPercentage}%</Text>
-                  </View>
-                </View>
+            <TouchableOpacity
+              onPress={() => navigation.navigate('AwardBadge', { babyId })}
+              className='bg-blue-500 px-4 py-2 rounded-full flex-row items-center'
+            >
+              <Icon name='plus' iconStyle='solid' size={14} color='white' />
+              <Text className='text-white font-medium ml-2'>Award</Text>
+            </TouchableOpacity>
+          </View>
 
-                <View className='flex-1 flex-row'>
-                  {renderStatsCard('Total', statistics.totalBadges, 'trophy', 'blue')}
-                  {renderStatsCard('Approved', statistics.approvedBadges, 'check', 'green')}
-                  {renderStatsCard('Pending', statistics.pendingBadges, 'clock', 'yellow')}
+          {/* Progress Circle and Stats */}
+          {statistics && (
+            <View className='flex-row items-center mb-4'>
+              <View className='relative mr-6'>
+                <View className='w-16 h-16 rounded-full border-4 border-gray-200'>
+                  <Animated.View
+                    style={[
+                      progressStyle,
+                      {
+                        position: 'absolute',
+                        width: 64,
+                        height: 64,
+                        borderRadius: 32,
+                        borderWidth: 4,
+                        borderColor: '#3B82F6',
+                        borderTopColor: 'transparent',
+                        borderRightColor: 'transparent',
+                      },
+                    ]}
+                  />
+                </View>
+                <View className='absolute inset-0 items-center justify-center'>
+                  <Text className='text-lg font-bold text-gray-800'>{progressPercentage}%</Text>
                 </View>
               </View>
-            )}
 
-            {/* View Mode Toggle */}
-            <View className='flex-row items-center justify-between mb-4'>
-              <View className='flex-row bg-gray-100 rounded-full p-1'>
-                {[
-                  { key: 'list', title: 'List', icon: 'list' },
-                  { key: 'timeline', title: 'Timeline', icon: 'clock' },
-                ].map((mode) => (
-                  <TouchableOpacity
-                    key={mode.key}
-                    onPress={() => setViewMode(mode.key as any)}
-                    className={`px-4 py-2 rounded-full flex-row items-center ${
-                      viewMode === mode.key ? 'bg-white shadow-sm' : ''
-                    }`}
-                  >
-                    <Icon
-                      name={mode.icon as any}
-                      iconStyle='solid'
-                      size={14}
-                      color={viewMode === mode.key ? '#3B82F6' : '#9CA3AF'}
-                    />
-                    <Text className={`ml-2 font-medium ${viewMode === mode.key ? 'text-blue-500' : 'text-gray-500'}`}>
-                      {mode.title}
+              <View className='flex-1 flex-row'>
+                {renderStatsCard('Total', statistics.totalBadges, 'trophy', 'blue')}
+                {renderStatsCard('Approved', statistics.approvedBadges, 'check', 'green')}
+                {renderStatsCard('Pending', statistics.pendingBadges, 'clock', 'yellow')}
+              </View>
+            </View>
+          )}
+
+          {/* View Mode Toggle */}
+          <View className='flex-row items-center justify-between mb-4'>
+            <View className='flex-row bg-gray-100 rounded-full p-1'>
+              {[
+                { key: 'list', title: 'List', icon: 'list' },
+                { key: 'timeline', title: 'Timeline', icon: 'clock' },
+              ].map((mode) => (
+                <TouchableOpacity
+                  key={mode.key}
+                  onPress={() => setViewMode(mode.key as any)}
+                  className={`px-4 py-2 rounded-full flex-row items-center ${
+                    viewMode === mode.key ? 'bg-white shadow-sm' : ''
+                  }`}
+                >
+                  <Icon
+                    name={mode.icon as any}
+                    iconStyle='solid'
+                    size={14}
+                    color={viewMode === mode.key ? '#3B82F6' : '#9CA3AF'}
+                  />
+                  <Text className={`ml-2 font-medium ${viewMode === mode.key ? 'text-blue-500' : 'text-gray-500'}`}>
+                    {mode.title}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+
+          {/* Tab Navigation */}
+          <View className='relative'>
+            <View className='flex-row bg-gray-100 rounded-full p-1'>
+              {tabs.map((tab, index) => (
+                <TouchableOpacity
+                  key={tab.key}
+                  onPress={() => handleTabChange(tab.key, index)}
+                  className={`flex-1 py-2 px-3 rounded-full ${activeTab === tab.key ? 'bg-white shadow-sm' : ''}`}
+                >
+                  <View className='flex-row items-center justify-center'>
+                    <Text className={`font-medium ${activeTab === tab.key ? 'text-blue-500' : 'text-gray-500'}`}>
+                      {tab.title}
                     </Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            </View>
-
-            {/* Tab Navigation */}
-            <View className='relative'>
-              <View className='flex-row bg-gray-100 rounded-full p-1'>
-                {tabs.map((tab, index) => (
-                  <TouchableOpacity
-                    key={tab.key}
-                    onPress={() => handleTabChange(tab.key, index)}
-                    className={`flex-1 py-2 px-3 rounded-full ${activeTab === tab.key ? 'bg-white shadow-sm' : ''}`}
-                  >
-                    <View className='flex-row items-center justify-center'>
-                      <Text className={`font-medium ${activeTab === tab.key ? 'text-blue-500' : 'text-gray-500'}`}>
-                        {tab.title}
-                      </Text>
-                      {tab.count > 0 && (
-                        <View
-                          className={`ml-2 px-2 py-0.5 rounded-full ${
-                            activeTab === tab.key ? 'bg-blue-100' : 'bg-gray-200'
+                    {tab.count > 0 && (
+                      <View
+                        className={`ml-2 px-2 py-0.5 rounded-full ${
+                          activeTab === tab.key ? 'bg-blue-100' : 'bg-gray-200'
+                        }`}
+                      >
+                        <Text
+                          className={`text-xs font-semibold ${
+                            activeTab === tab.key ? 'text-blue-600' : 'text-gray-600'
                           }`}
                         >
-                          <Text
-                            className={`text-xs font-semibold ${
-                              activeTab === tab.key ? 'text-blue-600' : 'text-gray-600'
-                            }`}
-                          >
-                            {tab.count}
-                          </Text>
-                        </View>
-                      )}
-                    </View>
-                  </TouchableOpacity>
-                ))}
-              </View>
+                          {tab.count}
+                        </Text>
+                      </View>
+                    )}
+                  </View>
+                </TouchableOpacity>
+              ))}
             </View>
           </View>
-        </Animated.View>
+        </View>
+      </Animated.View>
 
-        {/* Content */}
-        {isLoading && badges.length === 0 ? (
-          <View className='flex-1 items-center justify-center'>
-            <ActivityIndicator size='large' color='#3B82F6' />
-            <Text className='text-gray-500 mt-4'>Loading badges...</Text>
-          </View>
-        ) : filteredCollections.length === 0 ? (
-          renderEmptyState()
-        ) : viewMode === 'timeline' ? (
-          <FlatList
-            data={timelineData}
-            renderItem={renderTimelineItem}
-            keyExtractor={(item) => item.month}
-            contentContainerClassName='pt-4 pb-20'
-            refreshControl={<RefreshControl refreshing={isLoading && badges.length > 0} onRefresh={refresh} />}
-          />
-        ) : (
-          <FlatList
-            data={filteredCollections}
-            renderItem={renderBadgeItem}
-            keyExtractor={(item) => item.id}
-            contentContainerClassName='pt-4 pb-20'
-            refreshControl={<RefreshControl refreshing={isLoading && badges.length > 0} onRefresh={refresh} />}
-            onScroll={(event) => {
-              scrollY.value = event.nativeEvent.contentOffset.y;
+      {/* Content */}
+      {isLoading && badges.length === 0 ? (
+        <View className='flex-1 items-center justify-center'>
+          <ActivityIndicator size='large' color='#3B82F6' />
+          <Text className='text-gray-500 mt-4'>Loading badges...</Text>
+        </View>
+      ) : filteredCollections.length === 0 ? (
+        renderEmptyState()
+      ) : viewMode === 'timeline' ? (
+        <FlatList
+          data={timelineData}
+          renderItem={renderTimelineItem}
+          keyExtractor={(item) => item.month}
+          contentContainerClassName='pt-4 pb-20'
+          refreshControl={<RefreshControl refreshing={isLoading && badges.length > 0} onRefresh={refresh} />}
+        />
+      ) : (
+        <FlatList
+          data={filteredCollections}
+          renderItem={renderBadgeItem}
+          keyExtractor={(item) => item.id}
+          contentContainerClassName='pt-4 pb-20'
+          refreshControl={<RefreshControl refreshing={isLoading && badges.length > 0} onRefresh={refresh} />}
+          onScroll={(event) => {
+            scrollY.value = event.nativeEvent.contentOffset.y;
+          }}
+          scrollEventThrottle={16}
+        />
+      )}
+
+      {/* Collection Detail Bottom Sheet */}
+      <BottomSheetModal
+        ref={setDetailSheetRef}
+        index={1}
+        snapPoints={['50%', '90%']}
+        backdropComponent={({ style }) => <View style={[style, { backgroundColor: 'rgba(0,0,0,0.5)' }]} />}
+      >
+        {selectedCollection && (
+          <CollectionDetailSheet
+            collection={selectedCollection}
+            onClose={() => detailSheetRef?.close()}
+            onEdit={() => {
+              detailSheetRef?.close();
+              navigation.navigate('EditBadgeCollection', {
+                collectionId: selectedCollection.id,
+              });
             }}
-            scrollEventThrottle={16}
           />
         )}
-
-        {/* Collection Detail Bottom Sheet */}
-        <BottomSheetModal
-          ref={setDetailSheetRef}
-          index={1}
-          snapPoints={['50%', '90%']}
-          backdropComponent={({ style }) => <View style={[style, { backgroundColor: 'rgba(0,0,0,0.5)' }]} />}
-        >
-          {selectedCollection && (
-            <CollectionDetailSheet
-              collection={selectedCollection}
-              onClose={() => detailSheetRef?.close()}
-              onEdit={() => {
-                detailSheetRef?.close();
-                navigation.navigate('EditBadgeCollection', {
-                  collectionId: selectedCollection.id,
-                });
-              }}
-            />
-          )}
-        </BottomSheetModal>
-      </SafeAreaView>
-    </BottomSheetModalProvider>
+      </BottomSheetModal>
+    </SafeAreaView>
   );
 };
 

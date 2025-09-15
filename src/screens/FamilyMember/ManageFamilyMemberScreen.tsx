@@ -9,17 +9,16 @@ import { useAppDispatch, useAppSelector } from '@/store/store';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import React, { useEffect, useRef, useState } from 'react';
 import {
-    Alert,
-    Animated,
-    Dimensions,
-    Image,
-    RefreshControl,
-    SafeAreaView,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Alert,
+  Animated,
+  Dimensions,
+  Image,
+  RefreshControl,
+  SafeAreaView,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 
 const { width, height } = Dimensions.get('window');
@@ -184,7 +183,7 @@ const ManageFamilyMemberScreen: React.FC<ManageFamilyMemberScreenProps> = ({ rou
   };
 
   const renderTabSelector = () => (
-    <View style={styles.tabSelector}>
+    <View className='flex-row bg-white px-4 border-b border-gray-200'>
       {[
         { key: 'all', label: 'All Members', count: members.length },
         { key: 'primary', label: 'Primary', count: getPrimaryCaregiversCount() },
@@ -192,10 +191,12 @@ const ManageFamilyMemberScreen: React.FC<ManageFamilyMemberScreenProps> = ({ rou
       ].map((tab) => (
         <TouchableOpacity
           key={tab.key}
-          style={[styles.tab, selectedTab === tab.key && styles.tabActive]}
+          className={`flex-1 py-3 items-center border-b-2 ${selectedTab === tab.key ? 'border-blue-500' : 'border-transparent'}`}
           onPress={() => setSelectedTab(tab.key as any)}
         >
-          <Text style={[styles.tabText, selectedTab === tab.key && styles.tabTextActive]}>
+          <Text
+            className={`text-sm font-medium ${selectedTab === tab.key ? 'text-blue-500 font-semibold' : 'text-gray-500'}`}
+          >
             {tab.label}
             {tab.count > 0 && ` (${tab.count})`}
           </Text>
@@ -214,75 +215,82 @@ const ManageFamilyMemberScreen: React.FC<ManageFamilyMemberScreenProps> = ({ rou
     return (
       <Animated.View
         key={member.userId}
-        style={[
-          styles.memberCard,
-          {
-            opacity: fadeAnim,
-            transform: [
-              {
-                translateY: slideAnim.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [0, index * 5],
-                }),
-              },
-            ],
-          },
-        ]}
+        className='bg-white rounded-xl mb-3 shadow-sm overflow-hidden'
+        style={{
+          opacity: fadeAnim,
+          transform: [
+            {
+              translateY: slideAnim.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0, index * 5],
+              }),
+            },
+          ],
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.1,
+          shadowRadius: 4,
+          elevation: 2,
+        }}
       >
-        <TouchableOpacity style={styles.memberCardHeader} onPress={() => handleMemberPress(member)} activeOpacity={0.7}>
+        <TouchableOpacity
+          className='flex-row items-center p-4'
+          onPress={() => handleMemberPress(member)}
+          activeOpacity={0.7}
+        >
           {/* Avatar */}
-          <View style={styles.memberAvatarContainer}>
+          <View className='relative mr-3'>
             {member.user?.avatar ? (
-              <Image source={{ uri: member.user.avatar }} style={styles.memberAvatar} />
+              <Image source={{ uri: member.user.avatar }} className='w-12 h-12 rounded-full' />
             ) : (
-              <View style={styles.memberAvatarPlaceholder}>
-                <Text style={styles.memberAvatarText}>{memberName.charAt(0).toUpperCase()}</Text>
+              <View className='w-12 h-12 rounded-full bg-blue-100 justify-center items-center'>
+                <Text className='text-lg font-bold text-blue-500'>{memberName.charAt(0).toUpperCase()}</Text>
               </View>
             )}
             {member.isPrimary && (
-              <View style={styles.primaryBadge}>
-                <Text style={styles.primaryBadgeText}>👑</Text>
+              <View className='absolute -top-1 -right-1 bg-yellow-400 rounded-lg w-5 h-5 justify-center items-center'>
+                <Text className='text-xs'>👑</Text>
               </View>
             )}
             {isCurrentUser && (
-              <View style={styles.currentUserBadge}>
-                <Text style={styles.currentUserBadgeText}>You</Text>
+              <View className='absolute -bottom-1 -left-1 bg-green-500 rounded-lg px-1 py-0.5'>
+                <Text className='text-xs text-white font-bold'>You</Text>
               </View>
             )}
           </View>
 
           {/* Member Info */}
-          <View style={styles.memberInfo}>
-            <Text style={styles.memberName}>{memberName}</Text>
-            <Text style={styles.memberRelation}>
+          <View className='flex-1'>
+            <Text className='text-base font-bold text-gray-800 mb-0.5'>{memberName}</Text>
+            <Text className='text-sm text-gray-500 mb-0.5'>
               {RELATION_DISPLAY_NAMES[member.relationType]}
               {member.isPrimary && ' • Primary Caregiver'}
             </Text>
-            {member.user?.email && <Text style={styles.memberEmail}>{member.user.email}</Text>}
-            <Text style={styles.memberPermissions}>
+            {member.user?.email && <Text className='text-xs text-gray-400 mb-0.5'>{member.user.email}</Text>}
+            <Text className='text-xs text-blue-500 font-medium'>
               {member.permissions.length} permission{member.permissions.length !== 1 ? 's' : ''}
             </Text>
           </View>
 
           {/* Actions */}
-          <View style={styles.memberActions}>
-            <TouchableOpacity style={styles.expandButton} onPress={() => handleExpandMember(member.userId)}>
-              <Text style={styles.expandButtonText}>{isExpanded ? '▼' : '▶'}</Text>
+          <View className='justify-center'>
+            <TouchableOpacity className='p-2' onPress={() => handleExpandMember(member.userId)}>
+              <Text className='text-base text-gray-500'>{isExpanded ? '▼' : '▶'}</Text>
             </TouchableOpacity>
           </View>
         </TouchableOpacity>
 
         {/* Expanded Content */}
         {isExpanded && (
-          <Animated.View style={styles.expandedContent}>
+          <Animated.View className='border-t border-gray-100 px-4 pb-4'>
             {/* Permissions List */}
-            <View style={styles.permissionsSection}>
-              <Text style={styles.permissionsSectionTitle}>Permissions</Text>
-              <View style={styles.permissionsList}>
+            <View className='mb-4'>
+              <Text className='text-sm font-bold text-gray-800 mb-2 mt-2'>Permissions</Text>
+              <View className='ml-2'>
                 {member.permissions.map((permission) => (
-                  <View key={permission} style={styles.permissionItem}>
-                    <Text style={styles.permissionIcon}>✓</Text>
-                    <Text style={styles.permissionText}>{PERMISSION_DISPLAY_NAMES[permission]}</Text>
+                  <View key={permission} className='flex-row items-center mb-1'>
+                    <Text className='text-xs text-green-500 mr-2 w-4'>✓</Text>
+                    <Text className='text-xs text-gray-500 flex-1'>{PERMISSION_DISPLAY_NAMES[permission]}</Text>
                   </View>
                 ))}
               </View>
@@ -290,39 +298,37 @@ const ManageFamilyMemberScreen: React.FC<ManageFamilyMemberScreenProps> = ({ rou
 
             {/* Action Buttons */}
             {canEdit && (
-              <View style={styles.actionButtons}>
-                <TouchableOpacity style={styles.actionButton} onPress={() => handleMemberPress(member)}>
-                  <Text style={styles.actionButtonText}>✏️ Edit Details</Text>
+              <View className='flex-row flex-wrap mb-3'>
+                <TouchableOpacity
+                  className='bg-gray-50 px-3 py-1.5 rounded-2xl mr-2 mb-2'
+                  onPress={() => handleMemberPress(member)}
+                >
+                  <Text className='text-xs text-gray-500 font-medium'>✏️ Edit Details</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                  style={[styles.actionButton, member.isPrimary ? styles.demoteButton : styles.promoteButton]}
+                  className={`px-3 py-1.5 rounded-2xl mr-2 mb-2 ${member.isPrimary ? 'bg-orange-50' : 'bg-green-50'}`}
                   onPress={() => handleTogglePrimary(member)}
                 >
-                  <Text
-                    style={[
-                      styles.actionButtonText,
-                      member.isPrimary ? styles.demoteButtonText : styles.promoteButtonText,
-                    ]}
-                  >
+                  <Text className={`text-xs font-medium ${member.isPrimary ? 'text-orange-500' : 'text-green-500'}`}>
                     {member.isPrimary ? '👑 Remove Primary' : '👑 Make Primary'}
                   </Text>
                 </TouchableOpacity>
 
                 {canRemove && (
                   <TouchableOpacity
-                    style={[styles.actionButton, styles.removeButton]}
+                    className='bg-red-50 px-3 py-1.5 rounded-2xl mr-2 mb-2'
                     onPress={() => handleRemoveMember(member)}
                   >
-                    <Text style={[styles.actionButtonText, styles.removeButtonText]}>🗑️ Remove</Text>
+                    <Text className='text-xs text-red-500 font-medium'>🗑️ Remove</Text>
                   </TouchableOpacity>
                 )}
               </View>
             )}
 
             {/* Added Info */}
-            <View style={styles.memberMetadata}>
-              <Text style={styles.metadataText}>Added {new Date(member.addedAt).toLocaleDateString()}</Text>
+            <View className='border-t border-gray-100 pt-2'>
+              <Text className='text-xs text-gray-400'>Added {new Date(member.addedAt).toLocaleDateString()}</Text>
             </View>
           </Animated.View>
         )}
@@ -340,36 +346,39 @@ const ManageFamilyMemberScreen: React.FC<ManageFamilyMemberScreenProps> = ({ rou
 
     return (
       <Animated.View
-        style={[
-          styles.permissionsOverview,
-          {
-            opacity: fadeAnim,
-            transform: [{ translateY: slideAnim }],
-          },
-        ]}
+        className='bg-white rounded-xl p-4 shadow-sm'
+        style={{
+          opacity: fadeAnim,
+          transform: [{ translateY: slideAnim }],
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.1,
+          shadowRadius: 4,
+          elevation: 2,
+        }}
       >
-        <Text style={styles.overviewTitle}>Permissions Overview</Text>
-        <Text style={styles.overviewDescription}>See which permissions are granted to family members</Text>
+        <Text className='text-xl font-bold text-gray-800 mb-1'>Permissions Overview</Text>
+        <Text className='text-sm text-gray-500 mb-4'>See which permissions are granted to family members</Text>
 
-        <View style={styles.permissionsGrid}>
+        <View className='mt-2'>
           {Object.entries(PERMISSION_DISPLAY_NAMES).map(([permission, label]) => (
-            <View key={permission} style={styles.permissionOverviewItem}>
-              <View style={styles.permissionOverviewHeader}>
-                <Text style={styles.permissionOverviewLabel}>{label}</Text>
-                <View style={styles.permissionOverviewCount}>
-                  <Text style={styles.permissionOverviewCountText}>
+            <View key={permission} className='mb-4 pb-3 border-b border-gray-100'>
+              <View className='flex-row justify-between items-center mb-1'>
+                <Text className='text-sm font-semibold text-gray-800 flex-1'>{label}</Text>
+                <View className='bg-blue-100 rounded-xl px-2 py-0.5 min-w-6 items-center'>
+                  <Text className='text-xs font-bold text-blue-500'>
                     {permissionStats[permission as BabyPermissionEnum] || 0}
                   </Text>
                 </View>
               </View>
 
               {/* Members with this permission */}
-              <View style={styles.membersWithPermission}>
+              <View className='flex-row flex-wrap'>
                 {members
                   .filter((member) => member.permissions.includes(permission as BabyPermissionEnum))
                   .slice(0, 3)
                   .map((member, index) => (
-                    <Text key={member.userId} style={styles.memberWithPermissionText}>
+                    <Text key={member.userId} className='text-xs text-gray-500'>
                       {member.displayName || RELATION_DISPLAY_NAMES[member.relationType]}
                       {index < 2 &&
                       index < members.filter((m) => m.permissions.includes(permission as BabyPermissionEnum)).length - 1
@@ -378,7 +387,7 @@ const ManageFamilyMemberScreen: React.FC<ManageFamilyMemberScreenProps> = ({ rou
                     </Text>
                   ))}
                 {members.filter((m) => m.permissions.includes(permission as BabyPermissionEnum)).length > 3 && (
-                  <Text style={styles.moreText}>
+                  <Text className='text-xs text-gray-400 italic'>
                     +{members.filter((m) => m.permissions.includes(permission as BabyPermissionEnum)).length - 3} more
                   </Text>
                 )}
@@ -419,29 +428,27 @@ const ManageFamilyMemberScreen: React.FC<ManageFamilyMemberScreenProps> = ({ rou
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView className='flex-1 bg-gray-50'>
       {/* Header */}
       <Animated.View
-        style={[
-          styles.header,
-          {
-            opacity: fadeAnim,
-            transform: [{ translateY: slideAnim }],
-          },
-        ]}
+        className='bg-white p-4 flex-row justify-between items-center border-b border-gray-200'
+        style={{
+          opacity: fadeAnim,
+          transform: [{ translateY: slideAnim }],
+        }}
       >
-        <View style={styles.headerContent}>
-          <Text style={styles.headerTitle}>{currentBaby.name}'s Family</Text>
-          <Text style={styles.headerSubtitle}>
+        <View className='flex-1'>
+          <Text className='text-2xl font-bold text-gray-800'>{currentBaby.name}'s Family</Text>
+          <Text className='text-sm text-gray-500 mt-0.5'>
             {members.length} member{members.length !== 1 ? 's' : ''}
           </Text>
         </View>
 
         <TouchableOpacity
-          style={styles.inviteButton}
+          className='bg-green-500 px-4 py-2 rounded-2xl'
           onPress={() => navigation.navigate('InviteFamilyMember', { babyId })}
         >
-          <Text style={styles.inviteButtonText}>👥 Invite</Text>
+          <Text className='text-white text-sm font-semibold'>👥 Invite</Text>
         </TouchableOpacity>
       </Animated.View>
 
@@ -450,7 +457,7 @@ const ManageFamilyMemberScreen: React.FC<ManageFamilyMemberScreenProps> = ({ rou
 
       {/* Content */}
       <ScrollView
-        style={styles.scrollView}
+        className='flex-1'
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />}
         showsVerticalScrollIndicator={false}
       >
@@ -463,28 +470,28 @@ const ManageFamilyMemberScreen: React.FC<ManageFamilyMemberScreenProps> = ({ rou
             onRefresh: handleRefresh,
           }}
         >
-          <View style={styles.content}>
+          <View className='p-4'>
             {selectedTab === 'permissions' ? (
               renderPermissionsOverview()
             ) : (
-              <View style={styles.membersList}>
-                {filteredMembers.map((member, index) => renderMemberCard(member, index))}
-              </View>
+              <View className='mb-5'>{filteredMembers.map((member, index) => renderMemberCard(member, index))}</View>
             )}
 
             {/* Family Tips */}
-            <View style={styles.tipsSection}>
-              <Text style={styles.tipsTitle}>💡 Family Management Tips</Text>
-              <View style={styles.tip}>
-                <Text style={styles.tipText}>
+            <View className='bg-green-50 rounded-xl p-4 mt-5'>
+              <Text className='text-base font-bold text-green-800 mb-3'>💡 Family Management Tips</Text>
+              <View className='mb-2'>
+                <Text className='text-sm text-green-800 leading-5'>
                   • Primary caregivers have full access and cannot be removed by other members
                 </Text>
               </View>
-              <View style={styles.tip}>
-                <Text style={styles.tipText}>• There must always be at least one primary caregiver</Text>
+              <View className='mb-2'>
+                <Text className='text-sm text-green-800 leading-5'>
+                  • There must always be at least one primary caregiver
+                </Text>
               </View>
-              <View style={styles.tip}>
-                <Text style={styles.tipText}>
+              <View className='mb-2'>
+                <Text className='text-sm text-green-800 leading-5'>
                   • Family members can update their own display name and some preferences
                 </Text>
               </View>
@@ -495,348 +502,5 @@ const ManageFamilyMemberScreen: React.FC<ManageFamilyMemberScreenProps> = ({ rou
     </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f8f9fa',
-  },
-  header: {
-    backgroundColor: '#fff',
-    padding: 16,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    borderBottomWidth: 1,
-    borderBottomColor: '#e1e5e9',
-  },
-  headerContent: {
-    flex: 1,
-  },
-  headerTitle: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  headerSubtitle: {
-    fontSize: 14,
-    color: '#666',
-    marginTop: 2,
-  },
-  inviteButton: {
-    backgroundColor: '#4CAF50',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-  },
-  inviteButtonText: {
-    color: '#fff',
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  tabSelector: {
-    flexDirection: 'row',
-    backgroundColor: '#fff',
-    paddingHorizontal: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e1e5e9',
-  },
-  tab: {
-    flex: 1,
-    paddingVertical: 12,
-    alignItems: 'center',
-    borderBottomWidth: 2,
-    borderBottomColor: 'transparent',
-  },
-  tabActive: {
-    borderBottomColor: '#007AFF',
-  },
-  tabText: {
-    fontSize: 14,
-    color: '#666',
-    fontWeight: '500',
-  },
-  tabTextActive: {
-    color: '#007AFF',
-    fontWeight: '600',
-  },
-  scrollView: {
-    flex: 1,
-  },
-  content: {
-    padding: 16,
-  },
-  membersList: {
-    marginBottom: 20,
-  },
-  memberCard: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    marginBottom: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-    overflow: 'hidden',
-  },
-  memberCardHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 16,
-  },
-  memberAvatarContainer: {
-    position: 'relative',
-    marginRight: 12,
-  },
-  memberAvatar: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-  },
-  memberAvatarPlaceholder: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: '#E3F2FD',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  memberAvatarText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#007AFF',
-  },
-  primaryBadge: {
-    position: 'absolute',
-    top: -5,
-    right: -5,
-    backgroundColor: '#FFD700',
-    borderRadius: 10,
-    width: 20,
-    height: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  primaryBadgeText: {
-    fontSize: 10,
-  },
-  currentUserBadge: {
-    position: 'absolute',
-    bottom: -5,
-    left: -5,
-    backgroundColor: '#4CAF50',
-    borderRadius: 8,
-    paddingHorizontal: 4,
-    paddingVertical: 2,
-  },
-  currentUserBadgeText: {
-    fontSize: 8,
-    color: '#fff',
-    fontWeight: 'bold',
-  },
-  memberInfo: {
-    flex: 1,
-  },
-  memberName: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 2,
-  },
-  memberRelation: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 2,
-  },
-  memberEmail: {
-    fontSize: 12,
-    color: '#999',
-    marginBottom: 2,
-  },
-  memberPermissions: {
-    fontSize: 12,
-    color: '#007AFF',
-    fontWeight: '500',
-  },
-  memberActions: {
-    justifyContent: 'center',
-  },
-  expandButton: {
-    padding: 8,
-  },
-  expandButtonText: {
-    fontSize: 16,
-    color: '#666',
-  },
-  expandedContent: {
-    borderTopWidth: 1,
-    borderTopColor: '#f0f0f0',
-    paddingHorizontal: 16,
-    paddingBottom: 16,
-  },
-  permissionsSection: {
-    marginBottom: 16,
-  },
-  permissionsSectionTitle: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 8,
-    marginTop: 8,
-  },
-  permissionsList: {
-    marginLeft: 8,
-  },
-  permissionItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 4,
-  },
-  permissionIcon: {
-    fontSize: 12,
-    color: '#4CAF50',
-    marginRight: 8,
-    width: 16,
-  },
-  permissionText: {
-    fontSize: 13,
-    color: '#666',
-    flex: 1,
-  },
-  actionButtons: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginBottom: 12,
-  },
-  actionButton: {
-    backgroundColor: '#F8F9FA',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
-    marginRight: 8,
-    marginBottom: 8,
-  },
-  promoteButton: {
-    backgroundColor: '#E8F5E8',
-  },
-  demoteButton: {
-    backgroundColor: '#FFF3E0',
-  },
-  removeButton: {
-    backgroundColor: '#FFEBEE',
-  },
-  actionButtonText: {
-    fontSize: 12,
-    color: '#666',
-    fontWeight: '500',
-  },
-  promoteButtonText: {
-    color: '#4CAF50',
-  },
-  demoteButtonText: {
-    color: '#FF9800',
-  },
-  removeButtonText: {
-    color: '#F44336',
-  },
-  memberMetadata: {
-    borderTopWidth: 1,
-    borderTopColor: '#f0f0f0',
-    paddingTop: 8,
-  },
-  metadataText: {
-    fontSize: 11,
-    color: '#999',
-  },
-  permissionsOverview: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  overviewTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 4,
-  },
-  overviewDescription: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 16,
-  },
-  permissionsGrid: {
-    marginTop: 8,
-  },
-  permissionOverviewItem: {
-    marginBottom: 16,
-    paddingBottom: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
-  },
-  permissionOverviewHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 4,
-  },
-  permissionOverviewLabel: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#333',
-    flex: 1,
-  },
-  permissionOverviewCount: {
-    backgroundColor: '#E3F2FD',
-    borderRadius: 12,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    minWidth: 24,
-    alignItems: 'center',
-  },
-  permissionOverviewCountText: {
-    fontSize: 12,
-    fontWeight: 'bold',
-    color: '#007AFF',
-  },
-  membersWithPermission: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-  },
-  memberWithPermissionText: {
-    fontSize: 12,
-    color: '#666',
-  },
-  moreText: {
-    fontSize: 12,
-    color: '#999',
-    fontStyle: 'italic',
-  },
-  tipsSection: {
-    backgroundColor: '#E8F5E8',
-    borderRadius: 12,
-    padding: 16,
-    marginTop: 20,
-  },
-  tipsTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#2E7D32',
-    marginBottom: 12,
-  },
-  tip: {
-    marginBottom: 8,
-  },
-  tipText: {
-    fontSize: 14,
-    color: '#2E7D32',
-    lineHeight: 20,
-  },
-});
 
 export default ManageFamilyMemberScreen;

@@ -19,7 +19,9 @@ import { NetworkService } from './services/network/networkService';
 import { store } from './store/store';
 import './translations';
 
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import BootSplash from 'react-native-bootsplash';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useAppIntro } from './hooks/useAppIntro';
 import { useSplashScreen } from './hooks/useSplashScreen';
@@ -130,7 +132,11 @@ function App() {
     <Provider store={store}>
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} translucent backgroundColor={'transparent'} />
 
-      <AppNavigator />
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <BottomSheetModalProvider>
+          <AppNavigator />
+        </BottomSheetModalProvider>
+      </GestureHandlerRootView>
     </Provider>
   );
 }

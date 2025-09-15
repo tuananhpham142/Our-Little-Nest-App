@@ -57,7 +57,7 @@ export const WeekProgressCard: React.FC<WeekProgressCardProps> = ({ journal, onE
   const sizeInfo = getSizeComparison(babyInfo.currentWeek);
 
   return (
-    <View className='mx-4 mb-6 mt-2'>
+    <View className='px-4 mb-6 mt-2'>
       <LinearGradient
         colors={['#F3E8FF', '#E879F9']}
         start={{ x: 0, y: 0 }}

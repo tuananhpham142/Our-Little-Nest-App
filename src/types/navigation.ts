@@ -50,6 +50,11 @@ export type RootStackParamList = {
   };
   // Notifications
   Notifications: undefined;
+  // Settings
+  Settings: undefined;
+  LanguageSettings: undefined;
+  NotificationsSettings: undefined;
+  PrivacySecuritySettings: undefined;
 };
 
 export type RootScreenProps<S extends keyof RootStackParamList = keyof RootStackParamList> = NativeStackScreenProps<
@@ -74,6 +79,8 @@ export type MainTabParamList = {
   Notifications: undefined;
   Babies: undefined;
   PregnancyJournal: undefined;
+  Auth: undefined;
+  Settings: undefined;
 };
 
 export type RootStackNavigationProp = StackNavigationProp<RootStackParamList>;

@@ -9,16 +9,15 @@ import { formatArticleDate, timeAgo } from '@/utils/timeUtils';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import React, { useEffect, useRef, useState } from 'react';
 import {
-    Animated,
-    Dimensions,
-    Image,
-    RefreshControl,
-    SafeAreaView,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Animated,
+  Dimensions,
+  Image,
+  RefreshControl,
+  SafeAreaView,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 
 const { width, height } = Dimensions.get('window');
@@ -120,66 +119,67 @@ const BabyInfoScreen: React.FC<BabyInfoScreenProps> = ({ route }) => {
 
     return (
       <Animated.View
-        style={[
-          styles.ageProgressSection,
-          {
-            opacity: fadeAnim,
-            transform: [{ translateY: slideAnim }],
-          },
-        ]}
+        className='bg-white rounded-2xl p-5 mb-4 shadow-lg'
+        style={{
+          opacity: fadeAnim,
+          transform: [{ translateY: slideAnim }],
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.1,
+          shadowRadius: 8,
+          elevation: 4,
+        }}
       >
-        <Text style={styles.sectionTitle}>Development Progress</Text>
+        <Text className='text-lg font-bold text-gray-800 mb-4'>Development Progress</Text>
 
-        <View style={styles.ageDisplayContainer}>
-          <View style={styles.ageMainDisplay}>
-            <Text style={styles.ageNumber}>{ageDetails.months}</Text>
-            <Text style={styles.ageUnit}>months old</Text>
+        <View className='items-center mb-5'>
+          <View className='items-center mb-4'>
+            <Text className='text-5xl font-bold text-blue-500'>{ageDetails.months}</Text>
+            <Text className='text-base text-gray-500 uppercase tracking-wide'>months old</Text>
           </View>
 
-          <View style={styles.ageBreakdown}>
-            <View style={styles.ageBreakdownItem}>
-              <Text style={styles.breakdownNumber}>{ageDetails.days}</Text>
-              <Text style={styles.breakdownLabel}>days</Text>
+          <View className='flex-row justify-around w-full'>
+            <View className='items-center'>
+              <Text className='text-xl font-bold text-gray-800'>{ageDetails.days}</Text>
+              <Text className='text-xs text-gray-500 uppercase'>days</Text>
             </View>
-            <View style={styles.ageBreakdownItem}>
-              <Text style={styles.breakdownNumber}>{ageDetails.weeks}</Text>
-              <Text style={styles.breakdownLabel}>weeks</Text>
+            <View className='items-center'>
+              <Text className='text-xl font-bold text-gray-800'>{ageDetails.weeks}</Text>
+              <Text className='text-xs text-gray-500 uppercase'>weeks</Text>
             </View>
             {ageDetails.years > 0 && (
-              <View style={styles.ageBreakdownItem}>
-                <Text style={styles.breakdownNumber}>{ageDetails.years}</Text>
-                <Text style={styles.breakdownLabel}>years</Text>
+              <View className='items-center'>
+                <Text className='text-xl font-bold text-gray-800'>{ageDetails.years}</Text>
+                <Text className='text-xs text-gray-500 uppercase'>years</Text>
               </View>
             )}
           </View>
         </View>
 
         {/* Progress Bar */}
-        <View style={styles.progressContainer}>
-          <Text style={styles.progressLabel}>Growth Timeline (0-24 months)</Text>
-          <View style={styles.progressBar}>
+        <View className='mb-4'>
+          <Text className='text-sm text-gray-500 mb-2 text-center'>Growth Timeline (0-24 months)</Text>
+          <View className='h-2 bg-blue-100 rounded-sm overflow-hidden'>
             <Animated.View
-              style={[
-                styles.progressFill,
-                {
-                  width: progressAnim.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: ['0%', `${progressValue * 100}%`],
-                  }),
-                },
-              ]}
+              className='h-full bg-blue-500 rounded-sm'
+              style={{
+                width: progressAnim.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: ['0%', `${progressValue * 100}%`],
+                }),
+              }}
             />
           </View>
-          <View style={styles.progressLabels}>
-            <Text style={styles.progressLabelText}>Birth</Text>
-            <Text style={styles.progressLabelText}>2 Years</Text>
+          <View className='flex-row justify-between mt-1'>
+            <Text className='text-xs text-gray-400'>Birth</Text>
+            <Text className='text-xs text-gray-400'>2 Years</Text>
           </View>
         </View>
 
         {/* Development Stage */}
-        <View style={styles.developmentStage}>
-          <Text style={styles.stageLabel}>Current Stage:</Text>
-          <Text style={styles.stageValue}>
+        <View className='flex-row justify-center items-center bg-purple-50 py-3 px-4 rounded-xl'>
+          <Text className='text-sm text-gray-500 mr-2'>Current Stage:</Text>
+          <Text className='text-base font-bold text-purple-600'>
             {ageDetails.isNewborn
               ? '👶 Newborn'
               : ageDetails.isInfant
@@ -200,37 +200,42 @@ const BabyInfoScreen: React.FC<BabyInfoScreenProps> = ({ route }) => {
 
     return (
       <Animated.View
-        style={[
-          styles.infoSection,
-          {
-            opacity: fadeAnim,
-            transform: [{ translateY: slideAnim }],
-          },
-        ]}
+        className='bg-white rounded-2xl p-5 mb-4 shadow-lg'
+        style={{
+          opacity: fadeAnim,
+          transform: [{ translateY: slideAnim }],
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.1,
+          shadowRadius: 8,
+          elevation: 4,
+        }}
       >
-        <Text style={styles.sectionTitle}>Basic Information</Text>
+        <Text className='text-lg font-bold text-gray-800 mb-4'>Basic Information</Text>
 
-        <View style={styles.infoGrid}>
-          <View style={styles.infoCard}>
-            <Text style={styles.infoLabel}>Full Name</Text>
-            <Text style={styles.infoValue}>{baby.name}</Text>
-            {baby.nickname && <Text style={styles.infoSubValue}>Nickname: "{baby.nickname}"</Text>}
+        <View className='mb-4'>
+          <View className='mb-4 pb-4 border-b border-gray-100'>
+            <Text className='text-xs text-gray-500 uppercase mb-1 tracking-wider'>Full Name</Text>
+            <Text className='text-base font-semibold text-gray-800'>{baby.name}</Text>
+            {baby.nickname && <Text className='text-sm text-gray-500 italic mt-0.5'>Nickname: "{baby.nickname}"</Text>}
           </View>
 
-          <View style={styles.infoCard}>
-            <Text style={styles.infoLabel}>Birth Date</Text>
-            <Text style={styles.infoValue}>{birthDate}</Text>
+          <View className='mb-4 pb-4 border-b border-gray-100'>
+            <Text className='text-xs text-gray-500 uppercase mb-1 tracking-wider'>Birth Date</Text>
+            <Text className='text-base font-semibold text-gray-800'>{birthDate}</Text>
           </View>
 
-          <View style={styles.infoCard}>
-            <Text style={styles.infoLabel}>Gender</Text>
-            <Text style={styles.infoValue}>{baby.gender === 'male' ? '♂️ Boy' : '♀️ Girl'}</Text>
+          <View className='mb-4 pb-4 border-b border-gray-100'>
+            <Text className='text-xs text-gray-500 uppercase mb-1 tracking-wider'>Gender</Text>
+            <Text className='text-base font-semibold text-gray-800'>
+              {baby.gender === 'male' ? '♂️ Boy' : '♀️ Girl'}
+            </Text>
           </View>
         </View>
 
-        <View style={styles.timestampSection}>
-          <Text style={styles.timestampText}>Profile created {createdTime}</Text>
-          <Text style={styles.timestampText}>Last updated {updatedTime}</Text>
+        <View className='border-t border-gray-100 pt-4'>
+          <Text className='text-xs text-gray-400 mb-1'>Profile created {createdTime}</Text>
+          <Text className='text-xs text-gray-400'>Last updated {updatedTime}</Text>
         </View>
       </Animated.View>
     );
@@ -249,47 +254,53 @@ const BabyInfoScreen: React.FC<BabyInfoScreenProps> = ({ route }) => {
 
     return (
       <Animated.View
-        style={[
-          styles.infoSection,
-          {
-            opacity: fadeAnim,
-            transform: [{ translateY: slideAnim }],
-          },
-        ]}
+        className='bg-white rounded-2xl p-5 mb-4 shadow-lg'
+        style={{
+          opacity: fadeAnim,
+          transform: [{ translateY: slideAnim }],
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.1,
+          shadowRadius: 8,
+          elevation: 4,
+        }}
       >
-        <Text style={styles.sectionTitle}>Physical Development</Text>
+        <Text className='text-lg font-bold text-gray-800 mb-4'>Physical Development</Text>
 
-        <View style={styles.statsGrid}>
+        <View className='mb-4'>
           {baby.weight && (
-            <View style={styles.statCard}>
-              <View style={styles.statIcon}>
-                <Text style={styles.statEmoji}>⚖️</Text>
+            <View className='flex-row items-center bg-gray-50 p-4 rounded-xl mb-3'>
+              <View className='mr-4'>
+                <Text className='text-2xl'>⚖️</Text>
               </View>
-              <View style={styles.statInfo}>
-                <Text style={styles.statLabel}>Weight</Text>
-                <Text style={styles.statValue}>{(baby.weight / 1000).toFixed(1)} kg</Text>
-                <Text style={styles.statPercentile}>{weightPercentile}th percentile</Text>
+              <View className='flex-1'>
+                <Text className='text-xs text-gray-500 uppercase mb-0.5'>Weight</Text>
+                <Text className='text-xl font-bold text-gray-800 mb-0.5'>{(baby.weight / 1000).toFixed(1)} kg</Text>
+                <Text className='text-xs text-green-500 font-medium'>{weightPercentile}th percentile</Text>
               </View>
             </View>
           )}
 
           {baby.height && (
-            <View style={styles.statCard}>
-              <View style={styles.statIcon}>
-                <Text style={styles.statEmoji}>📏</Text>
+            <View className='flex-row items-center bg-gray-50 p-4 rounded-xl mb-3'>
+              <View className='mr-4'>
+                <Text className='text-2xl'>📏</Text>
               </View>
-              <View style={styles.statInfo}>
-                <Text style={styles.statLabel}>Height</Text>
-                <Text style={styles.statValue}>{baby.height} cm</Text>
-                <Text style={styles.statPercentile}>{heightPercentile}th percentile</Text>
+              <View className='flex-1'>
+                <Text className='text-xs text-gray-500 uppercase mb-0.5'>Height</Text>
+                <Text className='text-xl font-bold text-gray-800 mb-0.5'>{baby.height} cm</Text>
+                <Text className='text-xs text-green-500 font-medium'>{heightPercentile}th percentile</Text>
               </View>
             </View>
           )}
         </View>
 
         {/* Growth Chart Button */}
-        <TouchableOpacity style={styles.chartButton} onPress={() => navigation.navigate('BabyHealth', { babyId })}>
-          <Text style={styles.chartButtonText}>📊 View Growth Chart</Text>
+        <TouchableOpacity
+          className='bg-green-50 py-3 px-4 rounded-xl items-center'
+          onPress={() => navigation.navigate('BabyHealth', { babyId })}
+        >
+          <Text className='text-green-500 text-sm font-semibold'>📊 View Growth Chart</Text>
         </TouchableOpacity>
       </Animated.View>
     );
@@ -301,23 +312,26 @@ const BabyInfoScreen: React.FC<BabyInfoScreenProps> = ({ route }) => {
     if (!hasHealthInfo) {
       return (
         <Animated.View
-          style={[
-            styles.infoSection,
-            {
-              opacity: fadeAnim,
-              transform: [{ translateY: slideAnim }],
-            },
-          ]}
+          className='bg-white rounded-2xl p-5 mb-4 shadow-lg'
+          style={{
+            opacity: fadeAnim,
+            transform: [{ translateY: slideAnim }],
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.1,
+            shadowRadius: 8,
+            elevation: 4,
+          }}
         >
-          <Text style={styles.sectionTitle}>Health Information</Text>
-          <View style={styles.emptyHealthState}>
-            <Text style={styles.emptyHealthEmoji}>🏥</Text>
-            <Text style={styles.emptyHealthText}>No health information recorded yet</Text>
+          <Text className='text-lg font-bold text-gray-800 mb-4'>Health Information</Text>
+          <View className='items-center py-6'>
+            <Text className='text-5xl mb-3'>🏥</Text>
+            <Text className='text-sm text-gray-500 text-center mb-4'>No health information recorded yet</Text>
             <TouchableOpacity
-              style={styles.addHealthButton}
+              className='bg-green-500 px-4 py-2 rounded-2xl'
               onPress={() => navigation.navigate('BabyHealth', { babyId })}
             >
-              <Text style={styles.addHealthButtonText}>Add Health Info</Text>
+              <Text className='text-white text-sm font-semibold'>Add Health Info</Text>
             </TouchableOpacity>
           </View>
         </Animated.View>
@@ -326,25 +340,28 @@ const BabyInfoScreen: React.FC<BabyInfoScreenProps> = ({ route }) => {
 
     return (
       <Animated.View
-        style={[
-          styles.infoSection,
-          {
-            opacity: fadeAnim,
-            transform: [{ translateY: slideAnim }],
-          },
-        ]}
+        className='bg-white rounded-2xl p-5 mb-4 shadow-lg'
+        style={{
+          opacity: fadeAnim,
+          transform: [{ translateY: slideAnim }],
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.1,
+          shadowRadius: 8,
+          elevation: 4,
+        }}
       >
-        <Text style={styles.sectionTitle}>Health Information</Text>
+        <Text className='text-lg font-bold text-gray-800 mb-4'>Health Information</Text>
 
         {baby.allergies && baby.allergies.length > 0 && (
-          <View style={styles.healthCard}>
-            <View style={styles.healthCardHeader}>
-              <Text style={styles.healthCardTitle}>⚠️ Allergies ({baby.allergies.length})</Text>
+          <View className='bg-yellow-50 p-4 rounded-xl mb-3 border-l-4 border-orange-500'>
+            <View className='mb-3'>
+              <Text className='text-base font-bold text-orange-800'>⚠️ Allergies ({baby.allergies.length})</Text>
             </View>
-            <View style={styles.healthItems}>
+            <View className='flex-row flex-wrap'>
               {baby.allergies.map((allergy, index) => (
-                <View key={index} style={styles.healthItem}>
-                  <Text style={styles.healthItemText}>{allergy}</Text>
+                <View key={index} className='bg-white px-3 py-1.5 rounded-2xl mr-2 mb-2'>
+                  <Text className='text-sm text-gray-800 font-medium'>{allergy}</Text>
                 </View>
               ))}
             </View>
@@ -352,14 +369,14 @@ const BabyInfoScreen: React.FC<BabyInfoScreenProps> = ({ route }) => {
         )}
 
         {baby.medications && baby.medications.length > 0 && (
-          <View style={styles.healthCard}>
-            <View style={styles.healthCardHeader}>
-              <Text style={styles.healthCardTitle}>💊 Medications ({baby.medications.length})</Text>
+          <View className='bg-yellow-50 p-4 rounded-xl mb-3 border-l-4 border-orange-500'>
+            <View className='mb-3'>
+              <Text className='text-base font-bold text-orange-800'>💊 Medications ({baby.medications.length})</Text>
             </View>
-            <View style={styles.healthItems}>
+            <View className='flex-row flex-wrap'>
               {baby.medications.map((medication, index) => (
-                <View key={index} style={styles.healthItem}>
-                  <Text style={styles.healthItemText}>{medication}</Text>
+                <View key={index} className='bg-white px-3 py-1.5 rounded-2xl mr-2 mb-2'>
+                  <Text className='text-sm text-gray-800 font-medium'>{medication}</Text>
                 </View>
               ))}
             </View>
@@ -367,16 +384,19 @@ const BabyInfoScreen: React.FC<BabyInfoScreenProps> = ({ route }) => {
         )}
 
         {baby.notes && (
-          <View style={styles.healthCard}>
-            <View style={styles.healthCardHeader}>
-              <Text style={styles.healthCardTitle}>📝 Notes</Text>
+          <View className='bg-yellow-50 p-4 rounded-xl mb-3 border-l-4 border-orange-500'>
+            <View className='mb-3'>
+              <Text className='text-base font-bold text-orange-800'>📝 Notes</Text>
             </View>
-            <Text style={styles.notesText}>{baby.notes}</Text>
+            <Text className='text-sm text-gray-500 leading-5'>{baby.notes}</Text>
           </View>
         )}
 
-        <TouchableOpacity style={styles.editHealthButton} onPress={() => navigation.navigate('BabyHealth', { babyId })}>
-          <Text style={styles.editHealthButtonText}>✏️ Edit Health Information</Text>
+        <TouchableOpacity
+          className='bg-blue-50 py-3 px-4 rounded-xl items-center'
+          onPress={() => navigation.navigate('BabyHealth', { babyId })}
+        >
+          <Text className='text-blue-500 text-sm font-semibold'>✏️ Edit Health Information</Text>
         </TouchableOpacity>
       </Animated.View>
     );
@@ -388,37 +408,45 @@ const BabyInfoScreen: React.FC<BabyInfoScreenProps> = ({ route }) => {
 
     return (
       <Animated.View
-        style={[
-          styles.infoSection,
-          {
-            opacity: fadeAnim,
-            transform: [{ translateY: slideAnim }],
-          },
-        ]}
+        className='bg-white rounded-2xl p-5 mb-4 shadow-lg'
+        style={{
+          opacity: fadeAnim,
+          transform: [{ translateY: slideAnim }],
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.1,
+          shadowRadius: 8,
+          elevation: 4,
+        }}
       >
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Family Members ({baby.familyMembers.length})</Text>
+        <View className='flex-row justify-between items-center mb-4'>
+          <Text className='text-lg font-bold text-gray-800'>Family Members ({baby.familyMembers.length})</Text>
           <TouchableOpacity
-            style={styles.viewAllButton}
+            className='bg-blue-50 px-3 py-1.5 rounded-xl'
             onPress={() => navigation.navigate('BabyTabs', { babyId, initialTab: 'Family' })}
           >
-            <Text style={styles.viewAllButtonText}>View All</Text>
+            <Text className='text-blue-500 text-xs font-semibold'>View All</Text>
           </TouchableOpacity>
         </View>
 
         {/* Primary Caregivers */}
         {primaryCaregivers.length > 0 && (
-          <View style={styles.familyGroup}>
-            <Text style={styles.familyGroupTitle}>👑 Primary Caregivers</Text>
+          <View className='mb-4'>
+            <Text className='text-sm font-bold text-gray-500 mb-2 uppercase'>👑 Primary Caregivers</Text>
             {primaryCaregivers.map((member, index) => (
-              <View key={member.userId} style={styles.familyMemberItem}>
-                <View style={styles.memberInfo}>
-                  <Text style={styles.memberName}>{member.displayName || 'Family Member'}</Text>
-                  <Text style={styles.memberRole}>{member.relationType.replace('_', ' ')}</Text>
+              <View
+                key={member.userId}
+                className='flex-row justify-between items-center py-3 px-4 bg-gray-50 rounded-xl mb-2'
+              >
+                <View className='flex-1'>
+                  <Text className='text-base font-semibold text-gray-800 mb-0.5'>
+                    {member.displayName || 'Family Member'}
+                  </Text>
+                  <Text className='text-xs text-gray-500 capitalize'>{member.relationType.replace('_', ' ')}</Text>
                 </View>
-                <View style={styles.memberBadges}>
-                  <View style={styles.primaryBadge}>
-                    <Text style={styles.primaryBadgeText}>Primary</Text>
+                <View className='flex-row'>
+                  <View className='bg-yellow-400 px-2 py-1 rounded-lg'>
+                    <Text className='text-xs font-bold text-yellow-800'>Primary</Text>
                   </View>
                 </View>
               </View>
@@ -428,27 +456,34 @@ const BabyInfoScreen: React.FC<BabyInfoScreenProps> = ({ route }) => {
 
         {/* Other Family Members */}
         {otherMembers.length > 0 && (
-          <View style={styles.familyGroup}>
-            <Text style={styles.familyGroupTitle}>👨‍👩‍👧‍👦 Other Family Members</Text>
+          <View className='mb-4'>
+            <Text className='text-sm font-bold text-gray-500 mb-2 uppercase'>👨‍👩‍👧‍👦 Other Family Members</Text>
             {otherMembers.slice(0, 3).map((member, index) => (
-              <View key={member.userId} style={styles.familyMemberItem}>
-                <View style={styles.memberInfo}>
-                  <Text style={styles.memberName}>{member.displayName || 'Family Member'}</Text>
-                  <Text style={styles.memberRole}>{member.relationType.replace('_', ' ')}</Text>
+              <View
+                key={member.userId}
+                className='flex-row justify-between items-center py-3 px-4 bg-gray-50 rounded-xl mb-2'
+              >
+                <View className='flex-1'>
+                  <Text className='text-base font-semibold text-gray-800 mb-0.5'>
+                    {member.displayName || 'Family Member'}
+                  </Text>
+                  <Text className='text-xs text-gray-500 capitalize'>{member.relationType.replace('_', ' ')}</Text>
                 </View>
               </View>
             ))}
             {otherMembers.length > 3 && (
-              <Text style={styles.moreMembers}>+{otherMembers.length - 3} more family members</Text>
+              <Text className='text-sm text-gray-500 text-center italic'>
+                +{otherMembers.length - 3} more family members
+              </Text>
             )}
           </View>
         )}
 
         <TouchableOpacity
-          style={styles.inviteButton}
+          className='bg-green-50 py-3 px-4 rounded-xl items-center mt-2'
           onPress={() => navigation.navigate('InviteFamilyMember', { babyId })}
         >
-          <Text style={styles.inviteButtonText}>👥 Invite Family Member</Text>
+          <Text className='text-green-500 text-sm font-semibold'>👥 Invite Family Member</Text>
         </TouchableOpacity>
       </Animated.View>
     );
@@ -471,53 +506,54 @@ const BabyInfoScreen: React.FC<BabyInfoScreenProps> = ({ route }) => {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView className='flex-1 bg-gray-50'>
       <ScrollView
-        style={styles.scrollView}
+        className='flex-1'
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />}
         showsVerticalScrollIndicator={false}
       >
         {/* Header with Baby Avatar and Name */}
         <Animated.View
-          style={[
-            styles.header,
-            {
-              opacity: fadeAnim,
-              transform: [{ translateY: slideAnim }],
-            },
-          ]}
+          className='bg-white p-5 flex-row justify-between items-center border-b border-gray-200'
+          style={{
+            opacity: fadeAnim,
+            transform: [{ translateY: slideAnim }],
+          }}
         >
-          <View style={styles.babyHeaderInfo}>
-            <View style={styles.avatarContainer}>
+          <View className='flex-row items-center flex-1'>
+            <View className='mr-4'>
               {currentBaby.avatarUrl ? (
-                <Image source={{ uri: currentBaby.avatarUrl }} style={styles.headerAvatar} />
+                <Image source={{ uri: currentBaby.avatarUrl }} className='w-16 h-16 rounded-full' />
               ) : (
                 <View
-                  style={[
-                    styles.headerAvatarPlaceholder,
-                    { backgroundColor: currentBaby.gender === 'male' ? '#4FC3F7' : '#F8BBD9' },
-                  ]}
+                  className='w-16 h-16 rounded-full justify-center items-center'
+                  style={{ backgroundColor: currentBaby.gender === 'male' ? '#4FC3F7' : '#F8BBD9' }}
                 >
-                  <Text style={styles.headerAvatarText}>{currentBaby.gender === 'male' ? '👶🏻' : '👶🏻'}</Text>
+                  <Text className='text-3xl'>{currentBaby.gender === 'male' ? '👶🏻' : '👶🏻'}</Text>
                 </View>
               )}
             </View>
-            <View style={styles.headerTextInfo}>
-              <Text style={styles.headerBabyName}>{currentBaby.name}</Text>
-              {currentBaby.nickname && <Text style={styles.headerBabyNickname}>"{currentBaby.nickname}"</Text>}
-              <Text style={styles.headerBabyAge}>
+            <View className='flex-1'>
+              <Text className='text-2xl font-bold text-gray-800'>{currentBaby.name}</Text>
+              {currentBaby.nickname && (
+                <Text className='text-base text-gray-500 italic mb-1'>"{currentBaby.nickname}"</Text>
+              )}
+              <Text className='text-lg text-blue-500 font-semibold'>
                 {BabyService.formatAge(BabyService.calculateAge(currentBaby.birthDate))}
               </Text>
             </View>
           </View>
 
-          <TouchableOpacity style={styles.editButton} onPress={() => navigation.navigate('EditBaby', { babyId })}>
-            <Text style={styles.editButtonText}>✏️ Edit</Text>
+          <TouchableOpacity
+            className='bg-blue-500 px-4 py-2 rounded-2xl'
+            onPress={() => navigation.navigate('EditBaby', { babyId })}
+          >
+            <Text className='text-white text-sm font-semibold'>✏️ Edit</Text>
           </TouchableOpacity>
         </Animated.View>
 
         {/* Content Sections */}
-        <View style={styles.content}>
+        <View className='p-4'>
           {renderAgeProgress(currentBaby)}
           {renderBasicInfo(currentBaby)}
           {renderPhysicalStats(currentBaby)}
@@ -528,438 +564,5 @@ const BabyInfoScreen: React.FC<BabyInfoScreenProps> = ({ route }) => {
     </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f8f9fa',
-  },
-  scrollView: {
-    flex: 1,
-  },
-  header: {
-    backgroundColor: '#fff',
-    padding: 20,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    borderBottomWidth: 1,
-    borderBottomColor: '#e1e5e9',
-  },
-  babyHeaderInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-  },
-  avatarContainer: {
-    marginRight: 16,
-  },
-  headerAvatar: {
-    width: 70,
-    height: 70,
-    borderRadius: 35,
-  },
-  headerAvatarPlaceholder: {
-    width: 70,
-    height: 70,
-    borderRadius: 35,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  headerAvatarText: {
-    fontSize: 28,
-  },
-  headerTextInfo: {
-    flex: 1,
-  },
-  headerBabyName: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  headerBabyNickname: {
-    fontSize: 16,
-    color: '#666',
-    fontStyle: 'italic',
-    marginBottom: 4,
-  },
-  headerBabyAge: {
-    fontSize: 18,
-    color: '#007AFF',
-    fontWeight: '600',
-  },
-  editButton: {
-    backgroundColor: '#007AFF',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-  },
-  editButtonText: {
-    color: '#fff',
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  content: {
-    padding: 16,
-  },
-  ageProgressSection: {
-    backgroundColor: '#fff',
-    borderRadius: 16,
-    padding: 20,
-    marginBottom: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 16,
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  viewAllButton: {
-    backgroundColor: '#E3F2FD',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 12,
-  },
-  viewAllButtonText: {
-    color: '#007AFF',
-    fontSize: 12,
-    fontWeight: '600',
-  },
-  ageDisplayContainer: {
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  ageMainDisplay: {
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  ageNumber: {
-    fontSize: 48,
-    fontWeight: 'bold',
-    color: '#007AFF',
-  },
-  ageUnit: {
-    fontSize: 16,
-    color: '#666',
-    textTransform: 'uppercase',
-    letterSpacing: 1,
-  },
-  ageBreakdown: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    width: '100%',
-  },
-  ageBreakdownItem: {
-    alignItems: 'center',
-  },
-  breakdownNumber: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  breakdownLabel: {
-    fontSize: 12,
-    color: '#666',
-    textTransform: 'uppercase',
-  },
-  progressContainer: {
-    marginBottom: 16,
-  },
-  progressLabel: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 8,
-    textAlign: 'center',
-  },
-  progressBar: {
-    height: 8,
-    backgroundColor: '#E3F2FD',
-    borderRadius: 4,
-    overflow: 'hidden',
-  },
-  progressFill: {
-    height: '100%',
-    backgroundColor: '#007AFF',
-    borderRadius: 4,
-  },
-  progressLabels: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 4,
-  },
-  progressLabelText: {
-    fontSize: 11,
-    color: '#999',
-  },
-  developmentStage: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F3E5F5',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 12,
-  },
-  stageLabel: {
-    fontSize: 14,
-    color: '#666',
-    marginRight: 8,
-  },
-  stageValue: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#9C27B0',
-  },
-  infoSection: {
-    backgroundColor: '#fff',
-    borderRadius: 16,
-    padding: 20,
-    marginBottom: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  infoGrid: {
-    marginBottom: 16,
-  },
-  infoCard: {
-    marginBottom: 16,
-    paddingBottom: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
-  },
-  infoLabel: {
-    fontSize: 12,
-    color: '#666',
-    textTransform: 'uppercase',
-    marginBottom: 4,
-    letterSpacing: 0.5,
-  },
-  infoValue: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#333',
-  },
-  infoSubValue: {
-    fontSize: 14,
-    color: '#666',
-    fontStyle: 'italic',
-    marginTop: 2,
-  },
-  timestampSection: {
-    borderTopWidth: 1,
-    borderTopColor: '#f0f0f0',
-    paddingTop: 16,
-  },
-  timestampText: {
-    fontSize: 12,
-    color: '#999',
-    marginBottom: 4,
-  },
-  statsGrid: {
-    marginBottom: 16,
-  },
-  statCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#F8F9FA',
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 12,
-  },
-  statIcon: {
-    marginRight: 16,
-  },
-  statEmoji: {
-    fontSize: 24,
-  },
-  statInfo: {
-    flex: 1,
-  },
-  statLabel: {
-    fontSize: 12,
-    color: '#666',
-    textTransform: 'uppercase',
-    marginBottom: 2,
-  },
-  statValue: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 2,
-  },
-  statPercentile: {
-    fontSize: 12,
-    color: '#4CAF50',
-    fontWeight: '500',
-  },
-  chartButton: {
-    backgroundColor: '#E8F5E8',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 12,
-    alignItems: 'center',
-  },
-  chartButtonText: {
-    color: '#4CAF50',
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  emptyHealthState: {
-    alignItems: 'center',
-    paddingVertical: 24,
-  },
-  emptyHealthEmoji: {
-    fontSize: 48,
-    marginBottom: 12,
-  },
-  emptyHealthText: {
-    fontSize: 14,
-    color: '#666',
-    textAlign: 'center',
-    marginBottom: 16,
-  },
-  addHealthButton: {
-    backgroundColor: '#4CAF50',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 16,
-  },
-  addHealthButtonText: {
-    color: '#fff',
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  healthCard: {
-    backgroundColor: '#FFF9E6',
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 12,
-    borderLeftWidth: 4,
-    borderLeftColor: '#FF9800',
-  },
-  healthCardHeader: {
-    marginBottom: 12,
-  },
-  healthCardTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#E65100',
-  },
-  healthItems: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-  },
-  healthItem: {
-    backgroundColor: '#FFF',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
-    marginRight: 8,
-    marginBottom: 8,
-  },
-  healthItemText: {
-    fontSize: 14,
-    color: '#333',
-    fontWeight: '500',
-  },
-  notesText: {
-    fontSize: 14,
-    color: '#666',
-    lineHeight: 20,
-  },
-  editHealthButton: {
-    backgroundColor: '#E3F2FD',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 12,
-    alignItems: 'center',
-  },
-  editHealthButtonText: {
-    color: '#007AFF',
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  familyGroup: {
-    marginBottom: 16,
-  },
-  familyGroupTitle: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#666',
-    marginBottom: 8,
-    textTransform: 'uppercase',
-  },
-  familyMemberItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    backgroundColor: '#F8F9FA',
-    borderRadius: 12,
-    marginBottom: 8,
-  },
-  memberInfo: {
-    flex: 1,
-  },
-  memberName: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#333',
-    marginBottom: 2,
-  },
-  memberRole: {
-    fontSize: 12,
-    color: '#666',
-    textTransform: 'capitalize',
-  },
-  memberBadges: {
-    flexDirection: 'row',
-  },
-  primaryBadge: {
-    backgroundColor: '#FFD700',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 8,
-  },
-  primaryBadgeText: {
-    fontSize: 11,
-    fontWeight: 'bold',
-    color: '#B8860B',
-  },
-  moreMembers: {
-    fontSize: 14,
-    color: '#666',
-    textAlign: 'center',
-    fontStyle: 'italic',
-  },
-  inviteButton: {
-    backgroundColor: '#E8F5E8',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 12,
-    alignItems: 'center',
-    marginTop: 8,
-  },
-  inviteButtonText: {
-    color: '#4CAF50',
-    fontSize: 14,
-    fontWeight: '600',
-  },
-});
 
 export default BabyInfoScreen;

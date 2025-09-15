@@ -10,6 +10,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { ActivityIndicator, Animated, Platform, RefreshControl, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 
+import AppLayout from '@/components/layout/AppLayout';
 import { NotificationFilterType } from '@/models/Notification/NotificationEnum';
 import { Notification } from '@/models/Notification/NotificationModel';
 import {
@@ -23,8 +24,9 @@ import {
 } from '@/store/slices/notificationSlice';
 import { AppDispatch, RootState } from '@/store/store';
 import NotificationEmptyState from './NotificationEmptyState';
-import NotificationFilterModal from './NotificationFilterModal';
+import NotificationFilterBottomSheet from './NotificationFilterBottomSheet';
 import NotificationItem from './NotificationItem';
+import { mockNotifications } from './mockup-data';
 
 type RootStackParamList = {
   Appointments: { appointmentId?: string };
@@ -239,8 +241,9 @@ const NotificationScreen: React.FC = () => {
   );
 
   return (
-    <View className='flex-1 pt-16'>
-      {/* <Animated.View className='border-b border-gray-100 shadow-sm'>
+    <AppLayout>
+      <View className='flex-1'>
+        {/* <Animated.View className='border-b border-gray-100 shadow-sm'>
         <NotificationHeader
           unreadCount={unreadCount}
           onBack={() => navigation.goBack()}
@@ -255,42 +258,42 @@ const NotificationScreen: React.FC = () => {
         />
       </Animated.View> */}
 
-      <View className='flex-1'>
-        <FlashList
-          ref={flashListRef}
-          data={notifications}
-          renderItem={renderNotification}
-          keyExtractor={keyExtractor}
-          contentContainerStyle={contentContainerStyle}
-          ListEmptyComponent={renderEmptyState}
-          refreshControl={
-            <RefreshControl
-              refreshing={isRefreshing}
-              onRefresh={handleRefresh}
-              colors={['#8B7AB8']}
-              tintColor='#8B7AB8'
-            />
-          }
-          onEndReached={handleLoadMore}
-          onEndReachedThreshold={0.5}
-          ListFooterComponent={renderFooter}
-          onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], { useNativeDriver: false })}
-          scrollEventThrottle={16}
-          showsVerticalScrollIndicator={false}
-          removeClippedSubviews={Platform.OS === 'android'}
-          drawDistance={200}
-          overrideItemLayout={(layout, item) => {
-            layout.span = ESTIMATED_ITEM_SIZE;
-          }}
+        <View className='flex-1'>
+          <FlashList
+            ref={flashListRef}
+            data={mockNotifications}
+            renderItem={renderNotification}
+            keyExtractor={keyExtractor}
+            contentContainerStyle={contentContainerStyle}
+            ListEmptyComponent={renderEmptyState}
+            refreshControl={
+              <RefreshControl
+                refreshing={isRefreshing}
+                onRefresh={handleRefresh}
+                colors={['#8B7AB8']}
+                tintColor='#8B7AB8'
+              />
+            }
+            onEndReached={handleLoadMore}
+            onEndReachedThreshold={0.5}
+            ListFooterComponent={renderFooter}
+            onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], { useNativeDriver: false })}
+            scrollEventThrottle={16}
+            showsVerticalScrollIndicator={false}
+            removeClippedSubviews={Platform.OS === 'android'}
+            drawDistance={200}
+            overrideItemLayout={(layout, item) => {
+              layout.span = ESTIMATED_ITEM_SIZE;
+            }}
+          />
+        </View>
+        <NotificationFilterBottomSheet
+          visible={isFilterModalVisible}
+          onClose={() => setIsFilterModalVisible(false)}
+          currentFilters={filters}
         />
       </View>
-
-      <NotificationFilterModal
-        visible={isFilterModalVisible}
-        onClose={() => setIsFilterModalVisible(false)}
-        currentFilters={filters}
-      />
-    </View>
+    </AppLayout>
   );
 };
 

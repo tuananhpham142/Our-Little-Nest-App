@@ -24,27 +24,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
   const { width: _width } = Dimensions.get('window');
 
   return (
-    <View className='mb-6'>
-      {/* Top Section with Coins and Notification */}
-      <View className='flex-row justify-between items-center mb-4'>
-        {/* Coins Display */}
-        <View className='flex-row items-center bg-white/20 backdrop-blur-sm rounded-2xl px-4 py-2'>
-          <Text className='text-2xl mr-2'>💰</Text>
-          <Text className='text-white font-bold text-lg'>{coins.toLocaleString()}</Text>
-        </View>
-
-        {/* Notification Bell */}
-        <TouchableOpacity
-          onPress={onNotificationPress}
-          className='bg-white/20 backdrop-blur-sm rounded-2xl p-3 active:scale-95 relative'
-        >
-          <Text className='text-white text-xl'>🔔</Text>
-          {hasNotifications && <View className='absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full' />}
-        </TouchableOpacity>
-      </View>
-
-      {/* Profile Avatar - Floating above with space */}
-
+    <View className='mb-6 px-4'>
       {/* Main Profile Card - Separate from avatar with space */}
       <LinearGradient
         colors={['#BFDBFE', '#E0E7FF', '#F3E8FF']}

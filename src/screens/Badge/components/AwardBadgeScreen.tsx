@@ -4,20 +4,20 @@ import { useAwardBadge } from '@/hooks/useBadgeCollection';
 import { BadgeCategory, BadgeDifficulty } from '@/models/Badge/BadgeEnum';
 import { Badge } from '@/models/Badge/BadgeModel';
 import { AwardBadgeFormData, BadgeCollectionFormValidation } from '@/models/BadgeCollection/BadgeCollectionUIForm';
-import { BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Icon from '@react-native-vector-icons/fontawesome6';
-import dayjs from 'dayjs';
+import { format, formatISO } from 'date-fns';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Alert, Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import Animated, {
-    FadeInDown,
-    FadeInUp,
-    useAnimatedStyle,
-    useSharedValue,
-    withSequence,
-    withSpring,
-    withTiming,
+  FadeInDown,
+  FadeInUp,
+  useAnimatedStyle,
+  useSharedValue,
+  withSequence,
+  withSpring,
+  withTiming,
 } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 interface Props {
@@ -116,7 +116,7 @@ const AwardBadgeScreen: React.FC<Props> = ({ navigation, route }) => {
       await awardBadge({
         babyId: formData.babyId,
         badgeId: formData.badgeId,
-        completedAt: dayjs(formData.completedAt).toISOString(),
+        completedAt: formatISO(formData.completedAt),
         submissionNote: formData.submissionNote,
         submissionMedia: formData.mediaFiles.map((f) => f.uri),
       });
@@ -247,7 +247,7 @@ const AwardBadgeScreen: React.FC<Props> = ({ navigation, route }) => {
       >
         <View className='flex-row items-center'>
           <Icon name='calendar' iconStyle='solid' size={16} color='#3B82F6' />
-          <Text className='text-gray-800 ml-3'>{dayjs(formData.completedAt).format('LL')}</Text>
+          <Text className='text-gray-800 ml-3'>{format(formData.completedAt, 'LL')}</Text>
         </View>
         <Icon name='chevron-right' iconStyle='solid' size={16} color='#9CA3AF' />
       </TouchableOpacity>
@@ -273,101 +273,99 @@ const AwardBadgeScreen: React.FC<Props> = ({ navigation, route }) => {
   );
 
   return (
-    <BottomSheetModalProvider>
-      <SafeAreaView className='flex-1 bg-gray-50'>
-        {/* Header */}
-        <View className='px-4 py-4 bg-white shadow-sm'>
-          <View className='flex-row items-center justify-between'>
-            <TouchableOpacity
-              onPress={() => navigation.goBack()}
-              className='w-10 h-10 rounded-full items-center justify-center bg-gray-100'
-            >
-              <Icon name='arrow-left' iconStyle='solid' size={16} color='#374151' />
-            </TouchableOpacity>
+    <SafeAreaView className='flex-1 bg-gray-50'>
+      {/* Header */}
+      <View className='px-4 py-4 bg-white shadow-sm'>
+        <View className='flex-row items-center justify-between'>
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            className='w-10 h-10 rounded-full items-center justify-center bg-gray-100'
+          >
+            <Icon name='arrow-left' iconStyle='solid' size={16} color='#374151' />
+          </TouchableOpacity>
 
-            <Text className='text-xl font-bold text-gray-800'>Award Badge</Text>
+          <Text className='text-xl font-bold text-gray-800'>Award Badge</Text>
 
-            <View className='w-10' />
-          </View>
+          <View className='w-10' />
         </View>
+      </View>
 
-        {/* Content */}
-        <Animated.View style={formAnimatedStyle} className='flex-1'>
-          <ScrollView className='flex-1 p-4' showsVerticalScrollIndicator={false}>
-            {renderBabySelector()}
-            {formData.babyId && renderBadgeSelector()}
-            {formData.badgeId && renderDateSelector()}
-            {formData.badgeId && renderNoteInput()}
+      {/* Content */}
+      <Animated.View style={formAnimatedStyle} className='flex-1'>
+        <ScrollView className='flex-1 p-4' showsVerticalScrollIndicator={false}>
+          {renderBabySelector()}
+          {formData.babyId && renderBadgeSelector()}
+          {formData.badgeId && renderDateSelector()}
+          {formData.badgeId && renderNoteInput()}
 
-            {/* Error Messages */}
-            {errors.length > 0 && (
-              <Animated.View entering={FadeInDown} className='mb-6'>
-                <View className='bg-red-50 border border-red-200 rounded-xl p-4'>
-                  <Text className='text-red-800 font-semibold mb-2'>Please fix the following:</Text>
-                  {errors.map((error, index) => (
-                    <Text key={index} className='text-red-700 text-sm'>
-                      • {error}
-                    </Text>
-                  ))}
-                </View>
-              </Animated.View>
-            )}
-          </ScrollView>
-
-          {/* Submit Button */}
-          <View className='p-4 bg-white border-t border-gray-200'>
-            <Animated.View style={submitButtonAnimatedStyle}>
-              <TouchableOpacity
-                onPress={handleSubmit}
-                disabled={isSubmitting || !formData.babyId || !formData.badgeId}
-                className={`py-4 rounded-xl items-center ${
-                  isSubmitting || !formData.babyId || !formData.badgeId ? 'bg-gray-300' : 'bg-blue-500'
-                }`}
-              >
-                {isSubmitting ? (
-                  <ActivityIndicator color='white' />
-                ) : (
-                  <Text className='text-white text-lg font-semibold'>Award Badge</Text>
-                )}
-              </TouchableOpacity>
+          {/* Error Messages */}
+          {errors.length > 0 && (
+            <Animated.View entering={FadeInDown} className='mb-6'>
+              <View className='bg-red-50 border border-red-200 rounded-xl p-4'>
+                <Text className='text-red-800 font-semibold mb-2'>Please fix the following:</Text>
+                {errors.map((error, index) => (
+                  <Text key={index} className='text-red-700 text-sm'>
+                    • {error}
+                  </Text>
+                ))}
+              </View>
             </Animated.View>
-          </View>
-        </Animated.View>
+          )}
+        </ScrollView>
 
-        {/* Date Picker Modal */}
+        {/* Submit Button */}
+        <View className='p-4 bg-white border-t border-gray-200'>
+          <Animated.View style={submitButtonAnimatedStyle}>
+            <TouchableOpacity
+              onPress={handleSubmit}
+              disabled={isSubmitting || !formData.babyId || !formData.badgeId}
+              className={`py-4 rounded-xl items-center ${
+                isSubmitting || !formData.babyId || !formData.badgeId ? 'bg-gray-300' : 'bg-blue-500'
+              }`}
+            >
+              {isSubmitting ? (
+                <ActivityIndicator color='white' />
+              ) : (
+                <Text className='text-white text-lg font-semibold'>Award Badge</Text>
+              )}
+            </TouchableOpacity>
+          </Animated.View>
+        </View>
+      </Animated.View>
 
-        <DateTimePicker
-          value={
-            (typeof formData.completedAt === 'string' ? new Date(formData.completedAt) : formData.completedAt) ||
-            new Date()
-          }
-          mode='date'
-          display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-          onChange={(event, date) => {
-            setShowDatePicker(false);
-            setFormData((prev) => ({ ...prev, completedAt: date as Date }));
-          }}
-          maximumDate={new Date()}
-          minimumDate={new Date(1900, 0, 1)}
+      {/* Date Picker Modal */}
+
+      <DateTimePicker
+        value={
+          (typeof formData.completedAt === 'string' ? new Date(formData.completedAt) : formData.completedAt) ||
+          new Date()
+        }
+        mode='date'
+        display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+        onChange={(event, date) => {
+          setShowDatePicker(false);
+          setFormData((prev) => ({ ...prev, completedAt: date as Date }));
+        }}
+        maximumDate={new Date()}
+        minimumDate={new Date(1900, 0, 1)}
+      />
+
+      {/* Badge Selection Bottom Sheet */}
+      <BottomSheetModal
+        ref={setBadgeSheetRef}
+        index={1}
+        snapPoints={['50%', '90%']}
+        backdropComponent={({ style }) => <View style={[style, { backgroundColor: 'rgba(0,0,0,0.5)' }]} />}
+      >
+        <BadgeSelectionSheet
+          badges={availableBadges}
+          selectedBabyAge={babies.find((b) => b.id === formData.babyId)?.age}
+          onSelect={handleBadgeSelect}
+          onClose={() => badgeSheetRef?.close()}
+          isLoading={isLoading}
         />
-
-        {/* Badge Selection Bottom Sheet */}
-        <BottomSheetModal
-          ref={setBadgeSheetRef}
-          index={1}
-          snapPoints={['50%', '90%']}
-          backdropComponent={({ style }) => <View style={[style, { backgroundColor: 'rgba(0,0,0,0.5)' }]} />}
-        >
-          <BadgeSelectionSheet
-            badges={availableBadges}
-            selectedBabyAge={babies.find((b) => b.id === formData.babyId)?.age}
-            onSelect={handleBadgeSelect}
-            onClose={() => badgeSheetRef?.close()}
-            isLoading={isLoading}
-          />
-        </BottomSheetModal>
-      </SafeAreaView>
-    </BottomSheetModalProvider>
+      </BottomSheetModal>
+    </SafeAreaView>
   );
 };
 

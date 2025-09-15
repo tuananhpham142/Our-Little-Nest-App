@@ -1,5 +1,5 @@
 // src/screens/Badge/BadgesScreen.tsx
-import { BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import Icon from '@react-native-vector-icons/fontawesome6';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import {
@@ -14,8 +14,8 @@ import {
   View,
 } from 'react-native';
 import Animated, { FadeInDown, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
+import AppLayout from '@/components/layout/AppLayout';
 import { useBadges } from '@/hooks/useBadge';
 import { BadgeCategory, BadgeDifficulty } from '@/models/Badge/BadgeEnum';
 import { Badge, BadgeFilters } from '@/models/Badge/BadgeModel';
@@ -291,8 +291,8 @@ const BadgesScreen: React.FC<Props> = ({ navigation }) => {
   }, []);
 
   return (
-    <BottomSheetModalProvider>
-      <SafeAreaView className='flex-1 bg-gray-50'>
+    <AppLayout>
+      <View className='flex-1'>
         {/* Header */}
         <View className='px-4 py-2 bg-white shadow-sm'>
           <View className='flex-row items-center justify-between mb-4'>
@@ -398,8 +398,8 @@ const BadgesScreen: React.FC<Props> = ({ navigation }) => {
             />
           )}
         </BottomSheetModal>
-      </SafeAreaView>
-    </BottomSheetModalProvider>
+      </View>
+    </AppLayout>
   );
 };
 

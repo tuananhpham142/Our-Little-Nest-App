@@ -1,11 +1,11 @@
 // src/screens/Baby/InviteFamilyMemberScreen.tsx
 
 import {
-    BabyPermissionEnum,
-    FamilyRelationTypeEnum,
-    PERMISSION_DISPLAY_NAMES,
-    PERMISSION_SETS,
-    RELATION_DISPLAY_NAMES,
+  BabyPermissionEnum,
+  FamilyRelationTypeEnum,
+  PERMISSION_DISPLAY_NAMES,
+  PERMISSION_SETS,
+  RELATION_DISPLAY_NAMES,
 } from '@/models/Baby/BabyEnum';
 import { AddFamilyMemberFormData, AddFamilyMemberFormErrors } from '@/models/Baby/BabyForm';
 import { fetchBabyById, inviteFamilyMember } from '@/store/slices/babySlice';
@@ -14,18 +14,17 @@ import { useAppDispatch, useAppSelector } from '@/store/store';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import React, { useEffect, useRef, useState } from 'react';
 import {
-    Alert,
-    Animated,
-    Dimensions,
-    KeyboardAvoidingView,
-    Platform,
-    SafeAreaView,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Alert,
+  Animated,
+  Dimensions,
+  KeyboardAvoidingView,
+  Platform,
+  SafeAreaView,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 
 const { width, height } = Dimensions.get('window');
@@ -235,14 +234,17 @@ const InviteFamilyMemberScreen: React.FC<InviteFamilyMemberScreenProps> = ({ rou
   };
 
   const renderProgressIndicator = () => (
-    <View style={styles.progressContainer}>
-      <View style={styles.progressBar}>
-        <View style={[styles.progressFill, { width: `${(currentStep / 3) * 100}%` }]} />
+    <View className='px-4 py-3 bg-white'>
+      <View className='h-1 bg-blue-100 rounded-sm mb-3'>
+        <View className='h-full bg-blue-500 rounded-sm' style={{ width: `${(currentStep / 3) * 100}%` }} />
       </View>
-      <View style={styles.stepIndicators}>
+      <View className='flex-row justify-between'>
         {[1, 2, 3].map((step) => (
-          <View key={step} style={[styles.stepIndicator, currentStep >= step && styles.stepIndicatorActive]}>
-            <Text style={[styles.stepNumber, currentStep >= step && styles.stepNumberActive]}>{step}</Text>
+          <View
+            key={step}
+            className={`w-8 h-8 rounded-2xl justify-center items-center ${currentStep >= step ? 'bg-blue-500' : 'bg-blue-100'}`}
+          >
+            <Text className={`text-sm font-bold ${currentStep >= step ? 'text-white' : 'text-gray-500'}`}>{step}</Text>
           </View>
         ))}
       </View>
@@ -251,24 +253,27 @@ const InviteFamilyMemberScreen: React.FC<InviteFamilyMemberScreenProps> = ({ rou
 
   const renderStep1 = () => (
     <Animated.View
-      style={[
-        styles.stepContainer,
-        {
-          opacity: fadeAnim,
-          transform: [{ translateY: slideAnim }],
-        },
-      ]}
+      className='bg-white rounded-2xl p-5 shadow-lg'
+      style={{
+        opacity: fadeAnim,
+        transform: [{ translateY: slideAnim }],
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+        elevation: 4,
+      }}
     >
-      <Text style={styles.stepTitle}>Contact Information</Text>
-      <Text style={styles.stepDescription}>
+      <Text className='text-2xl font-bold text-gray-800 mb-2'>Contact Information</Text>
+      <Text className='text-base text-gray-500 leading-6 mb-6'>
         Enter the email address and relationship type for the person you want to invite.
       </Text>
 
       {/* Email Input */}
-      <View style={styles.inputGroup}>
-        <Text style={styles.inputLabel}>Email Address *</Text>
+      <View className='mb-5'>
+        <Text className='text-base font-semibold text-gray-800 mb-2'>Email Address *</Text>
         <TextInput
-          style={[styles.textInput, formErrors.email && styles.inputError]}
+          className={`border rounded-xl px-4 py-3 text-base text-gray-800 bg-white ${formErrors.email ? 'border-red-500' : 'border-gray-200'}`}
           placeholder='Enter email address'
           placeholderTextColor='#999'
           value={formData.email}
@@ -282,30 +287,30 @@ const InviteFamilyMemberScreen: React.FC<InviteFamilyMemberScreenProps> = ({ rou
           autoCapitalize='none'
           autoCorrect={false}
         />
-        {formErrors.email && <Text style={styles.errorText}>{formErrors.email}</Text>}
+        {formErrors.email && <Text className='text-xs text-red-500 mt-1'>{formErrors.email}</Text>}
       </View>
 
       {/* Display Name Input */}
-      <View style={styles.inputGroup}>
-        <Text style={styles.inputLabel}>Display Name (Optional)</Text>
+      <View className='mb-5'>
+        <Text className='text-base font-semibold text-gray-800 mb-2'>Display Name (Optional)</Text>
         <TextInput
-          style={styles.textInput}
+          className='border border-gray-200 rounded-xl px-4 py-3 text-base text-gray-800 bg-white'
           placeholder='How should they appear in the family?'
           placeholderTextColor='#999'
           value={formData.displayName}
           onChangeText={(text) => setFormData((prev) => ({ ...prev, displayName: text }))}
         />
-        <Text style={styles.inputHint}>e.g., "Grandma Sarah", "Uncle Mike", etc.</Text>
+        <Text className='text-xs text-gray-400 mt-1'>e.g., "Grandma Sarah", "Uncle Mike", etc.</Text>
       </View>
 
       {/* Relationship Type */}
-      <View style={styles.inputGroup}>
-        <Text style={styles.inputLabel}>Relationship Type *</Text>
-        <View style={styles.relationshipGrid}>
+      <View className='mb-5'>
+        <Text className='text-base font-semibold text-gray-800 mb-2'>Relationship Type *</Text>
+        <View className='flex-row flex-wrap mt-2'>
           {Object.entries(RELATION_DISPLAY_NAMES).map(([key, label]) => (
             <TouchableOpacity
               key={key}
-              style={[styles.relationshipChip, formData.relationType === key && styles.relationshipChipSelected]}
+              className={`px-3 py-2 rounded-2xl mr-2 mb-2 border ${formData.relationType === key ? 'bg-blue-500 border-blue-500' : 'bg-gray-50 border-gray-200'}`}
               onPress={() => {
                 setFormData((prev) => ({ ...prev, relationType: key as FamilyRelationTypeEnum }));
                 if (formErrors.relationType) {
@@ -313,32 +318,29 @@ const InviteFamilyMemberScreen: React.FC<InviteFamilyMemberScreenProps> = ({ rou
                 }
               }}
             >
-              <Text
-                style={[
-                  styles.relationshipChipText,
-                  formData.relationType === key && styles.relationshipChipTextSelected,
-                ]}
-              >
+              <Text className={`text-sm font-medium ${formData.relationType === key ? 'text-white' : 'text-gray-800'}`}>
                 {label}
               </Text>
             </TouchableOpacity>
           ))}
         </View>
-        {formErrors.relationType && <Text style={styles.errorText}>{formErrors.relationType}</Text>}
+        {formErrors.relationType && <Text className='text-xs text-red-500 mt-1'>{formErrors.relationType}</Text>}
       </View>
 
       {/* Primary Caregiver Toggle */}
-      <View style={styles.inputGroup}>
+      <View className='mb-5'>
         <TouchableOpacity
-          style={styles.checkboxRow}
+          className='flex-row items-start'
           onPress={() => setFormData((prev) => ({ ...prev, isPrimary: !prev.isPrimary }))}
         >
-          <View style={[styles.checkbox, formData.isPrimary && styles.checkboxChecked]}>
-            {formData.isPrimary && <Text style={styles.checkmark}>✓</Text>}
+          <View
+            className={`w-6 h-6 border-2 rounded-md justify-center items-center mr-3 mt-0.5 ${formData.isPrimary ? 'bg-blue-500 border-blue-500' : 'border-gray-200'}`}
+          >
+            {formData.isPrimary && <Text className='text-white text-base font-bold'>✓</Text>}
           </View>
-          <View style={styles.checkboxContent}>
-            <Text style={styles.checkboxLabel}>Primary Caregiver</Text>
-            <Text style={styles.checkboxDescription}>
+          <View className='flex-1'>
+            <Text className='text-base font-semibold text-gray-800 mb-1'>Primary Caregiver</Text>
+            <Text className='text-sm text-gray-500 leading-5'>
               Primary caregivers have full access and cannot be removed by other family members.
             </Text>
           </View>
@@ -349,52 +351,52 @@ const InviteFamilyMemberScreen: React.FC<InviteFamilyMemberScreenProps> = ({ rou
 
   const renderStep2 = () => (
     <Animated.View
-      style={[
-        styles.stepContainer,
-        {
-          opacity: fadeAnim,
-          transform: [{ translateY: slideAnim }],
-        },
-      ]}
+      className='bg-white rounded-2xl p-5 shadow-lg'
+      style={{
+        opacity: fadeAnim,
+        transform: [{ translateY: slideAnim }],
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+        elevation: 4,
+      }}
     >
-      <Text style={styles.stepTitle}>Permissions</Text>
-      <Text style={styles.stepDescription}>
+      <Text className='text-2xl font-bold text-gray-800 mb-2'>Permissions</Text>
+      <Text className='text-base text-gray-500 leading-6 mb-6'>
         Choose what this family member can do with {currentBaby?.name}'s profile.
       </Text>
 
       {/* Recommended Permissions */}
       {formData.relationType && (
-        <View style={styles.recommendedSection}>
-          <Text style={styles.recommendedTitle}>
+        <View className='bg-green-50 p-4 rounded-xl mb-5'>
+          <Text className='text-base font-bold text-green-800 mb-1'>
             Recommended for {RELATION_DISPLAY_NAMES[formData.relationType as FamilyRelationTypeEnum]}:
           </Text>
-          <Text style={styles.recommendedDescription}>
+          <Text className='text-sm text-green-800 leading-5'>
             We've pre-selected the most common permissions for this relationship. You can adjust them as needed.
           </Text>
         </View>
       )}
 
       {/* Permissions List */}
-      <View style={styles.permissionsContainer}>
+      <View className='mt-2'>
         {Object.entries(PERMISSION_DISPLAY_NAMES).map(([permission, label]) => (
           <TouchableOpacity
             key={permission}
-            style={styles.permissionRow}
+            className='flex-row items-start py-3 border-b border-gray-100'
             onPress={() => togglePermission(permission as BabyPermissionEnum)}
           >
             <View
-              style={[
-                styles.checkbox,
-                formData.permissions.includes(permission as BabyPermissionEnum) && styles.checkboxChecked,
-              ]}
+              className={`w-6 h-6 border-2 rounded-md justify-center items-center mr-3 mt-0.5 ${formData.permissions.includes(permission as BabyPermissionEnum) ? 'bg-blue-500 border-blue-500' : 'border-gray-200'}`}
             >
               {formData.permissions.includes(permission as BabyPermissionEnum) && (
-                <Text style={styles.checkmark}>✓</Text>
+                <Text className='text-white text-base font-bold'>✓</Text>
               )}
             </View>
-            <View style={styles.permissionContent}>
-              <Text style={styles.permissionLabel}>{label}</Text>
-              <Text style={styles.permissionDescription}>
+            <View className='flex-1'>
+              <Text className='text-base font-semibold text-gray-800 mb-1'>{label}</Text>
+              <Text className='text-sm text-gray-500 leading-5'>
                 {getPermissionDescription(permission as BabyPermissionEnum)}
               </Text>
             </View>
@@ -402,28 +404,33 @@ const InviteFamilyMemberScreen: React.FC<InviteFamilyMemberScreenProps> = ({ rou
         ))}
       </View>
 
-      {formErrors.permissions && <Text style={styles.errorText}>{formErrors.permissions}</Text>}
+      {formErrors.permissions && <Text className='text-xs text-red-500 mt-1'>{formErrors.permissions}</Text>}
     </Animated.View>
   );
 
   const renderStep3 = () => (
     <Animated.View
-      style={[
-        styles.stepContainer,
-        {
-          opacity: fadeAnim,
-          transform: [{ translateY: slideAnim }],
-        },
-      ]}
+      className='bg-white rounded-2xl p-5 shadow-lg'
+      style={{
+        opacity: fadeAnim,
+        transform: [{ translateY: slideAnim }],
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+        elevation: 4,
+      }}
     >
-      <Text style={styles.stepTitle}>Personal Message</Text>
-      <Text style={styles.stepDescription}>Add a personal message to the invitation email (optional).</Text>
+      <Text className='text-2xl font-bold text-gray-800 mb-2'>Personal Message</Text>
+      <Text className='text-base text-gray-500 leading-6 mb-6'>
+        Add a personal message to the invitation email (optional).
+      </Text>
 
       {/* Message Input */}
-      <View style={styles.inputGroup}>
-        <Text style={styles.inputLabel}>Invitation Message</Text>
+      <View className='mb-5'>
+        <Text className='text-base font-semibold text-gray-800 mb-2'>Invitation Message</Text>
         <TextInput
-          style={[styles.textInput, styles.textArea]}
+          className='border border-gray-200 rounded-xl px-4 py-3 text-base text-gray-800 bg-white h-24'
           placeholder={`Hi! I'd like to invite you to be part of ${currentBaby?.name}'s family on our baby care app. This will help us all stay connected and share important updates about ${currentBaby?.name}'s growth and development.`}
           placeholderTextColor='#999'
           value={formData.message}
@@ -435,32 +442,34 @@ const InviteFamilyMemberScreen: React.FC<InviteFamilyMemberScreenProps> = ({ rou
       </View>
 
       {/* Invitation Summary */}
-      <View style={styles.summaryContainer}>
-        <Text style={styles.summaryTitle}>Invitation Summary</Text>
+      <View className='bg-gray-50 p-4 rounded-xl mt-5'>
+        <Text className='text-lg font-bold text-gray-800 mb-3'>Invitation Summary</Text>
 
-        <View style={styles.summaryRow}>
-          <Text style={styles.summaryLabel}>Email:</Text>
-          <Text style={styles.summaryValue}>{formData.email}</Text>
+        <View className='flex-row justify-between items-start mb-2'>
+          <Text className='text-sm text-gray-500 flex-1'>Email:</Text>
+          <Text className='text-sm font-semibold text-gray-800 flex-2 text-right'>{formData.email}</Text>
         </View>
 
-        <View style={styles.summaryRow}>
-          <Text style={styles.summaryLabel}>Relationship:</Text>
-          <Text style={styles.summaryValue}>
+        <View className='flex-row justify-between items-start mb-2'>
+          <Text className='text-sm text-gray-500 flex-1'>Relationship:</Text>
+          <Text className='text-sm font-semibold text-gray-800 flex-2 text-right'>
             {RELATION_DISPLAY_NAMES[formData.relationType as FamilyRelationTypeEnum]}
             {formData.isPrimary && ' (Primary Caregiver)'}
           </Text>
         </View>
 
         {formData.displayName && (
-          <View style={styles.summaryRow}>
-            <Text style={styles.summaryLabel}>Display Name:</Text>
-            <Text style={styles.summaryValue}>{formData.displayName}</Text>
+          <View className='flex-row justify-between items-start mb-2'>
+            <Text className='text-sm text-gray-500 flex-1'>Display Name:</Text>
+            <Text className='text-sm font-semibold text-gray-800 flex-2 text-right'>{formData.displayName}</Text>
           </View>
         )}
 
-        <View style={styles.summaryRow}>
-          <Text style={styles.summaryLabel}>Permissions:</Text>
-          <Text style={styles.summaryValue}>{formData.permissions.length} permission(s) selected</Text>
+        <View className='flex-row justify-between items-start mb-2'>
+          <Text className='text-sm text-gray-500 flex-1'>Permissions:</Text>
+          <Text className='text-sm font-semibold text-gray-800 flex-2 text-right'>
+            {formData.permissions.length} permission(s) selected
+          </Text>
         </View>
       </View>
     </Animated.View>
@@ -482,33 +491,33 @@ const InviteFamilyMemberScreen: React.FC<InviteFamilyMemberScreenProps> = ({ rou
 
   if (!currentBaby) {
     return (
-      <SafeAreaView style={styles.container}>
-        <View style={styles.loadingContainer}>
-          <Text style={styles.loadingText}>Loading baby information...</Text>
+      <SafeAreaView className='flex-1 bg-gray-50'>
+        <View className='flex-1 justify-center items-center'>
+          <Text className='text-base text-gray-500'>Loading baby information...</Text>
         </View>
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <KeyboardAvoidingView style={styles.keyboardAvoid} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+    <SafeAreaView className='flex-1 bg-gray-50'>
+      <KeyboardAvoidingView className='flex-1' behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
         {/* Header */}
-        <View style={styles.header}>
-          <TouchableOpacity style={styles.cancelButton} onPress={handleCancel}>
-            <Text style={styles.cancelButtonText}>Cancel</Text>
+        <View className='flex-row justify-between items-center px-4 py-3 bg-white border-b border-gray-200'>
+          <TouchableOpacity className='py-2' onPress={handleCancel}>
+            <Text className='text-red-500 text-base font-semibold'>Cancel</Text>
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Invite Family Member</Text>
-          <View style={styles.placeholder} />
+          <Text className='text-lg font-bold text-gray-800'>Invite Family Member</Text>
+          <View className='w-15' />
         </View>
 
         {/* Progress Indicator */}
         {renderProgressIndicator()}
 
         {/* Content */}
-        <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-          <View style={styles.content}>
-            <Text style={styles.babyName}>For {currentBaby.name}</Text>
+        <ScrollView className='flex-1' showsVerticalScrollIndicator={false}>
+          <View className='p-4'>
+            <Text className='text-xl font-bold text-gray-800 text-center mb-6'>For {currentBaby.name}</Text>
 
             {currentStep === 1 && renderStep1()}
             {currentStep === 2 && renderStep2()}
@@ -517,26 +526,26 @@ const InviteFamilyMemberScreen: React.FC<InviteFamilyMemberScreenProps> = ({ rou
         </ScrollView>
 
         {/* Footer */}
-        <View style={styles.footer}>
+        <View className='flex-row items-center px-4 py-3 bg-white border-t border-gray-200'>
           {currentStep > 1 && (
-            <TouchableOpacity style={styles.backButton} onPress={handleBack}>
-              <Text style={styles.backButtonText}>← Back</Text>
+            <TouchableOpacity className='px-4 py-3 rounded-lg bg-gray-50' onPress={handleBack}>
+              <Text className='text-gray-500 text-base font-semibold'>← Back</Text>
             </TouchableOpacity>
           )}
 
-          <View style={styles.footerSpacer} />
+          <View className='flex-1' />
 
           {currentStep < 3 ? (
-            <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
-              <Text style={styles.nextButtonText}>Next →</Text>
+            <TouchableOpacity className='bg-blue-500 px-6 py-3 rounded-lg' onPress={handleNext}>
+              <Text className='text-white text-base font-semibold'>Next →</Text>
             </TouchableOpacity>
           ) : (
             <TouchableOpacity
-              style={[styles.submitButton, (isSubmitting || isInviting) && styles.submitButtonDisabled]}
+              className={`px-6 py-3 rounded-lg ${isSubmitting || isInviting ? 'bg-gray-300' : 'bg-green-500'}`}
               onPress={handleSubmit}
               disabled={isSubmitting || isInviting}
             >
-              <Text style={styles.submitButtonText}>
+              <Text className='text-white text-base font-semibold'>
                 {isSubmitting || isInviting ? 'Sending...' : 'Send Invitation 📧'}
               </Text>
             </TouchableOpacity>
@@ -560,344 +569,5 @@ const getPermissionDescription = (permission: BabyPermissionEnum): string => {
   };
   return descriptions[permission] || '';
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f8f9fa',
-  },
-  keyboardAvoid: {
-    flex: 1,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    backgroundColor: '#fff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#e1e5e9',
-  },
-  cancelButton: {
-    paddingVertical: 8,
-  },
-  cancelButtonText: {
-    color: '#F44336',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  placeholder: {
-    width: 60,
-  },
-  progressContainer: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    backgroundColor: '#fff',
-  },
-  progressBar: {
-    height: 4,
-    backgroundColor: '#E3F2FD',
-    borderRadius: 2,
-    marginBottom: 12,
-  },
-  progressFill: {
-    height: '100%',
-    backgroundColor: '#007AFF',
-    borderRadius: 2,
-  },
-  stepIndicators: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  stepIndicator: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: '#E3F2FD',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  stepIndicatorActive: {
-    backgroundColor: '#007AFF',
-  },
-  stepNumber: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#666',
-  },
-  stepNumberActive: {
-    color: '#fff',
-  },
-  scrollView: {
-    flex: 1,
-  },
-  content: {
-    padding: 16,
-  },
-  babyName: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#333',
-    textAlign: 'center',
-    marginBottom: 24,
-  },
-  stepContainer: {
-    backgroundColor: '#fff',
-    borderRadius: 16,
-    padding: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  stepTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 8,
-  },
-  stepDescription: {
-    fontSize: 16,
-    color: '#666',
-    lineHeight: 24,
-    marginBottom: 24,
-  },
-  inputGroup: {
-    marginBottom: 20,
-  },
-  inputLabel: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#333',
-    marginBottom: 8,
-  },
-  textInput: {
-    borderWidth: 1,
-    borderColor: '#e1e5e9',
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    fontSize: 16,
-    color: '#333',
-    backgroundColor: '#fff',
-  },
-  textArea: {
-    height: 100,
-    textAlignVertical: 'top',
-  },
-  inputError: {
-    borderColor: '#F44336',
-  },
-  inputHint: {
-    fontSize: 12,
-    color: '#999',
-    marginTop: 4,
-  },
-  errorText: {
-    fontSize: 12,
-    color: '#F44336',
-    marginTop: 4,
-  },
-  relationshipGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginTop: 8,
-  },
-  relationshipChip: {
-    backgroundColor: '#F8F9FA',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 20,
-    marginRight: 8,
-    marginBottom: 8,
-    borderWidth: 1,
-    borderColor: '#e1e5e9',
-  },
-  relationshipChipSelected: {
-    backgroundColor: '#007AFF',
-    borderColor: '#007AFF',
-  },
-  relationshipChipText: {
-    fontSize: 14,
-    color: '#333',
-    fontWeight: '500',
-  },
-  relationshipChipTextSelected: {
-    color: '#fff',
-  },
-  checkboxRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-  },
-  checkbox: {
-    width: 24,
-    height: 24,
-    borderWidth: 2,
-    borderColor: '#e1e5e9',
-    borderRadius: 6,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 12,
-    marginTop: 2,
-  },
-  checkboxChecked: {
-    backgroundColor: '#007AFF',
-    borderColor: '#007AFF',
-  },
-  checkmark: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  checkboxContent: {
-    flex: 1,
-  },
-  checkboxLabel: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#333',
-    marginBottom: 4,
-  },
-  checkboxDescription: {
-    fontSize: 14,
-    color: '#666',
-    lineHeight: 20,
-  },
-  recommendedSection: {
-    backgroundColor: '#E8F5E8',
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 20,
-  },
-  recommendedTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#2E7D32',
-    marginBottom: 4,
-  },
-  recommendedDescription: {
-    fontSize: 14,
-    color: '#2E7D32',
-    lineHeight: 20,
-  },
-  permissionsContainer: {
-    marginTop: 8,
-  },
-  permissionRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
-  },
-  permissionContent: {
-    flex: 1,
-  },
-  permissionLabel: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#333',
-    marginBottom: 4,
-  },
-  permissionDescription: {
-    fontSize: 14,
-    color: '#666',
-    lineHeight: 20,
-  },
-  summaryContainer: {
-    backgroundColor: '#F8F9FA',
-    padding: 16,
-    borderRadius: 12,
-    marginTop: 20,
-  },
-  summaryTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 12,
-  },
-  summaryRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: 8,
-  },
-  summaryLabel: {
-    fontSize: 14,
-    color: '#666',
-    flex: 1,
-  },
-  summaryValue: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#333',
-    flex: 2,
-    textAlign: 'right',
-  },
-  footer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    backgroundColor: '#fff',
-    borderTopWidth: 1,
-    borderTopColor: '#e1e5e9',
-  },
-  backButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderRadius: 8,
-    backgroundColor: '#F8F9FA',
-  },
-  backButtonText: {
-    color: '#666',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  footerSpacer: {
-    flex: 1,
-  },
-  nextButton: {
-    backgroundColor: '#007AFF',
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 8,
-  },
-  nextButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  submitButton: {
-    backgroundColor: '#4CAF50',
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 8,
-  },
-  submitButtonDisabled: {
-    backgroundColor: '#ccc',
-  },
-  submitButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loadingText: {
-    fontSize: 16,
-    color: '#666',
-  },
-});
 
 export default InviteFamilyMemberScreen;

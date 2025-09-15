@@ -7,6 +7,7 @@ import { Platform } from 'react-native';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 import { RootStackParamList } from '../types/navigation';
+import { AuthNavigator } from './AuthNavigator';
 import { TabbarNavigator } from './TabbarNavigator';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -34,11 +35,8 @@ export const AppNavigator: React.FC = () => {
           fullScreenGestureEnabled: true,
         }}
       >
-        {/* {isAuthenticated ? ( */}
         <Stack.Screen name='Home' component={TabbarNavigator} />
-        {/* ) : (
-          <Stack.Screen name='Auth' component={AuthNavigator} />
-        )} */}
+        <Stack.Screen name='Auth' component={AuthNavigator} />
       </Stack.Navigator>
     </NavigationContainer>
   );

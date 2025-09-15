@@ -144,7 +144,7 @@ const NotificationItem: React.FC<NotificationItemProps> = memo(
     const content = (
       <View
         className={`
-        flex-row items-center bg-white px-4 py-3 mx-4 my-1 rounded-xl
+        flex-row items-center bg-white mx-4 px-4 py-3 my-1 rounded-xl 
         ${isUnread ? 'border-l-4 border-purple-500' : ''}
         ${isSelected ? 'bg-purple-50 border border-purple-500' : ''}
         ${Platform.OS === 'ios' ? 'shadow-sm' : 'elevation-1'}
@@ -154,7 +154,7 @@ const NotificationItem: React.FC<NotificationItemProps> = memo(
             ? {
                 shadowColor: '#000',
                 shadowOffset: { width: 0, height: 1 },
-                shadowOpacity: 0.05,
+                shadowOpacity: 0.15,
                 shadowRadius: 3,
               }
             : {}
@@ -187,7 +187,7 @@ const NotificationItem: React.FC<NotificationItemProps> = memo(
         <View className='flex-1 mr-2'>
           <View className='flex-row items-center mb-1'>
             <Text
-              className={`flex-1 text-[15px] ${isUnread ? 'font-bold text-black' : 'font-medium text-gray-800'}`}
+              className={`flex-1 text-base ${isUnread ? 'font-bold text-black' : 'font-medium text-gray-800'}`}
               numberOfLines={1}
             >
               {notification.title}
@@ -195,13 +195,13 @@ const NotificationItem: React.FC<NotificationItemProps> = memo(
             {priorityIndicator}
           </View>
 
-          <Text className='text-[13px] text-gray-600 leading-[18px] mb-1' numberOfLines={2}>
+          <Text className='text-sm text-gray-600 leading-[18px] mb-1' numberOfLines={2}>
             {notification.message}
           </Text>
 
           {notification.data?.actionText && (
             <TouchableOpacity className='mt-1'>
-              <Text className='text-[13px] text-purple-500 font-medium'>{notification.data.actionText}</Text>
+              <Text className='text-sm text-purple-500 font-medium'>{notification.data.actionText}</Text>
             </TouchableOpacity>
           )}
         </View>
