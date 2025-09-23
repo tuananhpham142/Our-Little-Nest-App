@@ -3,7 +3,7 @@ import { ReactNode } from 'react';
 import { ScrollViewProps, ViewStyle } from 'react-native';
 import { HeaderProps } from './header.types';
 
-export interface AppLayoutProps {
+export type AppLayoutProps = {
   children: ReactNode;
   useSafeArea?: boolean;
   // Header configuration - either use AppHeader with props or custom header component
@@ -38,4 +38,4 @@ export interface AppLayoutProps {
   // Refresh control
   refreshing?: boolean;
   onRefresh?: () => void;
-}
+};

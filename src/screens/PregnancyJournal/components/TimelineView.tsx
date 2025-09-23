@@ -61,11 +61,15 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ journal, onEmotionPr
     });
 
     // Add milestones
-    const milestones = generateMilestones(journal);
-    entries.push(...milestones);
+    // const milestones = generateMilestones(journal);
+    // entries.push(...milestones);
 
     // Sort by date (newest first)
-    return entries.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    return (
+      entries
+        // .sort((a, b) => b.week - a.week)
+        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    );
   };
 
   const getMoodTitle = (mood?: MoodType): string => {
@@ -104,38 +108,38 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ journal, onEmotionPr
     return mood ? icons[mood] : 'chatbubble';
   };
 
-  const generateMilestones = (journal: PregnancyJournal): TimelineEntry[] => {
-    const milestones: TimelineEntry[] = [];
-    const startDate = new Date(journal.pregnancyStartDate);
+  // const generateMilestones = (journal: PregnancyJournal): TimelineEntry[] => {
+  //   const milestones: TimelineEntry[] = [];
+  //   const startDate = new Date(journal.pregnancyStartDate);
 
-    // Key pregnancy milestones
-    const milestoneWeeks = [
-      { week: 4, title: 'Bắt đầu hành trình', content: 'Thai kỳ chính thức bắt đầu! 🎉' },
-      { week: 12, title: 'Vượt qua tam cá nguyệt đầu', content: 'Đã hoàn thành giai đoạn đầu quan trọng! 💪' },
-      { week: 20, title: 'Giữa chặng đường', content: 'Đã đi được nửa chặng đường rồi! 🎯' },
-      { week: 28, title: 'Bước vào tam cá nguyệt cuối', content: 'Chuẩn bị đón bé yêu thôi! 👶' },
-    ];
+  //   // Key pregnancy milestones
+  //   const milestoneWeeks = [
+  //     { week: 4, title: 'Bắt đầu hành trình', content: 'Thai kỳ chính thức bắt đầu! 🎉' },
+  //     { week: 12, title: 'Vượt qua tam cá nguyệt đầu', content: 'Đã hoàn thành giai đoạn đầu quan trọng! 💪' },
+  //     { week: 20, title: 'Giữa chặng đường', content: 'Đã đi được nửa chặng đường rồi! 🎯' },
+  //     { week: 28, title: 'Bước vào tam cá nguyệt cuối', content: 'Chuẩn bị đón bé yêu thôi! 👶' },
+  //   ];
 
-    milestoneWeeks.forEach((milestone) => {
-      if (milestone.week <= journal.babyInfo.currentWeek) {
-        const milestoneDate = new Date(startDate);
-        milestoneDate.setDate(milestoneDate.getDate() + milestone.week * 7);
+  //   milestoneWeeks.forEach((milestone) => {
+  //     if (milestone.week <= journal.babyInfo.currentWeek) {
+  //       const milestoneDate = new Date(startDate);
+  //       milestoneDate.setDate(milestoneDate.getDate() + milestone.week * 7);
 
-        milestones.push({
-          id: `milestone_${milestone.week}`,
-          type: 'milestone',
-          date: milestoneDate.toISOString().split('T')[0],
-          title: milestone.title,
-          content: milestone.content,
-          week: milestone.week,
-          color: '#8B5CF6',
-          icon: 'trophy',
-        });
-      }
-    });
+  //       milestones.push({
+  //         id: `milestone_${milestone.week}`,
+  //         type: 'milestone',
+  //         date: milestoneDate.toISOString().split('T')[0],
+  //         title: milestone.title,
+  //         content: milestone.content,
+  //         week: milestone.week,
+  //         color: '#8B5CF6',
+  //         icon: 'trophy',
+  //       });
+  //     }
+  //   });
 
-    return milestones;
-  };
+  //   return milestones;
+  // };
 
   const timelineEntries = getTimelineEntries();
 

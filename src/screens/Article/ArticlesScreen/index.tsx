@@ -1,4 +1,4 @@
-import Header from '@/components/Header';
+import AppLayout from '@/components/layout/AppLayout';
 import { ArticleListItemSkeleton } from '@/components/Skeletons';
 import { Article } from '@/models/Article/ArticleModel';
 import { fetchArticles, loadMoreArticles } from '@/store/slices/articleSlice';
@@ -29,7 +29,6 @@ const ArticlesScreen: React.FC<ArticlesScreenProps> = ({ route }) => {
     error: errorCategories,
   } = useAppSelector((state) => state.category);
 
-  console.log(categories);
   const navigation = useNavigation();
 
   // Mock data generator
@@ -51,7 +50,7 @@ const ArticlesScreen: React.FC<ArticlesScreenProps> = ({ route }) => {
   React.useEffect(() => {
     loadInitialData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedCategory]);
+  }, []);
 
   const loadInitialData = useCallback(async () => {
     try {
@@ -93,42 +92,39 @@ const ArticlesScreen: React.FC<ArticlesScreenProps> = ({ route }) => {
   const channelName = route?.params?.channel || 'News';
 
   return (
-    <View className='flex-1 bg-grey-light'>
-      <View className='pt-16 bg-white'>
-        <Header
-          title={channelName}
-          onBack={route?.params?.channel ? () => navigation.goBack() : undefined}
-          onSearch={handleSearch}
-        />
+    <AppLayout>
+      <View className='flex-1'>
+        <View>
+          <Categories
+            categories={categories}
+            selectedCategory={selectedCategory}
+            onSelectCategory={setSelectedCategory}
+          />
+        </View>
+        {isLoading ? (
+          <ArticleListItemSkeleton />
+        ) : (
+          <FlashList
+            data={articles}
+            showsVerticalScrollIndicator={false}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={handleRefresh}
+                colors={['#ff6464']}
+                tintColor='#ff6464'
+              />
+            }
+            renderItem={({ item, index }) => (
+              <NewsCard item={item} index={index} onPress={() => handleNewsPress(item)} />
+            )}
+            keyExtractor={(item) => item.id}
+            // eslint-disable-next-line react/no-unstable-nested-components
+            ItemSeparatorComponent={() => <View className='h-px bg-slate-200 mx-4' />}
+          />
+        )}
       </View>
-      <View>
-        <Categories
-          categories={categories}
-          selectedCategory={selectedCategory}
-          onSelectCategory={setSelectedCategory}
-        />
-      </View>
-      {isLoading ? (
-        <ArticleListItemSkeleton />
-      ) : (
-        <FlashList
-          data={articles}
-          showsVerticalScrollIndicator={false}
-          refreshControl={
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={handleRefresh}
-              colors={['#ff6464']}
-              tintColor='#ff6464'
-            />
-          }
-          renderItem={({ item, index }) => <NewsCard item={item} index={index} onPress={() => handleNewsPress(item)} />}
-          keyExtractor={(item) => item.id}
-          // eslint-disable-next-line react/no-unstable-nested-components
-          ItemSeparatorComponent={() => <View className='h-px bg-slate-200 mx-4' />}
-        />
-      )}
-    </View>
+    </AppLayout>
   );
 };
 

@@ -4,15 +4,22 @@ import { PregnancyJournal } from '@/models/PregnancyJournal/PregnancyJournalMode
 import Icon from '@react-native-vector-icons/fontawesome6';
 import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
 
 interface WeekProgressCardProps {
   journal: PregnancyJournal;
+  onPress: () => void;
   onEditPress: () => void;
+  onDeletePress?: () => void;
   onCarePress: () => void;
 }
 
-export const WeekProgressCard: React.FC<WeekProgressCardProps> = ({ journal, onEditPress, onCarePress }) => {
+const WeekProgressCard: React.FC<WeekProgressCardProps> = ({
+  journal,
+  onPress,
+  onEditPress,
+  onDeletePress,
+  onCarePress,
+}) => {
   const { babyInfo } = journal;
   const progressPercentage = (babyInfo.currentWeek / 40) * 100;
 
@@ -56,87 +63,151 @@ export const WeekProgressCard: React.FC<WeekProgressCardProps> = ({ journal, onE
 
   const sizeInfo = getSizeComparison(babyInfo.currentWeek);
 
+  // Get theme colors based on trimester
+  const getThemeColors = (week: number) => {
+    if (week <= 12)
+      return {
+        primary: '#8B5CF6',
+        secondary: '#A855F7',
+        background: '#F3E8FF',
+        accent: '#DDD6FE',
+      };
+    if (week <= 28)
+      return {
+        primary: '#EC4899',
+        secondary: '#F472B6',
+        background: '#FDF2F8',
+        accent: '#FBCFE8',
+      };
+    return {
+      primary: '#F59E0B',
+      secondary: '#FBBF24',
+      background: '#FEF3C7',
+      accent: '#FDE68A',
+    };
+  };
+
+  const colors = getThemeColors(babyInfo.currentWeek);
+
   return (
-    <View className='px-4 mb-6 mt-2'>
-      <LinearGradient
-        colors={['#F3E8FF', '#E879F9']}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={{ borderRadius: 16, overflow: 'hidden' }}
+    <TouchableOpacity onPress={onPress} activeOpacity={0.95} className='mx-4 mb-3'>
+      <View
+        className={`bg-white rounded-2xl p-4`}
+        style={{
+          // Shadow for iOS
+          shadowColor: '#000',
+          shadowOffset: {
+            width: 0,
+            height: 2,
+          },
+          shadowOpacity: 0.1,
+          shadowRadius: 3,
+          // Elevation for Android
+          elevation: 4,
+        }}
       >
-        <View className='p-6'>
-          {/* Header */}
-          <View className='flex-row items-center justify-between mb-4'>
-            <View className='flex-row items-center'>
-              <Text className='text-2xl mr-2'>{getBabyIcon(babyInfo.gender as GenderType)}</Text>
-              <View>
-                <Text className='text-lg font-bold text-white'>{babyInfo.nickname || 'Bé yêu'}</Text>
-                <Text className='text-purple-100 text-sm'>{getWeekDescription(babyInfo.currentWeek)}</Text>
-              </View>
-            </View>
-
-            <TouchableOpacity
-              onPress={onEditPress}
-              className='w-8 h-8 bg-white/20 rounded-full items-center justify-center'
-              activeOpacity={0.7}
+        {/* Header */}
+        <View className='flex-row items-center justify-between mb-4'>
+          <View className='flex-row items-center flex-1'>
+            <View
+              className='w-12 h-12 rounded-full items-center justify-center mr-4'
+              style={{ backgroundColor: colors.accent }}
             >
-              <Icon iconStyle='solid' name='pen' size={16} color='white' />
-            </TouchableOpacity>
-          </View>
-
-          {/* Week Progress */}
-          <View className='mb-4'>
-            <View className='flex-row items-center justify-between mb-2'>
-              <Text className='text-white font-medium'>Tuần {babyInfo.currentWeek}/40</Text>
-              <Text className='text-purple-100 text-sm'>{Math.round(progressPercentage)}%</Text>
+              <Text className='text-xl'>{getBabyIcon(babyInfo.gender as GenderType)}</Text>
             </View>
-
-            <View className='h-2 bg-white/20 rounded-full'>
-              <View className='h-full bg-white rounded-full' style={{ width: `${progressPercentage}%` }} />
+            <View className='flex-1'>
+              <Text className='text-gray-900 font-bold text-lg' numberOfLines={1}>
+                {babyInfo.nickname || 'Bé yêu'}
+              </Text>
+              <Text className='text-gray-600 text-sm mt-1'>{getWeekDescription(babyInfo.currentWeek)}</Text>
             </View>
           </View>
 
-          {/* Baby Info */}
-          <View className='flex-row justify-between mb-4'>
-            <View className='bg-white/15 rounded-xl p-3 flex-1 mr-2'>
-              <Text className='text-purple-100 text-xs mb-1'>Kích thước</Text>
-              <View className='flex-row items-center'>
-                <Text className='text-lg mr-1'>{sizeInfo.emoji}</Text>
-                <Text className='text-white font-medium text-sm'>{sizeInfo.item}</Text>
-              </View>
-            </View>
-
-            <View className='bg-white/15 rounded-xl p-3 flex-1 mx-1'>
-              <Text className='text-purple-100 text-xs mb-1'>Cân nặng</Text>
-              <Text className='text-white font-medium'>{babyInfo.estimatedWeight}g</Text>
-            </View>
-
-            <View className='bg-white/15 rounded-xl p-3 flex-1 ml-2'>
-              <Text className='text-purple-100 text-xs mb-1'>Chiều dài</Text>
-              <Text className='text-white font-medium'>{babyInfo.estimatedLength}cm</Text>
-            </View>
-          </View>
-
-          {/* Action Buttons */}
-          <View className='flex-row space-x-3'>
-            <TouchableOpacity
-              onPress={onCarePress}
-              className='flex-1 bg-white/20 rounded-xl py-3 items-center justify-center flex-row'
-              activeOpacity={0.7}
-            >
-              <Icon name='heart' size={16} color='white' />
-              <Text className='text-white font-medium ml-2'>Gợi ý chăm sóc</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              className='bg-white/20 rounded-xl py-3 px-4 items-center justify-center'
-              activeOpacity={0.7}
-            >
-              <Icon iconStyle='solid' name='share' size={16} color='white' />
-            </TouchableOpacity>
+          {/* Status Badge */}
+          <View className='px-3 py-1 rounded-full' style={{ backgroundColor: colors.accent }}>
+            <Text className='text-xs font-medium' style={{ color: colors.primary }}>
+              {journal.status === 'active' ? 'Hoạt động' : journal.status === 'completed' ? 'Hoàn thành' : 'Lưu trữ'}
+            </Text>
           </View>
         </View>
-      </LinearGradient>
-    </View>
+
+        {/* Progress Section */}
+        <View className='flex-row items-center mb-4'>
+          <Text className='text-gray-700 font-semibold text-base mr-3'>Tuần {babyInfo.currentWeek}/40</Text>
+          <View className='flex-1 h-2 bg-gray-200 rounded-full overflow-hidden mr-3'>
+            <View
+              className='h-full rounded-full'
+              style={{
+                width: `${progressPercentage}%`,
+                backgroundColor: colors.primary,
+              }}
+            />
+          </View>
+          <Text className='text-gray-600 text-sm font-medium'>{Math.round(progressPercentage)}%</Text>
+        </View>
+
+        {/* Baby Stats */}
+        <View className='flex-row justify-between mb-4'>
+          <View className='bg-gray-50 rounded-xl p-3 flex-1 mr-2 border border-gray-200'>
+            <Text className='text-gray-500 text-xs font-medium mb-2'>Kích thước</Text>
+            <View className='flex-row items-center'>
+              <Text className='text-base mr-2'>{sizeInfo.emoji}</Text>
+              <Text className='text-gray-800 font-semibold text-sm flex-1' numberOfLines={1}>
+                {sizeInfo.item}
+              </Text>
+            </View>
+          </View>
+
+          <View className='bg-gray-50 rounded-xl p-3 flex-1 mx-1 border border-gray-200'>
+            <Text className='text-gray-500 text-xs font-medium mb-2'>Cân nặng</Text>
+            <Text className='text-gray-800 font-bold text-base'>
+              {babyInfo.estimatedWeight || '--'}
+              <Text className='text-sm font-normal text-gray-600'>g</Text>
+            </Text>
+          </View>
+
+          <View className='bg-gray-50 rounded-xl p-3 flex-1 ml-2 border border-gray-200'>
+            <Text className='text-gray-500 text-xs font-medium mb-2'>Chiều dài</Text>
+            <Text className='text-gray-800 font-bold text-base'>
+              {babyInfo.estimatedLength || '--'}
+              <Text className='text-sm font-normal text-gray-600'>cm</Text>
+            </Text>
+          </View>
+        </View>
+
+        {/* Action Buttons */}
+        <View className='flex-row gap-3'>
+          <TouchableOpacity
+            onPress={onCarePress}
+            className='flex-1 bg-gray-50 rounded-xl py-3 px-4 flex-row items-center justify-center border border-gray-200'
+            activeOpacity={0.8}
+          >
+            <Icon iconStyle='solid' name='heart-pulse' size={16} color={colors.primary} />
+            <Text className='font-semibold ml-2 text-base' style={{ color: colors.primary }}>
+              Gợi ý chăm sóc
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={onEditPress}
+            className='w-12 h-12 bg-gray-50 rounded-xl items-center justify-center border border-gray-200'
+            activeOpacity={0.7}
+          >
+            <Icon iconStyle='solid' name='pen' size={16} color={colors.primary} />
+          </TouchableOpacity>
+          {onDeletePress && (
+            <TouchableOpacity
+              onPress={onDeletePress}
+              className='w-12 h-12 bg-gray-50 rounded-xl items-center justify-center border border-gray-200'
+              activeOpacity={0.7}
+            >
+              <Icon iconStyle='solid' name='trash' size={16} color='#EF4444' />
+            </TouchableOpacity>
+          )}
+        </View>
+      </View>
+    </TouchableOpacity>
   );
 };
+
+export default WeekProgressCard;

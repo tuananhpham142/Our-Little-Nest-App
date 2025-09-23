@@ -1,10 +1,11 @@
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 // import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
+import { PregnancyJournal } from '@/models/PregnancyJournal/PregnancyJournalModel';
 import { CompositeNavigationProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 
-export type RootStackParamList = {
+export type RootStackParamList = AuthStackParamList & {
   Auth: undefined;
   Main: undefined;
   Loading: undefined;
@@ -18,6 +19,7 @@ export type RootStackParamList = {
     channelLogo?: string;
   };
   // Babies
+  Babies: undefined;
   BabyList: undefined;
   BabyTabs: { babyId: string; initialTab?: string };
   CreateBaby: undefined;
@@ -30,7 +32,22 @@ export type RootStackParamList = {
   BabyFamily: { babyId: string };
   BabyHealth: { babyId: string };
   // Pregnancy Journal
+  PregnancyJournalList: undefined;
   PregnancyJournal: undefined;
+  CreateJournal: {
+    onSuccess?: () => void;
+  };
+  EditJournal: {
+    journal: PregnancyJournal;
+    onSuccess?: () => void;
+  };
+  EmotionEntry: {
+    journal: PregnancyJournal;
+    onSuccess?: () => void;
+  };
+  PregnancyCare: {
+    week?: number;
+  };
   // Badge
   BadgeList: undefined;
   BadgeCollection: {
@@ -79,6 +96,7 @@ export type MainTabParamList = {
   Notifications: undefined;
   Babies: undefined;
   PregnancyJournal: undefined;
+  PregnancyJournalList: undefined;
   Auth: undefined;
   Settings: undefined;
 };

@@ -152,10 +152,16 @@ const NotificationItem: React.FC<NotificationItemProps> = memo(
         style={
           Platform.OS === 'ios'
             ? {
+                // Shadow for iOS
                 shadowColor: '#000',
-                shadowOffset: { width: 0, height: 1 },
-                shadowOpacity: 0.15,
+                shadowOffset: {
+                  width: 0,
+                  height: 2,
+                },
+                shadowOpacity: 0.1,
                 shadowRadius: 3,
+                // Elevation for Android
+                elevation: 4,
               }
             : {}
         }

@@ -1,27 +1,17 @@
 // src/models/PregnancyJournal/PregnancyJournalResponse.ts
 
+import { ApiGetByPageResponse, ApiResponse } from '@/types/api';
 import { PregnancyJournal, PregnancyJournalStatistics } from './PregnancyJournalModel';
 
 // List Response
-export interface PregnancyJournalListResponse {
-  data: PregnancyJournal[];
-  total: number;
-  page: number;
-  limit: number;
-  hasNextPage: boolean;
-  hasPrevPage?: boolean;
-  totalPages?: number;
-}
+export interface PregnancyJournalListResponse extends ApiResponse<PregnancyJournal[]> {}
+export interface PregnancyJournalGetByPageResponse extends ApiGetByPageResponse<PregnancyJournal> {}
 
 // Detail Response
-export interface PregnancyJournalDetailResponse {
-  data: PregnancyJournal;
-}
+export interface PregnancyJournalDetailResponse extends PregnancyJournal {}
 
 // Statistics Response
-export interface PregnancyJournalStatisticsResponse {
-  data: PregnancyJournalStatistics;
-}
+export interface PregnancyJournalStatisticsResponse extends ApiResponse<PregnancyJournalStatistics> {}
 
 // API Error Response
 export interface ApiErrorResponse {
@@ -39,28 +29,10 @@ export interface SuccessResponse {
 }
 
 // Share Response
-export interface ShareJournalResponse {
-  data: PregnancyJournal;
-  sharedCount: number;
-  message: string;
-}
+export interface ShareJournalResponse extends ApiResponse<PregnancyJournal> {}
 
 // Update Week Response
-export interface UpdateWeekResponse {
-  data: PregnancyJournal;
-  weekChanged: boolean;
-  newLetterGenerated: boolean;
-  message?: string;
-}
+export interface UpdateWeekResponse extends ApiResponse<PregnancyJournal> {}
 
 // Emotion Entry Response
-export interface AddEmotionEntryResponse {
-  data: PregnancyJournal;
-  emotionEntry: {
-    id: string;
-    date: string;
-    content: string;
-    mood?: string;
-  };
-  message: string;
-}
+export interface AddEmotionEntryResponse extends ApiResponse<PregnancyJournal> {}

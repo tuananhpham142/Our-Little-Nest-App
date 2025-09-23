@@ -1,15 +1,15 @@
 // src/navigation/MainNavigator.tsx
 import FloatingBottomNavigation from '@/components/template/Navigations/FloatingBottomNavigation';
 import { useTheme } from '@/hooks/useTheme';
+import ArticlesScreen from '@/screens/Article/ArticlesScreen';
+import BabyMainScreen from '@/screens/Baby/BabyMainScreen';
 import HomeScreen from '@/screens/HomeScreen';
+import NotificationScreen from '@/screens/Notification/NotificationScreen';
+import { PregnancyJournalListScreen } from '@/screens/PregnancyJournal/PregnancyJournalListScreen';
+import SettingsScreen from '@/screens/SettingScreen';
 import { BottomTabBarProps, createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import React from 'react';
 import { MainTabParamList } from '../types/navigation';
-import { ArticleStack } from './ArticleStack';
-import { BabyStack } from './BabyStack';
-import { NotificationStack } from './NotificationStack';
-import { PregnancyJournalStack } from './PregnancyJournalStack';
-import { SettingsStack } from './SettingsStack';
 
 const appTabs = {
   Home: {
@@ -37,11 +37,11 @@ const appTabs = {
     label: 'Notifications',
     tabId: 'Notifications',
   },
-  PregnancyJournal: {
+  PregnancyJournalList: {
     icon: 'person-pregnant',
     activeIcon: 'person-pregnant',
     label: 'Pregnancy',
-    tabId: 'PregnancyJournal',
+    tabId: 'PregnancyJournalList',
   },
   Settings: {
     icon: 'gear',
@@ -69,7 +69,6 @@ export const TabbarNavigator: React.FC = () => {
   return (
     <Tab.Navigator
       initialRouteName='Home'
-      // tabBar={(props: BottomTabBarProps) => BottomNavigation({ ...props }) as ReactNode}
       tabBar={CustomTabBar}
       screenOptions={({ route }) => ({
         headerShown: false,
@@ -91,11 +90,11 @@ export const TabbarNavigator: React.FC = () => {
       })}
     >
       <Tab.Screen name='Home' component={HomeScreen} />
-      <Tab.Screen name='Babies' component={BabyStack} />
-      <Tab.Screen name='Notifications' component={NotificationStack} />
-      <Tab.Screen name='Articles' component={ArticleStack} />
-      <Tab.Screen name='PregnancyJournal' component={PregnancyJournalStack} />
-      <Tab.Screen name='Settings' component={SettingsStack} />
+      <Tab.Screen name='Babies' component={BabyMainScreen} />
+      <Tab.Screen name='Notifications' component={NotificationScreen} />
+      <Tab.Screen name='Articles' component={ArticlesScreen} />
+      <Tab.Screen name='PregnancyJournalList' component={PregnancyJournalListScreen} />
+      <Tab.Screen name='Settings' component={SettingsScreen} />
     </Tab.Navigator>
   );
 };

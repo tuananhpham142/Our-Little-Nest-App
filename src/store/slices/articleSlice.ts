@@ -30,7 +30,7 @@ export const fetchArticles = createAsyncThunk(
   async (params: GetArticlesRequest = {}, { rejectWithValue }) => {
     try {
       const response = await ArticleService.getArticles(params);
-      console.log(response);
+
       return response;
     } catch (error: any) {
       return rejectWithValue(error.message || 'Failed to fetch articles');

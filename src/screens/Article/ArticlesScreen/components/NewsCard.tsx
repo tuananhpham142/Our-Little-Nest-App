@@ -49,14 +49,14 @@ export const NewsCard = memo<{
           <Text className='text-base font-bold text-slate-800 leading-snug' numberOfLines={3}>
             {item.title}
           </Text>
-          <Text className='text-sm font-semibold text-primary mt-2'>{item.category.name}</Text>
+          <Text className='text-sm font-medium text-primary mt-2'>{item.category.name}</Text>
           <View className='flex-row items-center mt-2 justify-between'>
             <View className='flex-row items-center'>
-              <Text className='text-sm font-semibold text-info'>
+              <Text className='text-xs font-normal text-info'>
                 {articleTimeHelpers.getReadingTime(item.content.length).text}
               </Text>
-              <Text className='text-sm text-dark mx-1'>•</Text>
-              <Text className='text-sm text-dark'>{articleTimeHelpers.getCreatedTimeAgo(item.createdAt)} ago</Text>
+              <Text className='text-xs text-dark mx-1'>•</Text>
+              <Text className='text-xs text-dark'>{articleTimeHelpers.getCreatedTimeAgo(item.createdAt)} ago</Text>
             </View>
           </View>
         </View>

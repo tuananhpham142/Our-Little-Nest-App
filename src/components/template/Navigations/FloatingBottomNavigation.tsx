@@ -193,7 +193,7 @@ const FloatingBottomNavigation: React.FC<FloatingBottomNavProps> = (props) => {
     >
       {/* Main Navigation Container */}
       <View
-        className='rounded-full shadow-2xl'
+        className='rounded-2xl shadow-2xl'
         style={{
           backgroundColor: 'rgba(255, 255, 255, 0.7)', // Semi-transparent background
 

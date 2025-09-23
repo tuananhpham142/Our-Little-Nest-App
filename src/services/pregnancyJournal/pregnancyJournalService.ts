@@ -3,21 +3,22 @@
 import { PregnancyCare } from '@/models/PregnancyCare/PregnancyCareModel';
 import { PregnancyJournal } from '@/models/PregnancyJournal/PregnancyJournalModel';
 import {
-    AddEmotionEntryRequest,
-    CreatePregnancyJournalRequest,
-    DEFAULT_PREGNANCY_JOURNAL_PARAMS,
-    GetPregnancyJournalsRequest,
-    ShareJournalRequest,
-    UpdatePregnancyJournalRequest,
+  AddEmotionEntryRequest,
+  CreatePregnancyJournalRequest,
+  DEFAULT_PREGNANCY_JOURNAL_PARAMS,
+  GetPregnancyJournalsRequest,
+  ShareJournalRequest,
+  UpdatePregnancyJournalRequest,
 } from '@/models/PregnancyJournal/PregnancyJournalRequest';
 import {
-    AddEmotionEntryResponse,
-    ApiErrorResponse,
-    PregnancyJournalDetailResponse,
-    PregnancyJournalListResponse,
-    PregnancyJournalStatisticsResponse,
-    ShareJournalResponse,
-    UpdateWeekResponse,
+  AddEmotionEntryResponse,
+  ApiErrorResponse,
+  PregnancyJournalDetailResponse,
+  PregnancyJournalGetByPageResponse,
+  PregnancyJournalListResponse,
+  PregnancyJournalStatisticsResponse,
+  ShareJournalResponse,
+  UpdateWeekResponse,
 } from '@/models/PregnancyJournal/PregnancyJournalResponse';
 import { ApiResponse } from '@/types/api';
 import { baseApi } from '../baseApi';
@@ -28,18 +29,18 @@ export class PregnancyJournalService {
   /**
    * Get pregnancy journals with filtering and pagination
    */
-  static async getJournals(params: GetPregnancyJournalsRequest = {}): Promise<PregnancyJournalListResponse> {
+  static async getJournals(params: GetPregnancyJournalsRequest = {}): Promise<PregnancyJournalGetByPageResponse> {
     try {
       const queryParams = this.buildQueryParams({
         ...DEFAULT_PREGNANCY_JOURNAL_PARAMS,
         ...params,
       });
 
-      const response = await baseApi.get<ApiResponse<PregnancyJournalListResponse>>(
+      const response = await baseApi.get<PregnancyJournalGetByPageResponse>(
         `${this.BASE_PATH}?${queryParams.toString()}`,
       );
 
-      return response.data.data;
+      return response.data;
     } catch (error) {
       throw this.handleError(error);
     }
@@ -56,7 +57,7 @@ export class PregnancyJournalService {
 
       const response = await baseApi.get<ApiResponse<PregnancyJournalDetailResponse>>(`${this.BASE_PATH}/${id}`);
 
-      return response.data.data.data;
+      return response.data.data;
     } catch (error) {
       throw this.handleError(error);
     }
@@ -89,7 +90,7 @@ export class PregnancyJournalService {
         data,
       );
 
-      return response.data.data.data;
+      return response.data.data;
     } catch (error) {
       throw this.handleError(error);
     }
@@ -113,11 +114,11 @@ export class PregnancyJournalService {
   /**
    * Get user's own pregnancy journals
    */
-  static async getMyJournals(): Promise<PregnancyJournal[]> {
+  static async getMyJournals(): Promise<PregnancyJournalListResponse> {
     try {
-      const response = await baseApi.get<ApiResponse<{ data: PregnancyJournal[] }>>(`${this.BASE_PATH}/my-journals`);
+      const response = await baseApi.get<PregnancyJournalListResponse>(`${this.BASE_PATH}/my-journals`);
 
-      return response.data.data.data;
+      return response.data;
     } catch (error) {
       throw this.handleError(error);
     }
@@ -126,11 +127,11 @@ export class PregnancyJournalService {
   /**
    * Get journals shared with current user
    */
-  static async getSharedWithMe(): Promise<PregnancyJournal[]> {
+  static async getSharedWithMe(): Promise<PregnancyJournalListResponse> {
     try {
-      const response = await baseApi.get<ApiResponse<{ data: PregnancyJournal[] }>>(`${this.BASE_PATH}/shared-with-me`);
+      const response = await baseApi.get<PregnancyJournalListResponse>(`${this.BASE_PATH}/shared-with-me`);
 
-      return response.data.data.data;
+      return response.data;
     } catch (error) {
       throw this.handleError(error);
     }
@@ -139,11 +140,11 @@ export class PregnancyJournalService {
   /**
    * Get public pregnancy journals
    */
-  static async getPublicJournals(): Promise<PregnancyJournal[]> {
+  static async getPublicJournals(): Promise<PregnancyJournalListResponse> {
     try {
-      const response = await baseApi.get<ApiResponse<{ data: PregnancyJournal[] }>>(`${this.BASE_PATH}/public`);
+      const response = await baseApi.get<PregnancyJournalListResponse>(`${this.BASE_PATH}/public`);
 
-      return response.data.data.data;
+      return response.data;
     } catch (error) {
       throw this.handleError(error);
     }
@@ -152,18 +153,17 @@ export class PregnancyJournalService {
   /**
    * Add emotion entry to journal
    */
-  static async addEmotionEntry(journalId: string, data: AddEmotionEntryRequest): Promise<PregnancyJournal> {
+  static async addEmotionEntry(journalId: string, data: AddEmotionEntryRequest): Promise<AddEmotionEntryResponse> {
     try {
       if (!journalId) {
         throw new Error('Journal ID is required');
       }
-
-      const response = await baseApi.post<ApiResponse<AddEmotionEntryResponse>>(
+      const response = await baseApi.post<AddEmotionEntryResponse>(
         `${this.BASE_PATH}/${journalId}/emotion-entries`,
         data,
       );
 
-      return response.data.data.data;
+      return response.data;
     } catch (error) {
       throw this.handleError(error);
     }
@@ -172,18 +172,15 @@ export class PregnancyJournalService {
   /**
    * Share pregnancy journal
    */
-  static async shareJournal(journalId: string, data: ShareJournalRequest): Promise<PregnancyJournal> {
+  static async shareJournal(journalId: string, data: ShareJournalRequest): Promise<ShareJournalResponse> {
     try {
       if (!journalId) {
         throw new Error('Journal ID is required');
       }
 
-      const response = await baseApi.post<ApiResponse<ShareJournalResponse>>(
-        `${this.BASE_PATH}/${journalId}/share`,
-        data,
-      );
+      const response = await baseApi.post<ShareJournalResponse>(`${this.BASE_PATH}/${journalId}/share`, data);
 
-      return response.data.data.data;
+      return response.data;
     } catch (error) {
       throw this.handleError(error);
     }
@@ -192,17 +189,15 @@ export class PregnancyJournalService {
   /**
    * Update current pregnancy week
    */
-  static async updateCurrentWeek(journalId: string): Promise<PregnancyJournal> {
+  static async updateCurrentWeek(journalId: string): Promise<UpdateWeekResponse> {
     try {
       if (!journalId) {
         throw new Error('Journal ID is required');
       }
 
-      const response = await baseApi.patch<ApiResponse<UpdateWeekResponse>>(
-        `${this.BASE_PATH}/${journalId}/update-week`,
-      );
+      const response = await baseApi.patch<UpdateWeekResponse>(`${this.BASE_PATH}/${journalId}/update-week`);
 
-      return response.data.data.data;
+      return response.data;
     } catch (error) {
       throw this.handleError(error);
     }
@@ -211,13 +206,11 @@ export class PregnancyJournalService {
   /**
    * Get pregnancy journal statistics
    */
-  static async getStatistics(): Promise<PregnancyJournalStatisticsResponse['data']> {
+  static async getStatistics(): Promise<PregnancyJournalStatisticsResponse> {
     try {
-      const response = await baseApi.get<ApiResponse<PregnancyJournalStatisticsResponse>>(
-        `${this.BASE_PATH}/statistics`,
-      );
+      const response = await baseApi.get<PregnancyJournalStatisticsResponse>(`${this.BASE_PATH}/statistics`);
 
-      return response.data.data.data;
+      return response.data;
     } catch (error) {
       throw this.handleError(error);
     }
@@ -226,17 +219,17 @@ export class PregnancyJournalService {
   /**
    * Get care recommendations for a journal
    */
-  static async getCareRecommendations(journalId: string): Promise<PregnancyCare[]> {
+  static async getCareRecommendations(journalId: string): Promise<ApiResponse<PregnancyCare[]>> {
     try {
       if (!journalId) {
         throw new Error('Journal ID is required');
       }
 
-      const response = await baseApi.get<ApiResponse<{ data: PregnancyCare[] }>>(
+      const response = await baseApi.get<ApiResponse<PregnancyCare[]>>(
         `${this.BASE_PATH}/${journalId}/care-recommendations`,
       );
 
-      return response.data.data.data;
+      return response.data;
     } catch (error) {
       throw this.handleError(error);
     }

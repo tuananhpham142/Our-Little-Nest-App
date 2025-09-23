@@ -8,22 +8,17 @@ import {
   SharePermission,
 } from '@/models/PregnancyJournal/PregnancyJournalEnum';
 import { PregnancyJournal } from '@/models/PregnancyJournal/PregnancyJournalModel';
-import { pregnancyCareSelectors } from '@/store/slices/pregnancyCareSlice';
-import { pregnancyJournalSelectors, setCurrentJournal } from '@/store/slices/pregnancyJournalSlice';
+import { fetchCaresForWeek, pregnancyCareSelectors } from '@/store/slices/pregnancyCareSlice';
+import { fetchMyJournals, pregnancyJournalSelectors, setCurrentJournal } from '@/store/slices/pregnancyJournalSlice';
 import { AppDispatch } from '@/store/store';
-import BottomSheet from '@gorhom/bottom-sheet';
 import { useFocusEffect } from '@react-navigation/native';
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Alert, RefreshControl, ScrollView, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { CreateJournalBottomSheet } from './components/CreateJournalBottomSheet';
-import { EditJournalBottomSheet } from './components/EditJournalBottomSheet';
-import { EmotionEntryBottomSheet } from './components/EmotionEntryBottomSheet';
 import { LoadingSpinner } from './components/LoadingSpinner';
-import { PregnancyCareBottomSheet } from './components/PregnancyCareBottomSheet';
 import { PregnancyJournalHeader } from './components/PregnancyJournalHeader';
 import { TimelineView } from './components/TimelineView';
-import { WeekProgressCard } from './components/WeekProgressCard';
+import WeekProgressCard from './components/WeekProgressCard';
 
 // Fake data for demonstration
 const FAKE_JOURNALS: PregnancyJournal[] = [
@@ -45,7 +40,7 @@ const FAKE_JOURNALS: PregnancyJournal[] = [
       {
         id: 'e1',
         date: '2024-03-15',
-        content: 'Hôm nay siêu âm lần đầu! Thấy bé máy quá, tim đập rất khỏe 💓',
+        content: 'Hôm nay siêu âm lần đầu! Thấy bé máy quá, tim đập rất khỏe 💗',
         mood: MoodType.HAPPY,
         isPrivate: false,
         createdBy: 'user1',
@@ -106,20 +101,14 @@ export const PregnancyJournalScreen: React.FC<PregnancyJournalScreenProps> = ({ 
   const currentJournal = useSelector(pregnancyJournalSelectors.selectCurrentJournal);
   const recommendedCares = useSelector(pregnancyCareSelectors.selectRecommendedCares);
 
-  // Bottom sheet refs
-  const createJournalRef = useRef<BottomSheet>(null);
-  const editJournalRef = useRef<BottomSheet>(null);
-  const emotionEntryRef = useRef<BottomSheet>(null);
-  const pregnancyCareRef = useRef<BottomSheet>(null);
-
   // Local state
   const [refreshing, setRefreshing] = useState(false);
   const [selectedJournal, setSelectedJournal] = useState<PregnancyJournal | null>(null);
   const [activeTab, setActiveTab] = useState<'timeline' | 'care'>('timeline');
 
   // Use fake data for demo
-  const journals = FAKE_JOURNALS; // In production: myJournals
-  const activeJournal = FAKE_JOURNALS[0]; // In production: currentJournal || selectedJournal
+  const journals = myJournals; // In production: myJournals
+  const activeJournal = myJournals[0]; //currentJournal || selectedJournal; //FAKE_JOURNALS[0]; // In production: currentJournal || selectedJournal
 
   useFocusEffect(
     useCallback(() => {
@@ -131,10 +120,10 @@ export const PregnancyJournalScreen: React.FC<PregnancyJournalScreenProps> = ({ 
   const loadData = async () => {
     try {
       // In production, uncomment these:
-      // await dispatch(fetchMyJournals()).unwrap();
+      await dispatch(fetchMyJournals()).unwrap();
 
       if (activeJournal) {
-        // await dispatch(fetchCaresForWeek({ week: activeJournal.babyInfo.currentWeek })).unwrap();
+        await dispatch(fetchCaresForWeek({ week: activeJournal.babyInfo.currentWeek })).unwrap();
       }
     } catch (error) {
       console.error('Error loading data:', error);
@@ -175,7 +164,10 @@ export const PregnancyJournalScreen: React.FC<PregnancyJournalScreenProps> = ({ 
       Alert.alert('Thông báo', 'Vui lòng chọn nhật ký trước');
       return;
     }
-    emotionEntryRef.current?.expand();
+    navigation.navigate('EmotionEntry', {
+      journal: activeJournal,
+      onSuccess: loadData,
+    });
   };
 
   const handleViewCare = () => {
@@ -183,11 +175,15 @@ export const PregnancyJournalScreen: React.FC<PregnancyJournalScreenProps> = ({ 
       Alert.alert('Thông báo', 'Vui lòng chọn nhật ký trước');
       return;
     }
-    pregnancyCareRef.current?.expand();
+    navigation.navigate('PregnancyCare', {
+      week: activeJournal.babyInfo.currentWeek,
+    });
   };
 
   const handleCreateJournal = () => {
-    createJournalRef.current?.expand();
+    navigation.navigate('CreateJournal', {
+      onSuccess: loadData,
+    });
   };
 
   const handleEditJournal = () => {
@@ -195,7 +191,10 @@ export const PregnancyJournalScreen: React.FC<PregnancyJournalScreenProps> = ({ 
       Alert.alert('Thông báo', 'Vui lòng chọn nhật ký trước');
       return;
     }
-    editJournalRef.current?.expand();
+    navigation.navigate('EditJournal', {
+      journal: activeJournal,
+      onSuccess: loadData,
+    });
   };
 
   if (isLoading && journals.length === 0) {
@@ -228,7 +227,12 @@ export const PregnancyJournalScreen: React.FC<PregnancyJournalScreenProps> = ({ 
           >
             {/* Week Progress Card */}
             {activeJournal && (
-              <WeekProgressCard journal={activeJournal} onEditPress={handleEditJournal} onCarePress={handleViewCare} />
+              <WeekProgressCard
+                journal={activeJournal}
+                onEditPress={handleEditJournal}
+                onPress={handleViewCare}
+                onCarePress={handleViewCare}
+              />
             )}
 
             {/* Timeline Content */}
@@ -249,17 +253,6 @@ export const PregnancyJournalScreen: React.FC<PregnancyJournalScreenProps> = ({ 
             <View className='h-20' />
           </ScrollView>
         )}
-
-        {/* Floating Action Button */}
-
-        {/* Bottom Sheets */}
-        <CreateJournalBottomSheet ref={createJournalRef} onSuccess={loadData} />
-
-        <EditJournalBottomSheet ref={editJournalRef} journal={activeJournal} onSuccess={loadData} />
-
-        <EmotionEntryBottomSheet ref={emotionEntryRef} journal={activeJournal} onSuccess={loadData} />
-
-        <PregnancyCareBottomSheet ref={pregnancyCareRef} week={activeJournal?.babyInfo.currentWeek} />
       </View>
     </AppLayout>
   );

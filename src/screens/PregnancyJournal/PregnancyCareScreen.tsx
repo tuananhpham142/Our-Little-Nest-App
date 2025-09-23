@@ -1,4 +1,5 @@
-// screens/PregnancyJournal/components/PregnancyCareBottomSheet.tsx
+// screens/PregnancyJournal/PregnancyCareScreen.tsx
+import AppLayout from '@/components/layout/AppLayout';
 import {
   PregnancyCare,
   PregnancyCareCategory,
@@ -7,14 +8,18 @@ import {
 } from '@/models/PregnancyCare/PregnancyCareModel';
 import { pregnancyCareSelectors } from '@/store/slices/pregnancyCareSlice';
 import { AppDispatch } from '@/store/store';
-import BottomSheet, { BottomSheetBackdrop, BottomSheetScrollView, BottomSheetView } from '@gorhom/bottom-sheet';
 import Icon from '@react-native-vector-icons/fontawesome6';
-import React, { forwardRef, useCallback, useEffect, useMemo, useState } from 'react';
-import { Linking, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import React, { useEffect, useState } from 'react';
+import { Linking, RefreshControl, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 
-interface PregnancyCareBottomSheetProps {
-  week?: number;
+interface PregnancyCareScreenProps {
+  route: {
+    params: {
+      week?: number;
+    };
+  };
 }
 
 // Fake pregnancy care data for demonstration
@@ -94,33 +99,28 @@ const FAKE_CARE_DATA: PregnancyCare[] = [
   },
 ];
 
-export const PregnancyCareBottomSheet = forwardRef<BottomSheet, PregnancyCareBottomSheetProps>(({ week }, ref) => {
+export const PregnancyCareScreen: React.FC<PregnancyCareScreenProps> = ({ route }) => {
+  const navigation = useNavigation();
   const dispatch = useDispatch<AppDispatch>();
+  const { week } = route.params || {};
+
   const { isLoading } = useSelector(pregnancyCareSelectors.selectCareLoadingState);
   const cares = FAKE_CARE_DATA; // In production: useSelector(pregnancyCareSelectors.selectAllCares);
 
   const [selectedCategory, setSelectedCategory] = useState<PregnancyCareCategory | 'all'>('all');
-
-  // Bottom sheet configuration
-  const snapPoints = useMemo(() => ['25%', '50%', '90%'], []);
-
-  const renderBackdrop = useCallback(
-    (props: any) => <BottomSheetBackdrop {...props} disappearsOnIndex={-1} appearsOnIndex={0} />,
-    [],
-  );
-
-  const handleSheetChanges = useCallback((index: number) => {
-    if (index === 0) {
-      // Reset category filter when sheet is minimized
-      setSelectedCategory('all');
-    }
-  }, []);
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     if (week) {
       // In production: dispatch(fetchCaresForWeek({ week }));
     }
   }, [week, dispatch]);
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    // In production: await dispatch(fetchCaresForWeek({ week })).unwrap();
+    setTimeout(() => setRefreshing(false), 1000);
+  };
 
   const getCategoryIcon = (category: PregnancyCareCategory) => {
     const icons = {
@@ -175,23 +175,20 @@ export const PregnancyCareBottomSheet = forwardRef<BottomSheet, PregnancyCareBot
     }
   };
 
-  const handleClose = () => {
-    (ref as any)?.current?.close();
+  const handleBack = () => {
+    navigation.goBack();
   };
 
   return (
-    <BottomSheet
-      ref={ref}
-      index={-1}
-      snapPoints={snapPoints}
-      onChange={handleSheetChanges}
-      backdropComponent={renderBackdrop}
-      enablePanDownToClose
-    >
-      <BottomSheetView className='flex-1 bg-white'>
+    <AppLayout>
+      <View className='flex-1 bg-white'>
         {/* Header */}
-        <View className='flex-row items-center justify-between px-4 py-4 border-b border-gray-100'>
-          <View className='flex-1'>
+        <View className='flex-row items-center justify-between px-4 py-4 border-b border-gray-100 bg-white'>
+          <TouchableOpacity onPress={handleBack}>
+            <Icon iconStyle='solid' name='arrow-left' size={24} color='#6B7280' />
+          </TouchableOpacity>
+
+          <View className='flex-1 ml-4'>
             <Text className='font-bold text-lg'>Gợi ý chăm sóc</Text>
             {week && (
               <Text className='text-gray-500 text-sm'>
@@ -199,10 +196,6 @@ export const PregnancyCareBottomSheet = forwardRef<BottomSheet, PregnancyCareBot
               </Text>
             )}
           </View>
-
-          <TouchableOpacity onPress={handleClose}>
-            <Icon iconStyle='solid' name='xmark' size={24} color='#6B7280' />
-          </TouchableOpacity>
         </View>
 
         {/* Category Filter */}
@@ -246,7 +239,10 @@ export const PregnancyCareBottomSheet = forwardRef<BottomSheet, PregnancyCareBot
         </ScrollView>
 
         {/* Care List */}
-        <BottomSheetScrollView className='flex-1 px-4'>
+        <ScrollView
+          className='flex-1 px-4'
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+        >
           {filteredCares.map((care) => (
             <View key={care.id} className='bg-gray-50 rounded-xl p-4 mb-4 mt-4'>
               {/* Header */}
@@ -358,8 +354,8 @@ export const PregnancyCareBottomSheet = forwardRef<BottomSheet, PregnancyCareBot
           )}
 
           <View className='h-8' />
-        </BottomSheetScrollView>
-      </BottomSheetView>
-    </BottomSheet>
+        </ScrollView>
+      </View>
+    </AppLayout>
   );
-});
+};

@@ -89,6 +89,7 @@ export const fetchJournalById = createAsyncThunk(
 export const fetchMyJournals = createAsyncThunk('pregnancyJournals/fetchMyJournals', async (_, { rejectWithValue }) => {
   try {
     const response = await PregnancyJournalService.getMyJournals();
+
     return response;
   } catch (error: any) {
     return rejectWithValue(error.message || 'Failed to fetch my journals');
@@ -338,7 +339,7 @@ const pregnancyJournalSlice = createSlice({
       })
       .addCase(fetchMyJournals.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.myJournals = action.payload;
+        state.myJournals = action.payload.data;
         state.error = null;
       })
       .addCase(fetchMyJournals.rejected, (state, action) => {
@@ -348,13 +349,13 @@ const pregnancyJournalSlice = createSlice({
 
       // Fetch shared with me
       .addCase(fetchSharedWithMe.fulfilled, (state, action) => {
-        state.sharedWithMe = action.payload;
+        state.sharedWithMe = action.payload.data;
         state.error = null;
       })
 
       // Fetch public journals
       .addCase(fetchPublicJournals.fulfilled, (state, action) => {
-        state.publicJournals = action.payload;
+        state.publicJournals = action.payload.data;
         state.error = null;
       })
 
@@ -422,9 +423,9 @@ const pregnancyJournalSlice = createSlice({
       .addCase(addEmotionEntry.fulfilled, (state, action) => {
         state.isSubmitting = false;
         const updateList = (list: PregnancyJournal[]) => {
-          const index = list.findIndex((j) => j.id === action.payload.id);
+          const index = list.findIndex((j) => j.id === action.payload.data.id);
           if (index !== -1) {
-            list[index] = action.payload;
+            list[index] = action.payload.data;
           }
         };
 
@@ -432,8 +433,8 @@ const pregnancyJournalSlice = createSlice({
         updateList(state.myJournals);
         updateList(state.sharedWithMe);
 
-        if (state.currentJournal?.id === action.payload.id) {
-          state.currentJournal = action.payload;
+        if (state.currentJournal?.id === action.payload.data.id) {
+          state.currentJournal = action.payload.data;
         }
         state.error = null;
       })
@@ -445,24 +446,24 @@ const pregnancyJournalSlice = createSlice({
       // Share journal
       .addCase(shareJournal.fulfilled, (state, action) => {
         const updateList = (list: PregnancyJournal[]) => {
-          const index = list.findIndex((j) => j.id === action.payload.id);
+          const index = list.findIndex((j) => j.id === action.payload.data.id);
           if (index !== -1) {
-            list[index] = action.payload;
+            list[index] = action.payload.data;
           }
         };
 
         updateList(state.journals);
         updateList(state.myJournals);
 
-        if (action.payload.shareSettings.isPublic) {
-          const exists = state.publicJournals.some((j) => j.id === action.payload.id);
+        if (action.payload.data.shareSettings.isPublic) {
+          const exists = state.publicJournals.some((j) => j.id === action.payload.data.id);
           if (!exists) {
-            state.publicJournals.push(action.payload);
+            state.publicJournals.push(action.payload.data);
           }
         }
 
-        if (state.currentJournal?.id === action.payload.id) {
-          state.currentJournal = action.payload;
+        if (state.currentJournal?.id === action.payload.data.id) {
+          state.currentJournal = action.payload.data;
         }
         state.error = null;
       })
@@ -470,24 +471,24 @@ const pregnancyJournalSlice = createSlice({
       // Update current week
       .addCase(updateCurrentWeek.fulfilled, (state, action) => {
         const updateList = (list: PregnancyJournal[]) => {
-          const index = list.findIndex((j) => j.id === action.payload.id);
+          const index = list.findIndex((j) => j.id === action.payload.data.id);
           if (index !== -1) {
-            list[index] = action.payload;
+            list[index] = action.payload.data;
           }
         };
 
         updateList(state.journals);
         updateList(state.myJournals);
 
-        if (state.currentJournal?.id === action.payload.id) {
-          state.currentJournal = action.payload;
+        if (state.currentJournal?.id === action.payload.data.id) {
+          state.currentJournal = action.payload.data;
         }
         state.error = null;
       })
 
       // Fetch statistics
       .addCase(fetchStatistics.fulfilled, (state, action) => {
-        state.statistics = action.payload;
+        state.statistics = action.payload.data;
         state.error = null;
       });
   },

@@ -72,7 +72,7 @@ export const PregnancyJournalHeader: React.FC<PregnancyJournalHeaderProps> = ({
                 color={activeTab === 'timeline' ? '#8B5CF6' : '#6B7280'}
               />
               <Text className={`ml-2 font-medium ${activeTab === 'timeline' ? 'text-purple-600' : 'text-gray-600'}`}>
-                Timeline
+                Nhật ký
               </Text>
             </View>
           </TouchableOpacity>
