@@ -31,13 +31,13 @@ export interface UpdateBabyRequest {
 }
 
 export interface GetBabiesRequest {
-  page?: number;
-  limit?: number;
-  gender?: 'male' | 'female';
-  ageRange?: {
-    min: number;
-    max: number;
-  };
+  // page?: number;
+  // limit?: number;
+  // gender?: 'male' | 'female';
+  // ageRange?: {
+  //   min: number;
+  //   max: number;
+  // };
 }
 
 export interface GetBabyByIdRequest {

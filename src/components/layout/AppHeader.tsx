@@ -42,7 +42,7 @@ const AppHeader: React.FC<HeaderProps> = ({
         {user?.date && <Text className='text-gray-500 text-sm mt-0.5'>{user.date}</Text>}
       </View>
 
-      <View className='flex-row items-center space-x-4'>
+      <View className='flex-row items-center gap-4'>
         {onSearch && (
           <TouchableOpacity onPress={onSearch} className='w-10 h-10 items-center justify-center' testID='search-button'>
             <Icon iconStyle='solid' name='magnifying-glass' size={24} color='#6B7280' />
@@ -79,7 +79,7 @@ const AppHeader: React.FC<HeaderProps> = ({
         <Text className={`text-gray-900 text-lg font-medium flex-1 ${titleClassName}`}>{title}</Text>
       </View>
 
-      <View className='flex-row items-center space-x-2'>
+      <View className='flex flex-row items-center gap-2'>
         {actions.map((action, index) => (
           <TouchableOpacity
             key={index}
@@ -96,8 +96,8 @@ const AppHeader: React.FC<HeaderProps> = ({
   );
 
   const renderListHeader = () => (
-    <View className={`flex-row items-center justify-between px-4 ${className}`}>
-      <View className='flex-row items-center flex-1'>
+    <View className={`flex flex-row items-center justify-between px-4 ${className}`}>
+      <View className='flex flex-row items-center flex-1'>
         {onBack && (
           <TouchableOpacity
             onPress={onBack}
@@ -114,7 +114,7 @@ const AppHeader: React.FC<HeaderProps> = ({
       </View>
 
       {actions.length > 0 && (
-        <View className='flex-row items-center space-x-2 absolute right-4'>
+        <View className='flex-row items-center gap-2 absolute right-4'>
           {actions.map((action, index) => (
             <TouchableOpacity
               key={index}
@@ -148,7 +148,7 @@ const AppHeader: React.FC<HeaderProps> = ({
       </View>
 
       {actions.length > 0 && (
-        <View className='flex-row items-center space-x-2'>
+        <View className='flex-row items-center gap-2'>
           {actions.map((action, index) => (
             <TouchableOpacity
               key={index}

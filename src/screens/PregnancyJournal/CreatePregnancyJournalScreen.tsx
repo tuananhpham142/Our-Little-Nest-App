@@ -9,7 +9,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import Icon from '@react-native-vector-icons/fontawesome6';
 import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
-import { Alert, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, Modal, Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useDispatch } from 'react-redux';
 
 interface CreateJournalScreenProps {
@@ -40,6 +40,8 @@ export const CreateJournalScreen: React.FC<CreateJournalScreenProps> = ({ route 
 
   const [showDueDatePicker, setShowDueDatePicker] = useState(false);
   const [showStartDatePicker, setShowStartDatePicker] = useState(false);
+  const [tempDueDate, setTempDueDate] = useState<Date>(new Date());
+  const [tempStartDate, setTempStartDate] = useState<Date>(new Date());
   const [errors, setErrors] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -106,6 +108,157 @@ export const CreateJournalScreen: React.FC<CreateJournalScreenProps> = ({ route 
 
   const handleCancel = () => {
     navigation.goBack();
+  };
+
+  // Start Date Picker Handlers
+  const handleStartDatePickerOpen = () => {
+    setTempStartDate(formData.pregnancyStartDate);
+    setShowStartDatePicker(true);
+  };
+
+  const handleStartDatePickerSave = () => {
+    setFormData((prev) => ({ ...prev, pregnancyStartDate: tempStartDate }));
+    setShowStartDatePicker(false);
+  };
+
+  const handleStartDatePickerClose = () => {
+    setShowStartDatePicker(false);
+  };
+
+  // Due Date Picker Handlers
+  const handleDueDatePickerOpen = () => {
+    setTempDueDate(formData.expectedDueDate);
+    setShowDueDatePicker(true);
+  };
+
+  const handleDueDatePickerSave = () => {
+    setFormData((prev) => ({ ...prev, expectedDueDate: tempDueDate }));
+    setShowDueDatePicker(false);
+  };
+
+  const handleDueDatePickerClose = () => {
+    setShowDueDatePicker(false);
+  };
+
+  const renderStartDatePicker = () => {
+    if (Platform.OS === 'ios') {
+      return (
+        <Modal
+          visible={showStartDatePicker}
+          transparent
+          animationType='slide'
+          onRequestClose={handleStartDatePickerClose}
+        >
+          <View className='flex-1 justify-end bg-black bg-opacity-50'>
+            <View className='bg-white rounded-t-3xl'>
+              <View className='flex-row justify-between items-center px-6 py-4 bg-white border-b border-gray-100'>
+                <TouchableOpacity onPress={handleStartDatePickerClose}>
+                  <Text className='text-blue-600 font-medium text-base'>Đóng</Text>
+                </TouchableOpacity>
+
+                <Text className='font-semibold text-lg text-gray-900'>Chọn ngày bắt đầu</Text>
+
+                <TouchableOpacity onPress={handleStartDatePickerSave}>
+                  <Text className='font-medium text-base text-blue-600'>Lưu</Text>
+                </TouchableOpacity>
+              </View>
+
+              <View className='p-4'>
+                <DateTimePicker
+                  value={tempStartDate}
+                  mode='date'
+                  display='spinner'
+                  maximumDate={new Date()}
+                  onChange={(event, selectedDate) => {
+                    if (selectedDate) {
+                      setTempStartDate(selectedDate);
+                    }
+                  }}
+                  textColor='#000000'
+                />
+              </View>
+            </View>
+          </View>
+        </Modal>
+      );
+    }
+
+    // Android
+    return (
+      showStartDatePicker && (
+        <DateTimePicker
+          value={tempStartDate}
+          mode='date'
+          display='default'
+          maximumDate={new Date()}
+          onChange={(event, selectedDate) => {
+            setShowStartDatePicker(false);
+            if (selectedDate && event.type === 'set') {
+              setFormData((prev) => ({ ...prev, pregnancyStartDate: selectedDate }));
+            }
+          }}
+          textColor='#000000'
+        />
+      )
+    );
+  };
+
+  const renderDueDatePicker = () => {
+    if (Platform.OS === 'ios') {
+      return (
+        <Modal visible={showDueDatePicker} transparent animationType='slide' onRequestClose={handleDueDatePickerClose}>
+          <View className='flex-1 justify-end bg-black bg-opacity-50'>
+            <View className='bg-white rounded-t-3xl'>
+              <View className='flex-row justify-between items-center px-6 py-4 bg-white border-b border-gray-100'>
+                <TouchableOpacity onPress={handleDueDatePickerClose}>
+                  <Text className='text-blue-600 font-medium text-base'>Đóng</Text>
+                </TouchableOpacity>
+
+                <Text className='font-semibold text-lg text-gray-900'>Chọn ngày dự sinh</Text>
+
+                <TouchableOpacity onPress={handleDueDatePickerSave}>
+                  <Text className='font-medium text-base text-blue-600'>Lưu</Text>
+                </TouchableOpacity>
+              </View>
+
+              <View className='p-4'>
+                <DateTimePicker
+                  value={tempDueDate}
+                  mode='date'
+                  display='spinner'
+                  minimumDate={new Date()}
+                  onChange={(event, selectedDate) => {
+                    if (selectedDate) {
+                      setTempDueDate(selectedDate);
+                    }
+                  }}
+                  textColor='#000000'
+                />
+              </View>
+            </View>
+          </View>
+        </Modal>
+      );
+    }
+
+    // Android
+    return (
+      showDueDatePicker && (
+        <DateTimePicker
+          value={tempDueDate}
+          mode='date'
+          display='default'
+          minimumDate={new Date()}
+          onChange={(event, selectedDate) => {
+            setShowDueDatePicker(false);
+            if (selectedDate && event.type === 'set') {
+              setFormData((prev) => ({ ...prev, expectedDueDate: selectedDate }));
+            }
+          }}
+          textColor='#000000'
+        />
+      )
+    );
   };
 
   return (
@@ -196,7 +349,7 @@ export const CreateJournalScreen: React.FC<CreateJournalScreenProps> = ({ route 
                 <Text className='text-sm font-medium text-gray-700 mb-2'>Ngày bắt đầu thai kỳ *</Text>
                 <TouchableOpacity
                   className='bg-gray-50 rounded-xl px-4 py-4 flex-row items-center justify-between border border-gray-200'
-                  onPress={() => setShowStartDatePicker(true)}
+                  onPress={handleStartDatePickerOpen}
                 >
                   <Text className='text-base text-gray-700 font-medium'>
                     {formData.pregnancyStartDate.toLocaleDateString('vi-VN')}
@@ -209,7 +362,7 @@ export const CreateJournalScreen: React.FC<CreateJournalScreenProps> = ({ route 
                 <Text className='text-sm font-medium text-gray-700 mb-2'>Ngày dự sinh *</Text>
                 <TouchableOpacity
                   className='bg-gray-50 rounded-xl px-4 py-4 flex-row items-center justify-between border border-gray-200'
-                  onPress={() => setShowDueDatePicker(true)}
+                  onPress={handleDueDatePickerOpen}
                 >
                   <Text className='text-base text-gray-700 font-medium'>
                     {formData.expectedDueDate.toLocaleDateString('vi-VN')}
@@ -245,33 +398,8 @@ export const CreateJournalScreen: React.FC<CreateJournalScreenProps> = ({ route 
         </ScrollView>
 
         {/* Date Pickers */}
-        {showStartDatePicker && (
-          <DateTimePicker
-            value={formData.pregnancyStartDate}
-            mode='date'
-            display='default'
-            onChange={(event, selectedDate) => {
-              setShowStartDatePicker(false);
-              if (selectedDate) {
-                setFormData((prev) => ({ ...prev, pregnancyStartDate: selectedDate }));
-              }
-            }}
-          />
-        )}
-
-        {showDueDatePicker && (
-          <DateTimePicker
-            value={formData.expectedDueDate}
-            mode='date'
-            display='default'
-            onChange={(event, selectedDate) => {
-              setShowDueDatePicker(false);
-              if (selectedDate) {
-                setFormData((prev) => ({ ...prev, expectedDueDate: selectedDate }));
-              }
-            }}
-          />
-        )}
+        {renderStartDatePicker()}
+        {renderDueDatePicker()}
       </View>
     </AppLayout>
   );

@@ -16,7 +16,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import {
   Alert,
   Animated,
-  Dimensions,
   KeyboardAvoidingView,
   Platform,
   SafeAreaView,
@@ -26,8 +25,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-
-const { width, height } = Dimensions.get('window');
 
 interface InviteFamilyMemberScreenProps {
   route: {
@@ -44,10 +41,10 @@ const InviteFamilyMemberScreen: React.FC<InviteFamilyMemberScreenProps> = ({ rou
 
   // Animation values
   const fadeAnim = useRef(new Animated.Value(0)).current;
-  const slideAnim = useRef(new Animated.Value(50)).current;
-  const scaleAnim = useRef(new Animated.Value(0.9)).current;
+  const slideAnim = useRef(new Animated.Value(30)).current;
 
   // Form state
+  const [currentStep, setCurrentStep] = useState<1 | 2 | 3>(1);
   const [formData, setFormData] = useState<AddFamilyMemberFormData>({
     email: '',
     relationType: FamilyRelationTypeEnum.OTHER,
@@ -59,7 +56,6 @@ const InviteFamilyMemberScreen: React.FC<InviteFamilyMemberScreenProps> = ({ rou
 
   const [formErrors, setFormErrors] = useState<AddFamilyMemberFormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [currentStep, setCurrentStep] = useState<1 | 2 | 3>(1);
 
   // Redux state
   const { currentBaby, isLoading } = useAppSelector((state) => state.baby);
@@ -78,11 +74,6 @@ const InviteFamilyMemberScreen: React.FC<InviteFamilyMemberScreenProps> = ({ rou
         duration: 500,
         useNativeDriver: true,
       }),
-      Animated.timing(scaleAnim, {
-        toValue: 1,
-        duration: 400,
-        useNativeDriver: true,
-      }),
     ]).start();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -97,7 +88,7 @@ const InviteFamilyMemberScreen: React.FC<InviteFamilyMemberScreenProps> = ({ rou
   // Auto-set permissions when relation type changes
   useEffect(() => {
     if (formData.relationType) {
-      const defaultPermissions = PERMISSION_SETS[formData.relationType as FamilyRelationTypeEnum] || [];
+      const defaultPermissions = PERMISSION_SETS[formData.relationType] || [];
       setFormData((prev) => ({
         ...prev,
         permissions: defaultPermissions,
@@ -114,7 +105,7 @@ const InviteFamilyMemberScreen: React.FC<InviteFamilyMemberScreenProps> = ({ rou
     const errors: AddFamilyMemberFormErrors = {};
 
     if (!formData.email.trim()) {
-      errors.email = 'Email is required';
+      errors.email = 'Email address is required';
     } else if (!validateEmail(formData.email)) {
       errors.email = 'Please enter a valid email address';
     }
@@ -139,11 +130,18 @@ const InviteFamilyMemberScreen: React.FC<InviteFamilyMemberScreenProps> = ({ rou
   };
 
   const handleNext = () => {
-    if (currentStep === 1 && validateStep1()) {
-      setCurrentStep(2);
-      animateStepTransition();
-    } else if (currentStep === 2 && validateStep2()) {
-      setCurrentStep(3);
+    let isValid = false;
+
+    if (currentStep === 1) {
+      isValid = validateStep1();
+    } else if (currentStep === 2) {
+      isValid = validateStep2();
+    } else {
+      isValid = true;
+    }
+
+    if (isValid && currentStep < 3) {
+      setCurrentStep((prev) => (prev + 1) as 1 | 2 | 3);
       animateStepTransition();
     }
   };
@@ -184,12 +182,12 @@ const InviteFamilyMemberScreen: React.FC<InviteFamilyMemberScreenProps> = ({ rou
       ).unwrap();
 
       // Send invitation
-      const result = await dispatch(
+      await dispatch(
         inviteFamilyMember({
           babyId,
           invitationData: {
             email: formData.email,
-            relationType: formData.relationType as FamilyRelationTypeEnum,
+            relationType: formData.relationType,
             displayName: formData.displayName || undefined,
             isPrimary: formData.isPrimary,
             permissions: formData.permissions,
@@ -199,11 +197,11 @@ const InviteFamilyMemberScreen: React.FC<InviteFamilyMemberScreenProps> = ({ rou
       ).unwrap();
 
       Alert.alert(
-        'Invitation Sent! 🎉',
+        'Invitation Sent!',
         `We've sent an invitation to ${formData.email}. They'll receive an email with instructions to join ${currentBaby?.name}'s family.`,
         [
           {
-            text: 'OK',
+            text: 'Great!',
             onPress: () => navigation.goBack(),
           },
         ],
@@ -233,18 +231,42 @@ const InviteFamilyMemberScreen: React.FC<InviteFamilyMemberScreenProps> = ({ rou
     }));
   };
 
+  const getPermissionDescription = (permission: BabyPermissionEnum): string => {
+    const descriptions = {
+      [BabyPermissionEnum.VIEW]: 'Can view basic baby information and photos',
+      [BabyPermissionEnum.VIEW_MEDICAL]: 'Can view medical information, allergies, and medications',
+      [BabyPermissionEnum.EDIT]: 'Can edit basic information like name, birth date, physical stats',
+      [BabyPermissionEnum.EDIT_MEDICAL]: 'Can edit medical information and health records',
+      [BabyPermissionEnum.DELETE]: 'Can delete the baby profile (use with extreme caution)',
+      [BabyPermissionEnum.MANAGE_FAMILY]: 'Can add, remove, or modify other family members',
+      [BabyPermissionEnum.UPLOAD_MEDIA]: 'Can upload photos, videos, and update avatar',
+      [BabyPermissionEnum.VIEW_ANALYTICS]: 'Can view growth charts and development analytics',
+    };
+    return descriptions[permission] || '';
+  };
+
   const renderProgressIndicator = () => (
-    <View className='px-4 py-3 bg-white'>
-      <View className='h-1 bg-blue-100 rounded-sm mb-3'>
-        <View className='h-full bg-blue-500 rounded-sm' style={{ width: `${(currentStep / 3) * 100}%` }} />
+    <View className='px-4 py-3 bg-white border-b border-gray-100'>
+      <View className='h-1 bg-green-100 rounded-full mb-3'>
+        <View className='h-full bg-green-500 rounded-full' style={{ width: `${(currentStep / 3) * 100}%` }} />
       </View>
       <View className='flex-row justify-between'>
-        {[1, 2, 3].map((step) => (
-          <View
-            key={step}
-            className={`w-8 h-8 rounded-2xl justify-center items-center ${currentStep >= step ? 'bg-blue-500' : 'bg-blue-100'}`}
-          >
-            <Text className={`text-sm font-bold ${currentStep >= step ? 'text-white' : 'text-gray-500'}`}>{step}</Text>
+        {[
+          { step: 1, label: 'Contact' },
+          { step: 2, label: 'Permissions' },
+          { step: 3, label: 'Review' },
+        ].map(({ step, label }) => (
+          <View key={step} className='items-center'>
+            <View
+              className={`w-8 h-8 rounded-full justify-center items-center mb-1 ${
+                currentStep >= step ? 'bg-green-500' : 'bg-green-100'
+              }`}
+            >
+              <Text className={`text-sm font-bold ${currentStep >= step ? 'text-white' : 'text-green-300'}`}>
+                {step}
+              </Text>
+            </View>
+            <Text className='text-xs text-gray-500'>{label}</Text>
           </View>
         ))}
       </View>
@@ -253,28 +275,22 @@ const InviteFamilyMemberScreen: React.FC<InviteFamilyMemberScreenProps> = ({ rou
 
   const renderStep1 = () => (
     <Animated.View
-      className='bg-white rounded-2xl p-5 shadow-lg'
-      style={{
-        opacity: fadeAnim,
-        transform: [{ translateY: slideAnim }],
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 8,
-        elevation: 4,
-      }}
+      style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}
+      className='bg-white rounded-2xl p-5 mx-4 shadow-lg'
     >
-      <Text className='text-2xl font-bold text-gray-800 mb-2'>Contact Information</Text>
+      <Text className='text-2xl font-bold text-gray-800 mb-2'>Invite Family Member</Text>
       <Text className='text-base text-gray-500 leading-6 mb-6'>
-        Enter the email address and relationship type for the person you want to invite.
+        Enter the email address and relationship type for the person you want to invite to {currentBaby?.name}'s family.
       </Text>
 
       {/* Email Input */}
       <View className='mb-5'>
         <Text className='text-base font-semibold text-gray-800 mb-2'>Email Address *</Text>
         <TextInput
-          className={`border rounded-xl px-4 py-3 text-base text-gray-800 bg-white ${formErrors.email ? 'border-red-500' : 'border-gray-200'}`}
-          placeholder='Enter email address'
+          className={`border rounded-xl px-4 py-3 text-base text-gray-800 ${
+            formErrors.email ? 'border-red-500 bg-red-50' : 'border-gray-200 bg-white'
+          }`}
+          placeholder='Enter their email address'
           placeholderTextColor='#999'
           value={formData.email}
           onChangeText={(text) => {
@@ -295,30 +311,36 @@ const InviteFamilyMemberScreen: React.FC<InviteFamilyMemberScreenProps> = ({ rou
         <Text className='text-base font-semibold text-gray-800 mb-2'>Display Name (Optional)</Text>
         <TextInput
           className='border border-gray-200 rounded-xl px-4 py-3 text-base text-gray-800 bg-white'
-          placeholder='How should they appear in the family?'
+          placeholder='e.g., "Grandma Sarah", "Uncle Mike"'
           placeholderTextColor='#999'
           value={formData.displayName}
           onChangeText={(text) => setFormData((prev) => ({ ...prev, displayName: text }))}
         />
-        <Text className='text-xs text-gray-400 mt-1'>e.g., "Grandma Sarah", "Uncle Mike", etc.</Text>
+        <Text className='text-xs text-gray-400 mt-1'>
+          How should they appear in the family? Leave empty to use their name.
+        </Text>
       </View>
 
       {/* Relationship Type */}
       <View className='mb-5'>
-        <Text className='text-base font-semibold text-gray-800 mb-2'>Relationship Type *</Text>
-        <View className='flex-row flex-wrap mt-2'>
+        <Text className='text-base font-semibold text-gray-800 mb-3'>Relationship Type *</Text>
+        <View className='flex-row flex-wrap'>
           {Object.entries(RELATION_DISPLAY_NAMES).map(([key, label]) => (
             <TouchableOpacity
               key={key}
-              className={`px-3 py-2 rounded-2xl mr-2 mb-2 border ${formData.relationType === key ? 'bg-blue-500 border-blue-500' : 'bg-gray-50 border-gray-200'}`}
               onPress={() => {
                 setFormData((prev) => ({ ...prev, relationType: key as FamilyRelationTypeEnum }));
                 if (formErrors.relationType) {
                   setFormErrors((prev) => ({ ...prev, relationType: undefined }));
                 }
               }}
+              className={`px-4 py-2 rounded-2xl mr-2 mb-2 border ${
+                formData.relationType === key ? 'border-green-500 bg-green-50' : 'border-gray-200 bg-white'
+              }`}
             >
-              <Text className={`text-sm font-medium ${formData.relationType === key ? 'text-white' : 'text-gray-800'}`}>
+              <Text
+                className={`text-sm font-medium ${formData.relationType === key ? 'text-green-600' : 'text-gray-600'}`}
+              >
                 {label}
               </Text>
             </TouchableOpacity>
@@ -328,20 +350,23 @@ const InviteFamilyMemberScreen: React.FC<InviteFamilyMemberScreenProps> = ({ rou
       </View>
 
       {/* Primary Caregiver Toggle */}
-      <View className='mb-5'>
+      <View className='bg-yellow-50 p-4 rounded-xl'>
         <TouchableOpacity
           className='flex-row items-start'
           onPress={() => setFormData((prev) => ({ ...prev, isPrimary: !prev.isPrimary }))}
         >
           <View
-            className={`w-6 h-6 border-2 rounded-md justify-center items-center mr-3 mt-0.5 ${formData.isPrimary ? 'bg-blue-500 border-blue-500' : 'border-gray-200'}`}
+            className={`w-6 h-6 border-2 rounded-md justify-center items-center mr-3 mt-0.5 ${
+              formData.isPrimary ? 'bg-yellow-500 border-yellow-500' : 'border-gray-300'
+            }`}
           >
-            {formData.isPrimary && <Text className='text-white text-base font-bold'>✓</Text>}
+            {formData.isPrimary && <Text className='text-white text-sm font-bold'>✓</Text>}
           </View>
           <View className='flex-1'>
             <Text className='text-base font-semibold text-gray-800 mb-1'>Primary Caregiver</Text>
-            <Text className='text-sm text-gray-500 leading-5'>
-              Primary caregivers have full access and cannot be removed by other family members.
+            <Text className='text-sm text-gray-600 leading-5'>
+              Primary caregivers have full access to manage {currentBaby?.name}'s profile and cannot be removed by other
+              family members. Choose this for parents or main guardians.
             </Text>
           </View>
         </TouchableOpacity>
@@ -351,47 +376,45 @@ const InviteFamilyMemberScreen: React.FC<InviteFamilyMemberScreenProps> = ({ rou
 
   const renderStep2 = () => (
     <Animated.View
-      className='bg-white rounded-2xl p-5 shadow-lg'
-      style={{
-        opacity: fadeAnim,
-        transform: [{ translateY: slideAnim }],
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 8,
-        elevation: 4,
-      }}
+      style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}
+      className='bg-white rounded-2xl p-5 mx-4 shadow-lg'
     >
-      <Text className='text-2xl font-bold text-gray-800 mb-2'>Permissions</Text>
+      <Text className='text-2xl font-bold text-gray-800 mb-2'>Set Permissions</Text>
       <Text className='text-base text-gray-500 leading-6 mb-6'>
-        Choose what this family member can do with {currentBaby?.name}'s profile.
+        Choose what this family member can do with {currentBaby?.name}'s profile. We've pre-selected common permissions
+        for {RELATION_DISPLAY_NAMES[formData.relationType]}.
       </Text>
 
-      {/* Recommended Permissions */}
+      {/* Recommended Permissions Notice */}
       {formData.relationType && (
-        <View className='bg-green-50 p-4 rounded-xl mb-5'>
-          <Text className='text-base font-bold text-green-800 mb-1'>
-            Recommended for {RELATION_DISPLAY_NAMES[formData.relationType as FamilyRelationTypeEnum]}:
+        <View className='bg-blue-50 p-4 rounded-xl mb-5 border-l-4 border-blue-400'>
+          <Text className='text-blue-800 font-semibold mb-1'>
+            Recommended for {RELATION_DISPLAY_NAMES[formData.relationType]}
           </Text>
-          <Text className='text-sm text-green-800 leading-5'>
-            We've pre-selected the most common permissions for this relationship. You can adjust them as needed.
+          <Text className='text-blue-700 text-sm leading-5'>
+            We've automatically selected the most common permissions for this relationship type. You can adjust them as
+            needed.
           </Text>
         </View>
       )}
 
       {/* Permissions List */}
-      <View className='mt-2'>
+      <View className='mb-4'>
         {Object.entries(PERMISSION_DISPLAY_NAMES).map(([permission, label]) => (
           <TouchableOpacity
             key={permission}
-            className='flex-row items-start py-3 border-b border-gray-100'
             onPress={() => togglePermission(permission as BabyPermissionEnum)}
+            className='flex-row items-start py-4 border-b border-gray-100'
           >
             <View
-              className={`w-6 h-6 border-2 rounded-md justify-center items-center mr-3 mt-0.5 ${formData.permissions.includes(permission as BabyPermissionEnum) ? 'bg-blue-500 border-blue-500' : 'border-gray-200'}`}
+              className={`w-6 h-6 border-2 rounded-md justify-center items-center mr-3 mt-0.5 ${
+                formData.permissions.includes(permission as BabyPermissionEnum)
+                  ? 'bg-green-500 border-green-500'
+                  : 'border-gray-300'
+              }`}
             >
               {formData.permissions.includes(permission as BabyPermissionEnum) && (
-                <Text className='text-white text-base font-bold'>✓</Text>
+                <Text className='text-white text-sm font-bold'>✓</Text>
               )}
             </View>
             <View className='flex-1'>
@@ -404,34 +427,67 @@ const InviteFamilyMemberScreen: React.FC<InviteFamilyMemberScreenProps> = ({ rou
         ))}
       </View>
 
-      {formErrors.permissions && <Text className='text-xs text-red-500 mt-1'>{formErrors.permissions}</Text>}
+      {formErrors.permissions && <Text className='text-xs text-red-500 mb-4'>{formErrors.permissions}</Text>}
+
+      {/* Selected Count */}
+      <View className='bg-green-50 p-3 rounded-xl'>
+        <Text className='text-green-800 text-sm text-center font-medium'>
+          {formData.permissions.length} permission{formData.permissions.length !== 1 ? 's' : ''} selected
+        </Text>
+      </View>
     </Animated.View>
   );
 
   const renderStep3 = () => (
     <Animated.View
-      className='bg-white rounded-2xl p-5 shadow-lg'
-      style={{
-        opacity: fadeAnim,
-        transform: [{ translateY: slideAnim }],
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 8,
-        elevation: 4,
-      }}
+      style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}
+      className='bg-white rounded-2xl p-5 mx-4 shadow-lg'
     >
-      <Text className='text-2xl font-bold text-gray-800 mb-2'>Personal Message</Text>
+      <Text className='text-2xl font-bold text-gray-800 mb-2'>Review & Send</Text>
       <Text className='text-base text-gray-500 leading-6 mb-6'>
-        Add a personal message to the invitation email (optional).
+        Review the invitation details and add a personal message before sending.
       </Text>
 
-      {/* Message Input */}
+      {/* Invitation Summary */}
+      <View className='bg-gray-50 rounded-xl p-4 mb-5'>
+        <Text className='text-lg font-bold text-gray-800 mb-3'>Invitation Summary</Text>
+
+        <View className='flex flex-col gap-2'>
+          <View className='flex-row justify-between'>
+            <Text className='text-gray-600'>Inviting:</Text>
+            <Text className='font-semibold text-gray-800 flex-1 text-right'>{formData.email}</Text>
+          </View>
+
+          <View className='flex-row justify-between'>
+            <Text className='text-gray-600'>Relationship:</Text>
+            <Text className='font-semibold text-gray-800 flex-1 text-right'>
+              {RELATION_DISPLAY_NAMES[formData.relationType]}
+              {formData.isPrimary && ' (Primary)'}
+            </Text>
+          </View>
+
+          {formData.displayName && (
+            <View className='flex-row justify-between'>
+              <Text className='text-gray-600'>Display Name:</Text>
+              <Text className='font-semibold text-gray-800 flex-1 text-right'>{formData.displayName}</Text>
+            </View>
+          )}
+
+          <View className='flex-row justify-between'>
+            <Text className='text-gray-600'>Permissions:</Text>
+            <Text className='font-semibold text-blue-600 flex-1 text-right'>
+              {formData.permissions.length} selected
+            </Text>
+          </View>
+        </View>
+      </View>
+
+      {/* Personal Message */}
       <View className='mb-5'>
-        <Text className='text-base font-semibold text-gray-800 mb-2'>Invitation Message</Text>
+        <Text className='text-base font-semibold text-gray-800 mb-2'>Personal Message (Optional)</Text>
         <TextInput
           className='border border-gray-200 rounded-xl px-4 py-3 text-base text-gray-800 bg-white h-24'
-          placeholder={`Hi! I'd like to invite you to be part of ${currentBaby?.name}'s family on our baby care app. This will help us all stay connected and share important updates about ${currentBaby?.name}'s growth and development.`}
+          placeholder={`Hi! I'd like to invite you to be part of ${currentBaby?.name}'s family. This will help us stay connected and share precious moments together!`}
           placeholderTextColor='#999'
           value={formData.message}
           onChangeText={(text) => setFormData((prev) => ({ ...prev, message: text }))}
@@ -441,74 +497,43 @@ const InviteFamilyMemberScreen: React.FC<InviteFamilyMemberScreenProps> = ({ rou
         />
       </View>
 
-      {/* Invitation Summary */}
-      <View className='bg-gray-50 p-4 rounded-xl mt-5'>
-        <Text className='text-lg font-bold text-gray-800 mb-3'>Invitation Summary</Text>
-
-        <View className='flex-row justify-between items-start mb-2'>
-          <Text className='text-sm text-gray-500 flex-1'>Email:</Text>
-          <Text className='text-sm font-semibold text-gray-800 flex-2 text-right'>{formData.email}</Text>
-        </View>
-
-        <View className='flex-row justify-between items-start mb-2'>
-          <Text className='text-sm text-gray-500 flex-1'>Relationship:</Text>
-          <Text className='text-sm font-semibold text-gray-800 flex-2 text-right'>
-            {RELATION_DISPLAY_NAMES[formData.relationType as FamilyRelationTypeEnum]}
-            {formData.isPrimary && ' (Primary Caregiver)'}
+      {/* What Happens Next */}
+      <View className='bg-blue-50 p-4 rounded-xl'>
+        <Text className='text-blue-800 font-semibold mb-2'>What happens next?</Text>
+        <View className='flex flex-col gap-1'>
+          <Text className='text-blue-700 text-sm'>• They'll receive an email invitation</Text>
+          <Text className='text-blue-700 text-sm'>• They can accept or decline the invitation</Text>
+          <Text className='text-blue-700 text-sm'>
+            • Once accepted, they'll have access to {currentBaby?.name}'s profile
           </Text>
-        </View>
-
-        {formData.displayName && (
-          <View className='flex-row justify-between items-start mb-2'>
-            <Text className='text-sm text-gray-500 flex-1'>Display Name:</Text>
-            <Text className='text-sm font-semibold text-gray-800 flex-2 text-right'>{formData.displayName}</Text>
-          </View>
-        )}
-
-        <View className='flex-row justify-between items-start mb-2'>
-          <Text className='text-sm text-gray-500 flex-1'>Permissions:</Text>
-          <Text className='text-sm font-semibold text-gray-800 flex-2 text-right'>
-            {formData.permissions.length} permission(s) selected
-          </Text>
+          <Text className='text-blue-700 text-sm'>• You can modify their permissions anytime</Text>
         </View>
       </View>
     </Animated.View>
   );
 
-  const getPermissionDescription = (permission: BabyPermissionEnum): string => {
-    const descriptions = {
-      [BabyPermissionEnum.VIEW]: 'Can view basic baby information',
-      [BabyPermissionEnum.VIEW_MEDICAL]: 'Can view medical information, allergies, and medications',
-      [BabyPermissionEnum.EDIT]: 'Can edit basic information like name, birth date, etc.',
-      [BabyPermissionEnum.EDIT_MEDICAL]: 'Can edit medical information and health records',
-      [BabyPermissionEnum.DELETE]: 'Can delete the baby profile (use with caution)',
-      [BabyPermissionEnum.MANAGE_FAMILY]: 'Can add or remove other family members',
-      [BabyPermissionEnum.UPLOAD_MEDIA]: 'Can upload photos and videos',
-      [BabyPermissionEnum.VIEW_ANALYTICS]: 'Can view growth charts and development analytics',
-    };
-    return descriptions[permission] || '';
-  };
-
   if (!currentBaby) {
     return (
-      <SafeAreaView className='flex-1 bg-gray-50'>
+      <SafeAreaView className='flex-1 bg-gradient-to-br from-green-50 to-blue-50'>
         <View className='flex-1 justify-center items-center'>
-          <Text className='text-base text-gray-500'>Loading baby information...</Text>
+          <Text className='text-gray-500'>Loading baby information...</Text>
         </View>
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView className='flex-1 bg-gray-50'>
+    <SafeAreaView className='flex-1 bg-gradient-to-br from-green-50 to-blue-50'>
       <KeyboardAvoidingView className='flex-1' behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
         {/* Header */}
         <View className='flex-row justify-between items-center px-4 py-3 bg-white border-b border-gray-200'>
-          <TouchableOpacity className='py-2' onPress={handleCancel}>
+          <TouchableOpacity onPress={handleCancel}>
             <Text className='text-red-500 text-base font-semibold'>Cancel</Text>
           </TouchableOpacity>
-          <Text className='text-lg font-bold text-gray-800'>Invite Family Member</Text>
-          <View className='w-15' />
+
+          <Text className='text-lg font-bold text-gray-800'>Invite to Family</Text>
+
+          <View className='w-16' />
         </View>
 
         {/* Progress Indicator */}
@@ -516,9 +541,7 @@ const InviteFamilyMemberScreen: React.FC<InviteFamilyMemberScreenProps> = ({ rou
 
         {/* Content */}
         <ScrollView className='flex-1' showsVerticalScrollIndicator={false}>
-          <View className='p-4'>
-            <Text className='text-xl font-bold text-gray-800 text-center mb-6'>For {currentBaby.name}</Text>
-
+          <View className='py-4'>
             {currentStep === 1 && renderStep1()}
             {currentStep === 2 && renderStep2()}
             {currentStep === 3 && renderStep3()}
@@ -528,25 +551,25 @@ const InviteFamilyMemberScreen: React.FC<InviteFamilyMemberScreenProps> = ({ rou
         {/* Footer */}
         <View className='flex-row items-center px-4 py-3 bg-white border-t border-gray-200'>
           {currentStep > 1 && (
-            <TouchableOpacity className='px-4 py-3 rounded-lg bg-gray-50' onPress={handleBack}>
-              <Text className='text-gray-500 text-base font-semibold'>← Back</Text>
+            <TouchableOpacity onPress={handleBack} className='bg-gray-100 px-4 py-3 rounded-xl'>
+              <Text className='text-gray-600 font-semibold'>← Back</Text>
             </TouchableOpacity>
           )}
 
           <View className='flex-1' />
 
           {currentStep < 3 ? (
-            <TouchableOpacity className='bg-blue-500 px-6 py-3 rounded-lg' onPress={handleNext}>
-              <Text className='text-white text-base font-semibold'>Next →</Text>
+            <TouchableOpacity onPress={handleNext} className='bg-green-500 px-6 py-3 rounded-xl'>
+              <Text className='text-white font-semibold'>Next →</Text>
             </TouchableOpacity>
           ) : (
             <TouchableOpacity
-              className={`px-6 py-3 rounded-lg ${isSubmitting || isInviting ? 'bg-gray-300' : 'bg-green-500'}`}
               onPress={handleSubmit}
               disabled={isSubmitting || isInviting}
+              className={`px-6 py-3 rounded-xl ${isSubmitting || isInviting ? 'bg-gray-300' : 'bg-green-500'}`}
             >
-              <Text className='text-white text-base font-semibold'>
-                {isSubmitting || isInviting ? 'Sending...' : 'Send Invitation 📧'}
+              <Text className='text-white font-semibold'>
+                {isSubmitting || isInviting ? 'Sending...' : 'Send Invitation'}
               </Text>
             </TouchableOpacity>
           )}
@@ -554,20 +577,6 @@ const InviteFamilyMemberScreen: React.FC<InviteFamilyMemberScreenProps> = ({ rou
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
-};
-
-const getPermissionDescription = (permission: BabyPermissionEnum): string => {
-  const descriptions = {
-    [BabyPermissionEnum.VIEW]: 'Can view basic baby information',
-    [BabyPermissionEnum.VIEW_MEDICAL]: 'Can view medical information, allergies, and medications',
-    [BabyPermissionEnum.EDIT]: 'Can edit basic information like name, birth date, etc.',
-    [BabyPermissionEnum.EDIT_MEDICAL]: 'Can edit medical information and health records',
-    [BabyPermissionEnum.DELETE]: 'Can delete the baby profile (use with caution)',
-    [BabyPermissionEnum.MANAGE_FAMILY]: 'Can add or remove other family members',
-    [BabyPermissionEnum.UPLOAD_MEDIA]: 'Can upload photos and videos',
-    [BabyPermissionEnum.VIEW_ANALYTICS]: 'Can view growth charts and development analytics',
-  };
-  return descriptions[permission] || '';
 };
 
 export default InviteFamilyMemberScreen;

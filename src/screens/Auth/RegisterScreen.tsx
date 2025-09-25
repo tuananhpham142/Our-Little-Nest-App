@@ -1,14 +1,14 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import {
-    Alert,
-    Dimensions,
-    KeyboardAvoidingView,
-    Platform,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Alert,
+  Dimensions,
+  KeyboardAvoidingView,
+  Platform,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 
@@ -96,12 +96,12 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({ onVerifyPhone, onNaviga
               <View className='absolute top-16 -left-4 w-8 h-3 bg-blue-600 rounded-full transform -rotate-45' />
               <View className='absolute top-16 -right-4 w-8 h-3 bg-blue-600 rounded-full transform rotate-45' />
               {/* Legs */}
-              <View className='flex-row justify-center space-x-1 mt-1'>
+              <View className='flex-row justify-center flex gap-1 mt-1'>
                 <View className='w-3 h-12 bg-gray-800 rounded-b-lg' />
                 <View className='w-3 h-12 bg-gray-800 rounded-b-lg' />
               </View>
               {/* Feet */}
-              <View className='flex-row justify-center space-x-1 -mt-2'>
+              <View className='flex-row justify-center flex gap-1 -mt-2'>
                 <View className='w-6 h-3 bg-yellow-500 rounded-full' />
                 <View className='w-6 h-3 bg-yellow-500 rounded-full' />
               </View>

@@ -36,7 +36,7 @@ export const PregnancyJournalHeader: React.FC<PregnancyJournalHeaderProps> = ({
             <Text className='text-sm text-gray-500 mt-1'>{getCurrentDate()}</Text>
           </View>
 
-          <View className='flex-row items-center space-x-3'>
+          <View className='flex-row items-center flex gap-3'>
             <TouchableOpacity
               onPress={onCreatePress}
               className='w-10 h-10 bg-purple-100 rounded-full items-center justify-center'

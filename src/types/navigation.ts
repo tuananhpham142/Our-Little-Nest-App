@@ -21,7 +21,7 @@ export type RootStackParamList = AuthStackParamList & {
   // Babies
   Babies: undefined;
   BabyList: undefined;
-  BabyTabs: { babyId: string; initialTab?: string };
+  BabyFamilyMember: { babyId: string };
   CreateBaby: undefined;
   EditBaby: { babyId: string };
   InviteFamilyMember: { babyId: string };

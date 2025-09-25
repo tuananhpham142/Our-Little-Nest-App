@@ -2,7 +2,7 @@
 import FloatingBottomNavigation from '@/components/template/Navigations/FloatingBottomNavigation';
 import { useTheme } from '@/hooks/useTheme';
 import ArticlesScreen from '@/screens/Article/ArticlesScreen';
-import BabyMainScreen from '@/screens/Baby/BabyMainScreen';
+import BabyMainScreen from '@/screens/Baby/BabyListScreen';
 import HomeScreen from '@/screens/HomeScreen';
 import NotificationScreen from '@/screens/Notification/NotificationScreen';
 import { PregnancyJournalListScreen } from '@/screens/PregnancyJournal/PregnancyJournalListScreen';

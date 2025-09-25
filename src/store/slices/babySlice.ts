@@ -3,13 +3,13 @@
 import { BabyScreenTab, FamilyRelationTypeEnum } from '@/models/Baby/BabyEnum';
 import { Baby, BabyState, FamilyMember } from '@/models/Baby/BabyModel';
 import {
-    AddFamilyMemberRequest,
-    CreateBabyRequest,
-    GetBabiesRequest,
-    InviteFamilyMemberRequest,
-    SearchBabiesRequest,
-    UpdateBabyRequest,
-    UpdateFamilyMemberRequest,
+  AddFamilyMemberRequest,
+  CreateBabyRequest,
+  GetBabiesRequest,
+  InviteFamilyMemberRequest,
+  SearchBabiesRequest,
+  UpdateBabyRequest,
+  UpdateFamilyMemberRequest,
 } from '@/models/Baby/BabyRequest';
 import { BabyService } from '@/services/baby/babyService';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
@@ -99,7 +99,7 @@ export const fetchFamilyMembers = createAsyncThunk(
   async (babyId: string, { rejectWithValue }) => {
     try {
       const response = await BabyService.getFamilyMembers(babyId);
-      return { babyId, familyMembers: response };
+      return { babyId, familyMembers: response.data };
     } catch (error: any) {
       return rejectWithValue(error.message || 'Failed to fetch family members');
     }
@@ -333,9 +333,9 @@ const babySlice = createSlice({
       })
       .addCase(createBaby.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.babies.unshift(action.payload);
-        state.currentBaby = action.payload;
-        state.selectedBabyId = action.payload.id;
+        state.babies.unshift(action.payload.data);
+        state.currentBaby = action.payload.data;
+        state.selectedBabyId = action.payload.data.id;
         state.error = null;
       })
       .addCase(createBaby.rejected, (state, action) => {
@@ -365,15 +365,15 @@ const babySlice = createSlice({
       })
       .addCase(fetchBabyById.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.currentBaby = action.payload;
-        state.selectedBabyId = action.payload.id;
+        state.currentBaby = action.payload.data;
+        state.selectedBabyId = action.payload.data.id;
 
         // Update in babies list if exists
-        const index = state.babies.findIndex((baby) => baby.id === action.payload.id);
+        const index = state.babies.findIndex((baby) => baby.id === action.payload.data.id);
         if (index !== -1) {
-          state.babies[index] = action.payload;
+          state.babies[index] = action.payload.data;
         } else {
-          state.babies.push(action.payload);
+          state.babies.push(action.payload.data);
         }
 
         state.error = null;
@@ -385,12 +385,12 @@ const babySlice = createSlice({
 
       // Update baby
       .addCase(updateBaby.fulfilled, (state, action) => {
-        const index = state.babies.findIndex((baby) => baby.id === action.payload.id);
+        const index = state.babies.findIndex((baby) => baby.id === action.payload.data.id);
         if (index !== -1) {
-          state.babies[index] = action.payload;
+          state.babies[index] = action.payload.data;
         }
-        if (state.currentBaby && state.currentBaby.id === action.payload.id) {
-          state.currentBaby = action.payload;
+        if (state.currentBaby && state.currentBaby.id === action.payload.data.id) {
+          state.currentBaby = action.payload.data;
         }
       })
 
@@ -430,7 +430,7 @@ const babySlice = createSlice({
 
       // Add family member
       .addCase(addFamilyMember.fulfilled, (state, action) => {
-        const updatedBaby = action.payload;
+        const updatedBaby = action.payload.data;
         const index = state.babies.findIndex((baby) => baby.id === updatedBaby.id);
         if (index !== -1) {
           state.babies[index] = updatedBaby;
@@ -443,7 +443,7 @@ const babySlice = createSlice({
 
       // Update family member
       .addCase(updateFamilyMember.fulfilled, (state, action) => {
-        const updatedBaby = action.payload;
+        const updatedBaby = action.payload.data;
         const index = state.babies.findIndex((baby) => baby.id === updatedBaby.id);
         if (index !== -1) {
           state.babies[index] = updatedBaby;
@@ -456,7 +456,7 @@ const babySlice = createSlice({
 
       // Remove family member
       .addCase(removeFamilyMember.fulfilled, (state, action) => {
-        const updatedBaby = action.payload;
+        const updatedBaby = action.payload.data;
         const index = state.babies.findIndex((baby) => baby.id === updatedBaby.id);
         if (index !== -1) {
           state.babies[index] = updatedBaby;
@@ -469,7 +469,7 @@ const babySlice = createSlice({
 
       // Upload avatar
       .addCase(uploadBabyAvatar.fulfilled, (state, action) => {
-        const updatedBaby = action.payload;
+        const updatedBaby = action.payload.data;
         const index = state.babies.findIndex((baby) => baby.id === updatedBaby.id);
         if (index !== -1) {
           state.babies[index] = updatedBaby;

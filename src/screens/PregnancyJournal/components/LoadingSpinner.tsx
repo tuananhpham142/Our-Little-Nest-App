@@ -125,7 +125,7 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
         </Animated.View>
 
         {/* Loading dots */}
-        <View className='flex-row mt-6 space-x-1'>
+        <View className='flex-row mt-6 flex gap-1'>
           {[0, 1, 2].map((index) => (
             <Animated.View
               key={index}
@@ -211,7 +211,7 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
         </Animated.View>
 
         {/* Loading dots */}
-        <View className='flex-row mt-6 space-x-1'>
+        <View className='flex-row mt-6 flex gap-1'>
           {[0, 1, 2].map((index) => (
             <Animated.View
               key={index}

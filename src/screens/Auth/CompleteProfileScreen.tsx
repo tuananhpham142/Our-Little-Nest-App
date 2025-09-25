@@ -2,15 +2,15 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import {
-    Alert,
-    Dimensions,
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Alert,
+  Dimensions,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 
 interface ProfileFormData {
@@ -129,12 +129,12 @@ const CompleteProfileScreen: React.FC<CompleteProfileScreenProps> = ({ onComplet
               <View className='absolute top-14 -left-3 w-6 h-2 bg-blue-600 rounded-full transform -rotate-45' />
               <View className='absolute top-14 -right-3 w-6 h-2 bg-blue-600 rounded-full transform rotate-45' />
               {/* Legs */}
-              <View className='flex-row justify-center space-x-1 mt-1'>
+              <View className='flex flex-row justify-center gap-1 mt-1'>
                 <View className='w-2 h-10 bg-gray-800 rounded-b-lg' />
                 <View className='w-2 h-10 bg-gray-800 rounded-b-lg' />
               </View>
               {/* Feet */}
-              <View className='flex-row justify-center space-x-1 -mt-2'>
+              <View className='flex flex-row justify-center gap-1 -mt-2'>
                 <View className='w-4 h-2 bg-yellow-500 rounded-full' />
                 <View className='w-4 h-2 bg-yellow-500 rounded-full' />
               </View>
@@ -221,7 +221,7 @@ const CompleteProfileScreen: React.FC<CompleteProfileScreenProps> = ({ onComplet
 
             {/* Gender Selection */}
             <View className='mb-8'>
-              <View className='flex-row justify-center space-x-4'>
+              <View className='flex flex-row justify-center gap-1'>
                 {/* Male Option */}
                 <TouchableOpacity
                   onPress={() => handleGenderSelect('male')}

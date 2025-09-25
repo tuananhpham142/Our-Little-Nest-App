@@ -13,7 +13,7 @@ interface NotFoundCardProps {
 }
 
 interface EmptyStateProps {
-  type: 'articles' | 'categories' | 'tags' | 'search' | 'favorites' | 'history';
+  type: 'general' | 'articles' | 'categories' | 'tags' | 'search' | 'favorites' | 'history';
   searchQuery?: string;
   onRefresh?: () => void;
   onSearch?: () => void;

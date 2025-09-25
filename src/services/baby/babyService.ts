@@ -1,11 +1,9 @@
 // src/services/baby/babyService.ts
 
 import { FamilyRelationTypeEnum } from '@/models/Baby/BabyEnum';
-import { Baby, BabyStatistics, FamilyMember } from '@/models/Baby/BabyModel';
 import {
   AddFamilyMemberRequest,
   CreateBabyRequest,
-  DEFAULT_BABY_PARAMS,
   GetBabiesByRelationRequest,
   GetBabiesRequest,
   InviteFamilyMemberRequest,
@@ -30,7 +28,6 @@ import {
   UpdateFamilyMemberResponse,
   UploadAvatarResponse,
 } from '@/models/Baby/BabyResponse';
-import { ApiResponse } from '@/types/api';
 import { baseApi } from '../baseApi';
 
 export class BabyService {
@@ -41,13 +38,16 @@ export class BabyService {
   /**
    * Create a new baby
    */
-  static async createBaby(babyData: CreateBabyRequest, creatorRelationType?: FamilyRelationTypeEnum): Promise<Baby> {
+  static async createBaby(
+    babyData: CreateBabyRequest,
+    creatorRelationType?: FamilyRelationTypeEnum,
+  ): Promise<CreateBabyResponse> {
     try {
       const queryParams = creatorRelationType ? `?creatorRelationType=${creatorRelationType}` : '';
 
-      const response = await baseApi.post<ApiResponse<CreateBabyResponse>>(`${this.BASE_PATH}${queryParams}`, babyData);
+      const response = await baseApi.post<CreateBabyResponse>(`${this.BASE_PATH}${queryParams}`, babyData);
 
-      return response.data.data;
+      return response.data;
     } catch (error) {
       throw this.handleError(error);
     }
@@ -58,14 +58,9 @@ export class BabyService {
    */
   static async getBabies(params: GetBabiesRequest = {}): Promise<BabyListResponse> {
     try {
-      const queryParams = this.buildQueryParams({
-        ...DEFAULT_BABY_PARAMS,
-        ...params,
-      });
+      const response = await baseApi.get<BabyListResponse>(`${this.BASE_PATH}/my-babies`);
 
-      const response = await baseApi.get<ApiResponse<BabyListResponse>>(`${this.BASE_PATH}?${queryParams.toString()}`);
-
-      return response.data.data;
+      return response.data;
     } catch (error) {
       throw this.handleError(error);
     }
@@ -74,15 +69,15 @@ export class BabyService {
   /**
    * Get baby by ID
    */
-  static async getBabyById(id: string): Promise<Baby> {
+  static async getBabyById(id: string): Promise<BabyDetailResponse> {
     try {
       if (!id || typeof id !== 'string') {
         throw new Error('Baby ID is required');
       }
 
-      const response = await baseApi.get<ApiResponse<BabyDetailResponse>>(`${this.BASE_PATH}/${id}`);
+      const response = await baseApi.get<BabyDetailResponse>(`${this.BASE_PATH}/${id}`);
 
-      return response.data.data;
+      return response.data;
     } catch (error) {
       throw this.handleError(error);
     }
@@ -97,9 +92,9 @@ export class BabyService {
         throw new Error('Baby ID is required');
       }
 
-      const response = await baseApi.patch<ApiResponse<UpdateBabyResponse>>(`${this.BASE_PATH}/${id}`, babyData);
+      const response = await baseApi.patch<UpdateBabyResponse>(`${this.BASE_PATH}/${id}`, babyData);
 
-      return response.data.data;
+      return response.data;
     } catch (error) {
       throw this.handleError(error);
     }
@@ -114,7 +109,7 @@ export class BabyService {
         throw new Error('Baby ID is required');
       }
 
-      await baseApi.delete<ApiResponse<DeleteBabyResponse>>(`${this.BASE_PATH}/${id}`);
+      await baseApi.delete<DeleteBabyResponse>(`${this.BASE_PATH}/${id}`);
     } catch (error) {
       throw this.handleError(error);
     }
@@ -125,17 +120,15 @@ export class BabyService {
   /**
    * Get family members for a baby
    */
-  static async getFamilyMembers(babyId: string): Promise<FamilyMember[]> {
+  static async getFamilyMembers(babyId: string): Promise<FamilyMemberListResponse> {
     try {
       if (!babyId) {
         throw new Error('Baby ID is required');
       }
 
-      const response = await baseApi.get<ApiResponse<FamilyMemberListResponse>>(
-        `${this.BASE_PATH}/${babyId}/family-members`,
-      );
+      const response = await baseApi.get<FamilyMemberListResponse>(`${this.BASE_PATH}/${babyId}/family-members`);
 
-      return response.data.data.data;
+      return response.data;
     } catch (error) {
       throw this.handleError(error);
     }
@@ -150,12 +143,12 @@ export class BabyService {
         throw new Error('Baby ID is required');
       }
 
-      const response = await baseApi.post<ApiResponse<AddFamilyMemberResponse>>(
+      const response = await baseApi.post<AddFamilyMemberResponse>(
         `${this.BASE_PATH}/${babyId}/family-members`,
         memberData,
       );
 
-      return response.data.data;
+      return response.data;
     } catch (error) {
       throw this.handleError(error);
     }
@@ -174,12 +167,12 @@ export class BabyService {
         throw new Error('Baby ID and User ID are required');
       }
 
-      const response = await baseApi.patch<ApiResponse<UpdateFamilyMemberResponse>>(
+      const response = await baseApi.patch<UpdateFamilyMemberResponse>(
         `${this.BASE_PATH}/${babyId}/family-members/${userId}`,
         memberData,
       );
 
-      return response.data.data;
+      return response.data;
     } catch (error) {
       throw this.handleError(error);
     }
@@ -194,11 +187,11 @@ export class BabyService {
         throw new Error('Baby ID and User ID are required');
       }
 
-      const response = await baseApi.delete<ApiResponse<RemoveFamilyMemberResponse>>(
+      const response = await baseApi.delete<RemoveFamilyMemberResponse>(
         `${this.BASE_PATH}/${babyId}/family-members/${userId}`,
       );
 
-      return response.data.data;
+      return response.data;
     } catch (error) {
       throw this.handleError(error);
     }
@@ -216,12 +209,12 @@ export class BabyService {
         throw new Error('Baby ID is required');
       }
 
-      const response = await baseApi.post<ApiResponse<InviteFamilyMemberResponse>>(
+      const response = await baseApi.post<InviteFamilyMemberResponse>(
         `${this.BASE_PATH}/${babyId}/invite-family-member`,
         invitationData,
       );
 
-      return response.data.data;
+      return response.data;
     } catch (error) {
       throw this.handleError(error);
     }
@@ -230,17 +223,15 @@ export class BabyService {
   /**
    * Get primary caregivers for a baby
    */
-  static async getPrimaryCaregivers(babyId: string): Promise<FamilyMember[]> {
+  static async getPrimaryCaregivers(babyId: string): Promise<PrimaryCaregiversResponse> {
     try {
       if (!babyId) {
         throw new Error('Baby ID is required');
       }
 
-      const response = await baseApi.get<ApiResponse<PrimaryCaregiversResponse>>(
-        `${this.BASE_PATH}/${babyId}/primary-caregivers`,
-      );
+      const response = await baseApi.get<PrimaryCaregiversResponse>(`${this.BASE_PATH}/${babyId}/primary-caregivers`);
 
-      return response.data.data.data;
+      return response.data;
     } catch (error) {
       throw this.handleError(error);
     }
@@ -262,17 +253,13 @@ export class BabyService {
         formData.append('file', file);
       }
 
-      const response = await baseApi.post<ApiResponse<UploadAvatarResponse>>(
-        `${this.BASE_PATH}/${babyId}/avatar`,
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
+      const response = await baseApi.post<UploadAvatarResponse>(`${this.BASE_PATH}/${babyId}/avatar`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
         },
-      );
+      });
 
-      return response.data.data;
+      return response.data;
     } catch (error) {
       throw this.handleError(error);
     }
@@ -291,11 +278,11 @@ export class BabyService {
       const queryParams = this.buildQueryParams(params);
       const query = queryParams.toString();
 
-      const response = await baseApi.get<ApiResponse<BabiesByRelationResponse>>(
+      const response = await baseApi.get<BabiesByRelationResponse>(
         `${this.BASE_PATH}/by-relation/${relationType}${query ? `?${query}` : ''}`,
       );
 
-      return response.data.data;
+      return response.data;
     } catch (error) {
       throw this.handleError(error);
     }
@@ -304,11 +291,11 @@ export class BabyService {
   /**
    * Get user statistics
    */
-  static async getBabyStatistics(): Promise<BabyStatistics> {
+  static async getBabyStatistics(): Promise<BabyStatisticsResponse> {
     try {
-      const response = await baseApi.get<ApiResponse<BabyStatisticsResponse>>(`${this.BASE_PATH}/statistics`);
+      const response = await baseApi.get<BabyStatisticsResponse>(`${this.BASE_PATH}/statistics`);
 
-      return response.data.data.data;
+      return response.data;
     } catch (error) {
       throw this.handleError(error);
     }

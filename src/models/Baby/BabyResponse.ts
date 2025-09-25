@@ -1,59 +1,33 @@
 // src/models/Baby/BabyResponse.ts
 
+import { ApiResponse } from '@/types/api';
 import { Baby, BabyStatistics, FamilyMember } from './BabyModel';
-
-export interface ApiResponse<T> {
-  data: T;
-  message?: string;
-  statusCode: number;
-}
-
-export interface PaginationMeta {
-  page: number;
-  limit: number;
-  itemCount: number;
-  pageCount: number;
-  hasPreviousPage: boolean;
-  hasNextPage: boolean;
-}
-
-export interface GetAllResponse<T> {
-  data: T[];
-  meta?: PaginationMeta;
-}
 
 export interface GetOneResponse<T> {
   data: T;
 }
 
 // Baby-specific responses
-export interface BabyListResponse {
-  data: Baby[];
-  total: number;
-  hasNextPage: boolean;
-}
+export interface BabyListResponse extends ApiResponse<Baby[]> {}
 
-export interface BabyDetailResponse extends Baby {}
+export interface BabyDetailResponse extends ApiResponse<Baby> {}
 
-export interface CreateBabyResponse extends Baby {}
+export interface CreateBabyResponse extends ApiResponse<Baby> {}
 
-export interface UpdateBabyResponse extends Baby {}
+export interface UpdateBabyResponse extends ApiResponse<Baby> {}
 
 export interface DeleteBabyResponse {
   message: string;
 }
 
 // Family member responses
-export interface FamilyMemberListResponse {
-  data: FamilyMember[];
-  total: number;
-}
+export interface FamilyMemberListResponse extends ApiResponse<FamilyMember[]> {}
 
-export interface AddFamilyMemberResponse extends Baby {}
+export interface AddFamilyMemberResponse extends ApiResponse<Baby> {}
 
-export interface UpdateFamilyMemberResponse extends Baby {}
+export interface UpdateFamilyMemberResponse extends ApiResponse<Baby> {}
 
-export interface RemoveFamilyMemberResponse extends Baby {}
+export interface RemoveFamilyMemberResponse extends ApiResponse<Baby> {}
 
 export interface InviteFamilyMemberResponse {
   invitationId: string;
@@ -61,27 +35,19 @@ export interface InviteFamilyMemberResponse {
 }
 
 // Media upload responses
-export interface UploadAvatarResponse extends Baby {}
+export interface UploadAvatarResponse extends ApiResponse<Baby> {}
 
 // Statistics responses
-export interface BabyStatisticsResponse {
-  data: BabyStatistics;
-}
+export interface BabyStatisticsResponse extends ApiResponse<BabyStatistics> {}
 
 export interface RelationStatisticsResponse {
   data: Baby[];
 }
 
 // Special query responses
-export interface PrimaryCaregiversResponse {
-  data: FamilyMember[];
-}
+export interface PrimaryCaregiversResponse extends ApiResponse<FamilyMember[]> {}
 
-export interface BabiesByRelationResponse {
-  data: Baby[];
-  total: number;
-  hasNextPage: boolean;
-}
+export interface BabiesByRelationResponse extends ApiResponse<Baby[]> {}
 
 // Search responses
 export interface SearchBabiesResponse {

@@ -480,7 +480,7 @@ const CollectionDetailSheet: React.FC<{
       </View>
 
       {/* Details */}
-      <View className='space-y-4'>
+      <View className='flex flex-col gap-4'>
         <View>
           <Text className='text-lg font-semibold text-gray-800 mb-2'>Description</Text>
           <Text className='text-gray-600 leading-6'>{collection.badge?.description || 'No description available'}</Text>
@@ -529,7 +529,7 @@ const CollectionDetailSheet: React.FC<{
       </View>
 
       {/* Actions */}
-      <View className='flex-row space-x-3 mt-8'>
+      <View className='flex-row flex gap-3 mt-8'>
         <TouchableOpacity onPress={onEdit} className='flex-1 bg-gray-100 py-4 rounded-xl items-center'>
           <Text className='text-gray-700 font-semibold'>Edit Details</Text>
         </TouchableOpacity>

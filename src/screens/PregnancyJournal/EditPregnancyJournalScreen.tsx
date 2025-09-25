@@ -192,7 +192,7 @@ export const EditJournalScreen: React.FC<EditJournalScreenProps> = ({ route }) =
           <View className='mx-4 mt-6'>
             <Text className='text-lg font-semibold text-gray-900 mb-6'>Thông tin cơ bản</Text>
 
-            <View className='space-y-5'>
+            <View className='flex flex-col gap-5s'>
               <View>
                 <Text className='text-sm font-medium text-gray-700 mb-2'>Tên nhật ký *</Text>
                 <View className='bg-gray-50 rounded-xl px-4 py-4 border border-gray-200'>
@@ -238,7 +238,7 @@ export const EditJournalScreen: React.FC<EditJournalScreenProps> = ({ route }) =
           <View className='mx-4 mt-6'>
             <Text className='text-lg font-semibold text-gray-900 mb-6'>Thông tin bé yêu</Text>
 
-            <View className='space-y-5'>
+            <View className='flex flex-col gap-5s'>
               <View>
                 <Text className='text-sm font-medium text-gray-700 mb-2'>Biệt danh của bé</Text>
                 <View className='bg-gray-50 rounded-xl px-4 py-4 border border-gray-200'>
@@ -277,7 +277,7 @@ export const EditJournalScreen: React.FC<EditJournalScreenProps> = ({ route }) =
                 </View>
               </View>
 
-              <View className='flex-row space-x-3'>
+              <View className='flex-row flex gap-3'>
                 <View className='flex-1'>
                   <Text className='text-sm font-medium text-gray-700 mb-2'>Cân nặng ước tính (g)</Text>
                   <View className='bg-gray-50 rounded-xl px-4 py-4 border border-gray-200'>
@@ -313,7 +313,7 @@ export const EditJournalScreen: React.FC<EditJournalScreenProps> = ({ route }) =
           <View className='mx-4 mt-6'>
             <Text className='text-lg font-semibold text-gray-900 mb-6'>Thông tin thai kỳ</Text>
 
-            <View className='space-y-5'>
+            <View className='flex flex-col gap-5s'>
               <View>
                 <Text className='text-sm font-medium text-gray-700 mb-2'>Ngày bắt đầu thai kỳ *</Text>
                 <TouchableOpacity
