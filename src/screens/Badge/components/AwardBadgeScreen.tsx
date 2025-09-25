@@ -9,7 +9,17 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import Icon from '@react-native-vector-icons/fontawesome6';
 import { format, formatISO } from 'date-fns';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Alert, Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Alert,
+  Modal,
+  Platform,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import Animated, {
   FadeInDown,
   FadeInUp,
@@ -46,6 +56,7 @@ const AwardBadgeScreen: React.FC<Props> = ({ navigation, route }) => {
   });
 
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [tempDate, setTempDate] = useState<Date>(new Date());
   const [selectedBadge, setSelectedBadge] = useState<Badge | null>(null);
   const [badgeSheetRef, setBadgeSheetRef] = useState<BottomSheetModal | null>(null);
   const [errors, setErrors] = useState<string[]>([]);
@@ -158,6 +169,21 @@ const AwardBadgeScreen: React.FC<Props> = ({ navigation, route }) => {
     [badgeSheetRef],
   );
 
+  // Date Picker Handlers
+  const handleDatePickerOpen = () => {
+    setTempDate(formData.completedAt as Date);
+    setShowDatePicker(true);
+  };
+
+  const handleDatePickerSave = () => {
+    setFormData((prev) => ({ ...prev, completedAt: tempDate }));
+    setShowDatePicker(false);
+  };
+
+  const handleDatePickerClose = () => {
+    setShowDatePicker(false);
+  };
+
   // Animation styles
   const formAnimatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: formScale.value }],
@@ -242,7 +268,7 @@ const AwardBadgeScreen: React.FC<Props> = ({ navigation, route }) => {
     <Animated.View entering={FadeInUp.delay(300)} className='mb-6'>
       <Text className='text-lg font-semibold text-gray-800 mb-3'>Completion Date</Text>
       <TouchableOpacity
-        onPress={() => setShowDatePicker(true)}
+        onPress={handleDatePickerOpen}
         className='bg-white rounded-xl p-4 flex-row items-center justify-between border border-gray-200'
       >
         <View className='flex-row items-center'>
@@ -271,6 +297,66 @@ const AwardBadgeScreen: React.FC<Props> = ({ navigation, route }) => {
       <Text className='text-gray-500 text-sm mt-2'>{formData.submissionNote.length}/500 characters</Text>
     </Animated.View>
   );
+
+  const renderDatePicker = () => {
+    if (Platform.OS === 'ios') {
+      return (
+        <Modal visible={showDatePicker} transparent animationType='slide' onRequestClose={handleDatePickerClose}>
+          <View className='flex-1 justify-end bg-black bg-opacity-50'>
+            <View className='bg-white rounded-t-3xl'>
+              <View className='flex-row justify-between items-center px-6 py-4 bg-white border-b border-gray-100'>
+                <TouchableOpacity onPress={handleDatePickerClose}>
+                  <Text className='text-blue-600 font-medium text-base'>Cancel</Text>
+                </TouchableOpacity>
+
+                <Text className='font-semibold text-lg text-gray-900'>Select Date</Text>
+
+                <TouchableOpacity onPress={handleDatePickerSave}>
+                  <Text className='font-medium text-base text-blue-600'>Save</Text>
+                </TouchableOpacity>
+              </View>
+
+              <View className='p-4'>
+                <DateTimePicker
+                  value={tempDate}
+                  mode='date'
+                  display='spinner'
+                  maximumDate={new Date()}
+                  minimumDate={new Date(1900, 0, 1)}
+                  onChange={(event, selectedDate) => {
+                    if (selectedDate) {
+                      setTempDate(selectedDate);
+                    }
+                  }}
+                  textColor='#000000'
+                />
+              </View>
+            </View>
+          </View>
+        </Modal>
+      );
+    }
+
+    // Android
+    return (
+      showDatePicker && (
+        <DateTimePicker
+          value={tempDate}
+          mode='date'
+          display='default'
+          maximumDate={new Date()}
+          minimumDate={new Date(1900, 0, 1)}
+          onChange={(event, selectedDate) => {
+            setShowDatePicker(false);
+            if (selectedDate && event.type === 'set') {
+              setFormData((prev) => ({ ...prev, completedAt: selectedDate }));
+            }
+          }}
+          textColor='#000000'
+        />
+      )
+    );
+  };
 
   return (
     <SafeAreaView className='flex-1 bg-gray-50'>
@@ -334,24 +420,10 @@ const AwardBadgeScreen: React.FC<Props> = ({ navigation, route }) => {
       </Animated.View>
 
       {/* Date Picker Modal */}
-
-      <DateTimePicker
-        value={
-          (typeof formData.completedAt === 'string' ? new Date(formData.completedAt) : formData.completedAt) ||
-          new Date()
-        }
-        mode='date'
-        display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-        onChange={(event, date) => {
-          setShowDatePicker(false);
-          setFormData((prev) => ({ ...prev, completedAt: date as Date }));
-        }}
-        maximumDate={new Date()}
-        minimumDate={new Date(1900, 0, 1)}
-      />
+      {renderDatePicker()}
 
       {/* Badge Selection Bottom Sheet */}
-      <BottomSheetModal
+      {/* <BottomSheetModal
         ref={setBadgeSheetRef}
         index={1}
         snapPoints={['50%', '90%']}
@@ -364,7 +436,7 @@ const AwardBadgeScreen: React.FC<Props> = ({ navigation, route }) => {
           onClose={() => badgeSheetRef?.close()}
           isLoading={isLoading}
         />
-      </BottomSheetModal>
+      </BottomSheetModal> */}
     </SafeAreaView>
   );
 };

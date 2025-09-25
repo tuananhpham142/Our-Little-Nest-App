@@ -204,7 +204,7 @@ const BabyListScreen: React.FC = () => {
             {/* Quick Actions */}
             <View className='items-end'>
               <TouchableOpacity
-                onPress={() => navigation.navigate('Badges', { babyId: baby.id })}
+                onPress={() => navigation.navigate('BadgeList', { babyId: baby.id })}
                 className='bg-orange-100 p-2 rounded-xl mb-2 flex-row items-center'
               >
                 <Icon iconStyle='solid' name='trophy' size={12} color='#EA580C' />

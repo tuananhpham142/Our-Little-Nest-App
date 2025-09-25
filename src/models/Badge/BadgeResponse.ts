@@ -1,22 +1,14 @@
+import { AxiosResponse } from 'axios';
 // src/models/Badge/BadgeResponse.ts
 
+import { ApiGetByPageResponse, ApiResponse } from '@/types/api';
 import { Badge, BadgeProgress, BadgeRecommendation, BadgeStatistics } from './BadgeModel';
 
 // List Response
-export interface BadgeListResponse {
-  data: Badge[];
-  total: number;
-  page: number;
-  limit: number;
-  hasNextPage: boolean;
-  hasPrevPage?: boolean;
-  totalPages?: number;
-}
+export interface BadgeListResponse extends ApiGetByPageResponse<Badge> {}
 
 // Detail Response
-export interface BadgeDetailResponse {
-  data: Badge;
-}
+export interface BadgeDetailResponse extends ApiResponse<Badge> {}
 
 // Statistics Response
 export interface BadgeStatisticsResponse {
@@ -35,39 +27,19 @@ export interface BadgeProgressResponse {
 }
 
 // Create/Update Response
-export interface BadgeMutationResponse {
-  data: Badge;
-  message: string;
-}
+export interface BadgeMutationResponse extends ApiResponse<Badge> {}
 
 // Activation Response
-export interface BadgeActivationResponse {
-  data: Badge;
-  isActive: boolean;
-  message: string;
-}
+export interface BadgeActivationResponse extends ApiResponse<Badge> {}
 
 // Custom Badges Response
-export interface CustomBadgesResponse {
-  data: Badge[];
-  total: number;
-  remaining: number; // How many more custom badges user can create
-}
+export interface CustomBadgesResponse extends ApiResponse<Badge[]> {}
 
 // Category Badges Response
-export interface CategoryBadgesResponse {
-  category: string;
-  badges: Badge[];
-  total: number;
-}
+export interface CategoryBadgesResponse extends ApiResponse<Badge[]> {}
 
 // Age-based Badges Response
-export interface AgeBadgesResponse {
-  ageInMonths: number;
-  badges: Badge[];
-  total: number;
-  ageGroup: string;
-}
+export interface AgeBadgesResponse extends AxiosResponse<Badge[]> {}
 
 // API Error Response
 export interface ApiErrorResponse {

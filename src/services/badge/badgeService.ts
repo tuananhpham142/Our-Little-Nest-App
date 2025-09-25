@@ -2,24 +2,23 @@
 
 import { Badge, BadgeRecommendation, BadgeStatistics } from '@/models/Badge/BadgeModel';
 import {
-    CreateBadgeRequest,
-    DEFAULT_BADGE_PARAMS,
-    GetBadgeRecommendationsRequest,
-    GetBadgesRequest,
-    UpdateBadgeRequest
+  CreateBadgeRequest,
+  DEFAULT_BADGE_PARAMS,
+  GetBadgeRecommendationsRequest,
+  GetBadgesRequest,
+  UpdateBadgeRequest,
 } from '@/models/Badge/BadgeRequest';
 import {
-    AgeBadgesResponse,
-    BadgeActivationResponse,
-    BadgeDetailResponse,
-    BadgeListResponse,
-    BadgeMutationResponse,
-    BadgeRecommendationsResponse,
-    BadgeStatisticsResponse,
-    CategoryBadgesResponse,
-    CustomBadgesResponse,
+  AgeBadgesResponse,
+  BadgeActivationResponse,
+  BadgeDetailResponse,
+  BadgeListResponse,
+  BadgeMutationResponse,
+  BadgeRecommendationsResponse,
+  BadgeStatisticsResponse,
+  CategoryBadgesResponse,
+  CustomBadgesResponse,
 } from '@/models/Badge/BadgeResponse';
-import { ApiResponse } from '@/types/api';
 import { baseApi } from '../baseApi';
 
 export class BadgeService {
@@ -37,23 +36,9 @@ export class BadgeService {
         ...params,
       });
 
-      const cacheKey = `badges:${queryParams.toString()}`;
-      const cached = this.getCachedData(cacheKey);
-      if (cached && !params.createdBy) {
-        // Don't cache user-specific queries
-        return cached;
-      }
+      const response = await baseApi.get<BadgeListResponse>(`${this.BASE_PATH}?${queryParams.toString()}`);
 
-      const response = await baseApi.get<ApiResponse<BadgeListResponse>>(`${this.BASE_PATH}?${queryParams.toString()}`);
-
-      const data = response.data.data;
-
-      // Cache non-personalized queries
-      if (!params.createdBy) {
-        this.setCachedData(cacheKey, data);
-      }
-
-      return data;
+      return response.data;
     } catch (error) {
       throw this.handleError(error);
     }
@@ -68,16 +53,9 @@ export class BadgeService {
         throw new Error('Badge ID is required');
       }
 
-      const cacheKey = `badge:${id}`;
-      const cached = this.getCachedData(cacheKey);
-      if (cached) {
-        return cached;
-      }
+      const response = await baseApi.get<BadgeDetailResponse>(`${this.BASE_PATH}/${id}`);
 
-      const response = await baseApi.get<ApiResponse<BadgeDetailResponse>>(`${this.BASE_PATH}/${id}`);
-
-      const badge = response.data.data.data;
-      this.setCachedData(cacheKey, badge);
+      const badge = response.data.data;
 
       return badge;
     } catch (error) {
@@ -90,12 +68,9 @@ export class BadgeService {
    */
   static async createBadge(data: CreateBadgeRequest): Promise<Badge> {
     try {
-      const response = await baseApi.post<ApiResponse<BadgeMutationResponse>>(this.BASE_PATH, data);
+      const response = await baseApi.post<BadgeMutationResponse>(this.BASE_PATH, data);
 
-      // Clear cache after creation
-      this.clearCache();
-
-      return response.data.data.data;
+      return response.data.data;
     } catch (error) {
       throw this.handleError(error);
     }
@@ -110,12 +85,9 @@ export class BadgeService {
         throw new Error('Badge ID is required');
       }
 
-      const response = await baseApi.patch<ApiResponse<BadgeMutationResponse>>(`${this.BASE_PATH}/${id}`, data);
+      const response = await baseApi.patch<BadgeMutationResponse>(`${this.BASE_PATH}/${id}`, data);
 
-      // Clear cache after update
-      this.clearCache();
-
-      return response.data.data.data;
+      return response.data.data;
     } catch (error) {
       throw this.handleError(error);
     }
@@ -131,9 +103,6 @@ export class BadgeService {
       }
 
       await baseApi.delete(`${this.BASE_PATH}/${id}`);
-
-      // Clear cache after deletion
-      this.clearCache();
     } catch (error) {
       throw this.handleError(error);
     }
@@ -142,22 +111,11 @@ export class BadgeService {
   /**
    * Get badges by category
    */
-  static async getBadgesByCategory(category: string): Promise<Badge[]> {
+  static async getBadgesByCategory(category: string): Promise<CategoryBadgesResponse> {
     try {
-      const cacheKey = `badges:category:${category}`;
-      const cached = this.getCachedData(cacheKey);
-      if (cached) {
-        return cached;
-      }
+      const response = await baseApi.get<CategoryBadgesResponse>(`${this.BASE_PATH}/by-category/${category}`);
 
-      const response = await baseApi.get<ApiResponse<CategoryBadgesResponse>>(
-        `${this.BASE_PATH}/by-category/${category}`,
-      );
-
-      const badges = response.data.data.badges;
-      this.setCachedData(cacheKey, badges);
-
-      return badges;
+      return response.data;
     } catch (error) {
       throw this.handleError(error);
     }
@@ -166,24 +124,15 @@ export class BadgeService {
   /**
    * Get badges suitable for age
    */
-  static async getBadgesForAge(ageInMonths: number): Promise<Badge[]> {
+  static async getBadgesForAge(ageInMonths: number): Promise<AgeBadgesResponse> {
     try {
       if (ageInMonths < 0) {
         throw new Error('Age must be positive');
       }
 
-      const cacheKey = `badges:age:${ageInMonths}`;
-      const cached = this.getCachedData(cacheKey);
-      if (cached) {
-        return cached;
-      }
+      const response = await baseApi.get<AgeBadgesResponse>(`${this.BASE_PATH}/suitable-for-age/${ageInMonths}`);
 
-      const response = await baseApi.get<ApiResponse<AgeBadgesResponse>>(
-        `${this.BASE_PATH}/suitable-for-age/${ageInMonths}`,
-      );
-
-      const badges = response.data.data.badges;
-      this.setCachedData(cacheKey, badges);
+      const badges = response.data;
 
       return badges;
     } catch (error) {
@@ -196,9 +145,9 @@ export class BadgeService {
    */
   static async getMyCustomBadges(): Promise<Badge[]> {
     try {
-      const response = await baseApi.get<ApiResponse<CustomBadgesResponse>>(`${this.BASE_PATH}/my-custom`);
+      const response = await baseApi.get<CustomBadgesResponse>(`${this.BASE_PATH}/my-custom`);
 
-      return response.data.data.data;
+      return response.data.data;
     } catch (error) {
       throw this.handleError(error);
     }
@@ -209,16 +158,9 @@ export class BadgeService {
    */
   static async getStatistics(): Promise<BadgeStatistics> {
     try {
-      const cacheKey = 'badges:statistics';
-      const cached = this.getCachedData(cacheKey);
-      if (cached) {
-        return cached;
-      }
+      const response = await baseApi.get<BadgeStatisticsResponse>(`${this.BASE_PATH}/statistics`);
 
-      const response = await baseApi.get<ApiResponse<BadgeStatisticsResponse>>(`${this.BASE_PATH}/statistics`);
-
-      const stats = response.data.data.data;
-      this.setCachedData(cacheKey, stats, 60 * 60 * 1000); // Cache for 1 hour
+      const stats = response.data.data;
 
       return stats;
     } catch (error) {
@@ -235,12 +177,9 @@ export class BadgeService {
         throw new Error('Badge ID is required');
       }
 
-      const response = await baseApi.patch<ApiResponse<BadgeActivationResponse>>(`${this.BASE_PATH}/${id}/activate`);
+      const response = await baseApi.patch<BadgeActivationResponse>(`${this.BASE_PATH}/${id}/activate`);
 
-      // Clear cache after activation
-      this.clearCache();
-
-      return response.data.data.data;
+      return response.data.data;
     } catch (error) {
       throw this.handleError(error);
     }
@@ -255,12 +194,9 @@ export class BadgeService {
         throw new Error('Badge ID is required');
       }
 
-      const response = await baseApi.patch<ApiResponse<BadgeActivationResponse>>(`${this.BASE_PATH}/${id}/deactivate`);
+      const response = await baseApi.patch<BadgeActivationResponse>(`${this.BASE_PATH}/${id}/deactivate`);
 
-      // Clear cache after deactivation
-      this.clearCache();
-
-      return response.data.data.data;
+      return response.data.data;
     } catch (error) {
       throw this.handleError(error);
     }
@@ -273,11 +209,11 @@ export class BadgeService {
     try {
       const queryParams = this.buildQueryParams(params);
 
-      const response = await baseApi.get<ApiResponse<BadgeRecommendationsResponse>>(
+      const response = await baseApi.get<BadgeRecommendationsResponse>(
         `${this.BASE_PATH}/recommendations?${queryParams.toString()}`,
       );
 
-      return response.data.data.data;
+      return response.data.data;
     } catch (error) {
       throw this.handleError(error);
     }
@@ -300,43 +236,6 @@ export class BadgeService {
     });
 
     return queryParams;
-  }
-
-  /**
-   * Get cached data if available and not expired
-   */
-  private static getCachedData(key: string): any | null {
-    const cached = this.cache.get(key);
-    if (cached) {
-      const isExpired = Date.now() - cached.timestamp > this.CACHE_DURATION;
-      if (!isExpired) {
-        return cached.data;
-      }
-      this.cache.delete(key);
-    }
-    return null;
-  }
-
-  /**
-   * Set cached data
-   */
-  private static setCachedData(key: string, data: any, duration?: number): void {
-    this.cache.set(key, {
-      data,
-      timestamp: Date.now(),
-    });
-
-    // Auto-clear cache after duration
-    setTimeout(() => {
-      this.cache.delete(key);
-    }, duration || this.CACHE_DURATION);
-  }
-
-  /**
-   * Clear all cache
-   */
-  static clearCache(): void {
-    this.cache.clear();
   }
 
   /**

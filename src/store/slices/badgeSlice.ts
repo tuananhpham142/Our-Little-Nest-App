@@ -112,7 +112,7 @@ export const fetchBadgesByCategory = createAsyncThunk(
   async (category: BadgeCategory, { rejectWithValue }) => {
     try {
       const response = await BadgeService.getBadgesByCategory(category);
-      return { category, badges: response };
+      return { category, badges: response.data };
     } catch (error: any) {
       return rejectWithValue(error.message || 'Failed to fetch badges by category');
     }
@@ -400,7 +400,7 @@ const badgeSlice = createSlice({
 
       // Fetch badges for age
       .addCase(fetchBadgesForAge.fulfilled, (state, action) => {
-        state.suitableForAgeBadges = action.payload;
+        state.suitableForAgeBadges = action.payload.data;
         state.error = null;
       })
 

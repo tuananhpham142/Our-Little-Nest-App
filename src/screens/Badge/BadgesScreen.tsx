@@ -13,7 +13,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import Animated, { FadeInDown, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
+import Animated, { FadeInDown, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 
 import AppLayout from '@/components/layout/AppLayout';
 import { useBadges } from '@/hooks/useBadge';
@@ -43,7 +43,6 @@ const BadgesScreen: React.FC<Props> = ({ navigation }) => {
   const [badgeDetailRef, setBadgeDetailRef] = useState<BottomSheetModal | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const searchOpacity = useSharedValue(1);
   const searchInputRef = useRef<TextInput>(null);
 
   // Debounced search
@@ -252,7 +251,7 @@ const BadgesScreen: React.FC<Props> = ({ navigation }) => {
           </TouchableOpacity>
         ) : (
           <TouchableOpacity
-            onPress={() => navigation.navigate('CreateBadge')}
+            onPress={() => navigation.navigate('AwardBadge')}
             className='bg-blue-500 px-6 py-3 rounded-full'
             accessibilityRole='button'
             accessibilityLabel='Create your first badge'
@@ -298,7 +297,7 @@ const BadgesScreen: React.FC<Props> = ({ navigation }) => {
           <View className='flex-row items-center justify-between mb-4'>
             <Text className='text-2xl font-bold text-gray-800'>Badges</Text>
             <TouchableOpacity
-              onPress={() => navigation.navigate('CreateBadge')}
+              onPress={() => navigation.navigate('AwardBadge')}
               className='bg-blue-500 px-4 py-2 rounded-full flex-row items-center'
             >
               <Icon name='plus' iconStyle='solid' size={14} color='white' />
@@ -371,17 +370,17 @@ const BadgesScreen: React.FC<Props> = ({ navigation }) => {
         )}
 
         {/* Filter Bottom Sheet */}
-        <BottomSheetModal
+        {/* <BottomSheetModal
           ref={setFilterSheetRef}
           index={1}
           snapPoints={['25%', '80%']}
           backdropComponent={({ style }) => <View style={[style, { backgroundColor: 'rgba(0,0,0,0.5)' }]} />}
         >
           <FilterBottomSheet filters={filters} onApplyFilters={setFilters} onClose={() => filterSheetRef?.close()} />
-        </BottomSheetModal>
+        </BottomSheetModal> */}
 
         {/* Badge Detail Bottom Sheet */}
-        <BottomSheetModal
+        {/* <BottomSheetModal
           ref={setBadgeDetailRef}
           index={1}
           snapPoints={['50%', '90%']}
@@ -397,7 +396,7 @@ const BadgesScreen: React.FC<Props> = ({ navigation }) => {
               }}
             />
           )}
-        </BottomSheetModal>
+        </BottomSheetModal> */}
       </View>
     </AppLayout>
   );

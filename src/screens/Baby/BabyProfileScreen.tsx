@@ -156,7 +156,7 @@ const BabyProfileScreen: React.FC<BabyProfileScreenProps> = ({ route }) => {
 
           <View className='flex-row'>
             <TouchableOpacity
-              onPress={() => navigation.navigate('Badges', { babyId })}
+              onPress={() => navigation.navigate('BadgeList', { babyId })}
               className='bg-white bg-opacity-20 p-2 rounded-full mr-2 flex-row items-center justify-center'
             >
               <Icon iconStyle='solid' name='trophy' size={18} color='#ffffff' />

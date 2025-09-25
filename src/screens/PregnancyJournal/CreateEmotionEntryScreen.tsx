@@ -9,7 +9,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import Icon from '@react-native-vector-icons/fontawesome6';
 import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
-import { Alert, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, Modal, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useDispatch } from 'react-redux';
 
 interface EmotionEntryScreenProps {
@@ -78,7 +78,14 @@ const MOOD_OPTIONS: MoodOption[] = [
   },
 
   // Low Energy - Negative
-  { type: MoodType.TIRED, label: 'Mệt mỏi', color: '#0891B2', bgColor: '#CFFAFE', energy: 'low', feeling: 'negative' },
+  {
+    type: MoodType.TIRED,
+    label: 'Mệt mỏi',
+    color: '#0891B2',
+    bgColor: '#CFFAFE',
+    energy: 'low',
+    feeling: 'negative',
+  },
 
   // Low Energy - Positive
   {
@@ -112,6 +119,7 @@ export const EmotionEntryScreen: React.FC<EmotionEntryScreenProps> = ({ route })
   });
 
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [tempDate, setTempDate] = useState<Date>(new Date());
   const [errors, setErrors] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -170,6 +178,21 @@ export const EmotionEntryScreen: React.FC<EmotionEntryScreenProps> = ({ route })
     }));
   };
 
+  // Date Picker Handlers
+  const handleDatePickerOpen = () => {
+    setTempDate(formData.date);
+    setShowDatePicker(true);
+  };
+
+  const handleDatePickerSave = () => {
+    setFormData((prev) => ({ ...prev, date: tempDate }));
+    setShowDatePicker(false);
+  };
+
+  const handleDatePickerClose = () => {
+    setShowDatePicker(false);
+  };
+
   const getMoodIcon = (mood: MoodOption) => {
     if (mood.energy === 'high' && mood.feeling === 'negative') return '😰';
     if (mood.energy === 'high' && mood.feeling === 'positive') return '😊';
@@ -177,6 +200,43 @@ export const EmotionEntryScreen: React.FC<EmotionEntryScreenProps> = ({ route })
     if (mood.energy === 'low' && mood.feeling === 'negative') return '😴';
     if (mood.energy === 'low' && mood.feeling === 'positive') return '😌';
     return '😐';
+  };
+
+  const renderDatePicker = () => {
+    return (
+      <Modal visible={showDatePicker} transparent animationType='slide' onRequestClose={handleDatePickerClose}>
+        <View className='flex-1 justify-end bg-black bg-opacity-50'>
+          <View className='bg-white rounded-t-3xl'>
+            <View className='flex-row justify-between items-center px-6 py-4 bg-white border-b border-gray-100'>
+              <TouchableOpacity onPress={handleDatePickerClose}>
+                <Text className='text-blue-600 font-medium text-base'>Đóng</Text>
+              </TouchableOpacity>
+
+              <Text className='font-semibold text-lg text-gray-900'>Chọn ngày</Text>
+
+              <TouchableOpacity onPress={handleDatePickerSave}>
+                <Text className='font-medium text-base text-blue-600'>Lưu</Text>
+              </TouchableOpacity>
+            </View>
+
+            <View className='p-4'>
+              <DateTimePicker
+                value={tempDate}
+                mode='date'
+                display='spinner'
+                maximumDate={new Date()}
+                onChange={(event, selectedDate) => {
+                  if (selectedDate) {
+                    setTempDate(selectedDate);
+                  }
+                }}
+                textColor='#000000'
+              />
+            </View>
+          </View>
+        </View>
+      </Modal>
+    );
   };
 
   if (!journal) return null;
@@ -221,7 +281,7 @@ export const EmotionEntryScreen: React.FC<EmotionEntryScreenProps> = ({ route })
 
             <TouchableOpacity
               className='bg-gray-50 rounded-xl px-4 py-4 flex-row items-center justify-between border border-gray-200'
-              onPress={() => setShowDatePicker(true)}
+              onPress={handleDatePickerOpen}
             >
               <Text className='text-base text-gray-700 font-medium'>
                 {formData.date.toLocaleDateString('vi-VN', {
@@ -335,19 +395,7 @@ export const EmotionEntryScreen: React.FC<EmotionEntryScreenProps> = ({ route })
         </ScrollView>
 
         {/* Date Picker */}
-        {showDatePicker && (
-          <DateTimePicker
-            value={formData.date}
-            mode='date'
-            display='default'
-            onChange={(event, selectedDate) => {
-              setShowDatePicker(false);
-              if (selectedDate) {
-                setFormData((prev) => ({ ...prev, date: selectedDate }));
-              }
-            }}
-          />
-        )}
+        {renderDatePicker()}
       </View>
     </AppLayout>
   );
