@@ -2,14 +2,15 @@
 
 import { VerificationStatus } from '@/models/Badge/BadgeEnum';
 import {
-    BadgeCollection,
-    BadgeCollectionFilters,
-    BadgeCollectionState,
+  BadgeCollection,
+  BadgeCollectionFilters,
+  BadgeCollectionState,
 } from '@/models/BadgeCollection/BadgeCollectionModel';
 import {
-    CreateBadgeCollectionRequest,
-    GetBadgeCollectionsRequest,
-    UpdateBadgeCollectionRequest,
+  CreateBadgeCollectionRequest,
+  GetBadgeCollectionsRequest,
+  UpdateBadgeCollectionRequest,
+  VerifyBadgeCollectionRequest,
 } from '@/models/BadgeCollection/BadgeCollectionRequest';
 import { BadgeCollectionService } from '@/services/badge/badgeCollectionService';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
@@ -65,6 +66,26 @@ export const fetchBadgeCollections = createAsyncThunk(
   },
 );
 
+export const loadMoreBadgeCollections = createAsyncThunk(
+  'badgeCollections/loadMoreBadgeCollections',
+  async (params: GetBadgeCollectionsRequest, { getState, rejectWithValue }) => {
+    try {
+      const state = getState() as any;
+      const currentPage = state.badgeCollections.pagination.page;
+      const nextPage = currentPage + 1;
+
+      const response = await BadgeCollectionService.getBadgeCollections({
+        ...params,
+        page: nextPage,
+      });
+
+      return { ...response, page: nextPage };
+    } catch (error: any) {
+      return rejectWithValue(error.message || 'Failed to load more collections');
+    }
+  },
+);
+
 export const fetchBadgeCollectionById = createAsyncThunk(
   'badgeCollections/fetchBadgeCollectionById',
   async (id: string, { rejectWithValue }) => {
@@ -103,10 +124,13 @@ export const deleteBadgeCollection = createAsyncThunk(
 
 export const fetchBabyBadges = createAsyncThunk(
   'badgeCollections/fetchBabyBadges',
-  async (babyId: string, { rejectWithValue }) => {
+  async (
+    { babyId, params = {} }: { babyId: string; params?: { verificationStatus?: string } },
+    { rejectWithValue },
+  ) => {
     try {
-      const response = await BadgeCollectionService.getBabyBadges(babyId);
-      return { babyId, badges: response };
+      const response = await BadgeCollectionService.getBabyBadges(babyId, params);
+      return { ...response };
     } catch (error: any) {
       return rejectWithValue(error.message || 'Failed to fetch baby badges');
     }
@@ -139,9 +163,9 @@ export const fetchBabyProgress = createAsyncThunk(
 
 export const fetchPendingVerifications = createAsyncThunk(
   'badgeCollections/fetchPendingVerifications',
-  async (_, { rejectWithValue }) => {
+  async (params: { page?: number; limit?: number } = {}, { rejectWithValue }) => {
     try {
-      const response = await BadgeCollectionService.getPendingVerifications();
+      const response = await BadgeCollectionService.getPendingVerifications(params);
       return response;
     } catch (error: any) {
       return rejectWithValue(error.message || 'Failed to fetch pending verifications');
@@ -151,9 +175,9 @@ export const fetchPendingVerifications = createAsyncThunk(
 
 export const fetchMySubmissions = createAsyncThunk(
   'badgeCollections/fetchMySubmissions',
-  async (_, { rejectWithValue }) => {
+  async (params: { verificationStatus?: string; page?: number; limit?: number } = {}, { rejectWithValue }) => {
     try {
-      const response = await BadgeCollectionService.getMySubmissions();
+      const response = await BadgeCollectionService.getMySubmissions(params);
       return response;
     } catch (error: any) {
       return rejectWithValue(error.message || 'Failed to fetch submissions');
@@ -161,11 +185,23 @@ export const fetchMySubmissions = createAsyncThunk(
   },
 );
 
+export const verifyBadgeCollection = createAsyncThunk(
+  'badgeCollections/verifyBadgeCollection',
+  async ({ id, data }: { id: string; data: VerifyBadgeCollectionRequest }, { rejectWithValue }) => {
+    try {
+      const response = await BadgeCollectionService.verifyBadgeCollection(id, data);
+      return response;
+    } catch (error: any) {
+      return rejectWithValue(error.message || 'Failed to verify badge collection');
+    }
+  },
+);
+
 export const approveBadgeCollection = createAsyncThunk(
   'badgeCollections/approveBadgeCollection',
-  async (id: string, { rejectWithValue }) => {
+  async ({ id, verificationNote }: { id: string; verificationNote?: string }, { rejectWithValue }) => {
     try {
-      const response = await BadgeCollectionService.approveBadgeCollection(id);
+      const response = await BadgeCollectionService.approveBadgeCollection(id, verificationNote);
       return response;
     } catch (error: any) {
       return rejectWithValue(error.message || 'Failed to approve badge collection');
@@ -175,9 +211,9 @@ export const approveBadgeCollection = createAsyncThunk(
 
 export const rejectBadgeCollection = createAsyncThunk(
   'badgeCollections/rejectBadgeCollection',
-  async (id: string, { rejectWithValue }) => {
+  async ({ id, verificationNote }: { id: string; verificationNote?: string }, { rejectWithValue }) => {
     try {
-      const response = await BadgeCollectionService.rejectBadgeCollection(id);
+      const response = await BadgeCollectionService.rejectBadgeCollection(id, verificationNote);
       return response;
     } catch (error: any) {
       return rejectWithValue(error.message || 'Failed to reject badge collection');
@@ -193,6 +229,33 @@ export const uploadBadgeMedia = createAsyncThunk(
       return { collectionId, urls: response };
     } catch (error: any) {
       return rejectWithValue(error.message || 'Failed to upload media');
+    }
+  },
+);
+
+export const fetchBabyTimeline = createAsyncThunk(
+  'badgeCollections/fetchBabyTimeline',
+  async (
+    { babyId, params = {} }: { babyId: string; params?: { startDate?: string; endDate?: string } },
+    { rejectWithValue },
+  ) => {
+    try {
+      const response = await BadgeCollectionService.getBabyTimeline(babyId, params);
+      return { babyId, timeline: response };
+    } catch (error: any) {
+      return rejectWithValue(error.message || 'Failed to fetch baby timeline');
+    }
+  },
+);
+
+export const fetchBadgeRecommendations = createAsyncThunk(
+  'badgeCollections/fetchBadgeRecommendations',
+  async ({ babyId, params = {} }: { babyId: string; params?: { limit?: number } }, { rejectWithValue }) => {
+    try {
+      const response = await BadgeCollectionService.getBadgeRecommendations(babyId, params);
+      return { babyId, recommendations: response };
+    } catch (error: any) {
+      return rejectWithValue(error.message || 'Failed to fetch recommendations');
     }
   },
 );
@@ -332,6 +395,26 @@ const badgeCollectionSlice = createSlice({
         state.error = action.payload as string;
       })
 
+      // Load more badge collections
+      .addCase(loadMoreBadgeCollections.pending, (state) => {
+        state.isLoadingMore = true;
+        state.error = null;
+      })
+      .addCase(loadMoreBadgeCollections.fulfilled, (state, action) => {
+        state.isLoadingMore = false;
+        state.collections = [...state.collections, ...action.payload.data];
+        state.pagination = {
+          ...state.pagination,
+          page: action.payload.page,
+          hasNextPage: action.payload.hasNextPage,
+        };
+        state.error = null;
+      })
+      .addCase(loadMoreBadgeCollections.rejected, (state, action) => {
+        state.isLoadingMore = false;
+        state.error = action.payload as string;
+      })
+
       // Fetch badge collection by ID
       .addCase(fetchBadgeCollectionById.pending, (state) => {
         state.isLoading = true;
@@ -348,7 +431,12 @@ const badgeCollectionSlice = createSlice({
       })
 
       // Update badge collection
+      .addCase(updateBadgeCollection.pending, (state) => {
+        state.isSubmitting = true;
+        state.error = null;
+      })
       .addCase(updateBadgeCollection.fulfilled, (state, action) => {
+        state.isSubmitting = false;
         const updateList = (list: BadgeCollection[]) => {
           const index = list.findIndex((c) => c.id === action.payload.id);
           if (index !== -1) {
@@ -363,6 +451,10 @@ const badgeCollectionSlice = createSlice({
           state.currentCollection = action.payload;
         }
         state.error = null;
+      })
+      .addCase(updateBadgeCollection.rejected, (state, action) => {
+        state.isSubmitting = false;
+        state.error = action.payload as string;
       })
 
       // Delete badge collection
@@ -399,13 +491,33 @@ const badgeCollectionSlice = createSlice({
 
       // Fetch pending verifications
       .addCase(fetchPendingVerifications.fulfilled, (state, action) => {
-        state.pendingVerifications = action.payload;
+        state.pendingVerifications = action.payload.data;
         state.error = null;
       })
 
       // Fetch my submissions
       .addCase(fetchMySubmissions.fulfilled, (state, action) => {
-        state.mySubmissions = action.payload;
+        state.mySubmissions = action.payload.data;
+        state.error = null;
+      })
+
+      // Verify badge collection (approve/reject)
+      .addCase(verifyBadgeCollection.fulfilled, (state, action) => {
+        const updateList = (list: BadgeCollection[]) => {
+          const index = list.findIndex((c) => c.id === action.payload.id);
+          if (index !== -1) {
+            list[index] = action.payload;
+          }
+        };
+
+        updateList(state.collections);
+
+        // Remove from pending
+        state.pendingVerifications = state.pendingVerifications.filter((c) => c.id !== action.payload.id);
+
+        if (state.currentCollection?.id === action.payload.id) {
+          state.currentCollection = action.payload;
+        }
         state.error = null;
       })
 

@@ -65,7 +65,7 @@ export const fetchMemberDetails = createAsyncThunk(
   async ({ babyId, userId }: { babyId: string; userId: string }, { rejectWithValue }) => {
     try {
       const familyMembers = await BabyService.getFamilyMembers(babyId);
-      const member = familyMembers.find((m) => m.userId === userId);
+      const member = familyMembers.data.find((m) => m.userId === userId);
 
       if (!member) {
         throw new Error('Family member not found');
@@ -177,7 +177,7 @@ export const validateInvitation = createAsyncThunk(
     try {
       // Check if email is already a family member
       const familyMembers = await BabyService.getFamilyMembers(babyId);
-      const existingMember = familyMembers.find((member) => member.user?.email === email);
+      const existingMember = familyMembers.data.find((member) => member.user?.email === email);
 
       if (existingMember) {
         throw new Error('This person is already a family member');

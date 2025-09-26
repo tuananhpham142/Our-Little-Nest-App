@@ -8,17 +8,17 @@ import { BadgeCategory, BadgeDifficulty } from '@/models/Badge/BadgeEnum';
 import { Badge } from '@/models/Badge/BadgeModel';
 import { BadgeCollection } from '@/models/BadgeCollection/BadgeCollectionModel';
 import {
-    formatCompletionDate,
-    formatVerificationStatus,
-    getVerificationStatusColor,
+  formatCompletionDate,
+  formatVerificationStatus,
+  getVerificationStatusColor,
 } from '@/models/BadgeCollection/BadgeCollectionUIForm';
 import {
-    formatCategory,
-    formatDifficulty,
-    getCategoryColor,
-    getCategoryIcon,
-    getDifficultyColor,
-    getDifficultyIcon,
+  formatCategory,
+  formatDifficulty,
+  getCategoryColor,
+  getCategoryIcon,
+  getDifficultyColor,
+  getDifficultyIcon,
 } from '@/utils/badgeUtils';
 
 // Types for component props

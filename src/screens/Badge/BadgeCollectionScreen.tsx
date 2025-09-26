@@ -1,544 +1,339 @@
-// src/screens/Badge/BadgeCollectionScreen.tsx
-import { BottomSheetModal } from '@gorhom/bottom-sheet';
+// src/screens/Badge/BadgeSelectionScreen.tsx
 import Icon from '@react-native-vector-icons/fontawesome6';
 import React, { useCallback, useMemo, useState } from 'react';
-import {
-  ActivityIndicator,
-  Dimensions,
-  FlatList,
-  RefreshControl,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import Animated, {
-  FadeInDown,
-  FadeInUp,
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-  withTiming,
-} from 'react-native-reanimated';
+import { ActivityIndicator, FlatList, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { useBabyBadges, useBadgeCollectionTabs } from '@/hooks/useBadgeCollection';
-import { BadgeCollection } from '@/models/BadgeCollection/BadgeCollectionModel';
-import {
-  formatCompletionDate,
-  formatVerificationStatus,
-  getVerificationStatusColor,
-} from '@/models/BadgeCollection/BadgeCollectionUIForm';
-
-const { width } = Dimensions.get('window');
+import { useBadgesForSelection } from '@/hooks/useBadge';
+import { BadgeCategory, BadgeDifficulty } from '@/models/Badge/BadgeEnum';
+import { Badge } from '@/models/Badge/BadgeModel';
+import { formatCategory, formatDifficulty, getCategoryColor, getCategoryIcon } from '@/utils/badgeUtils';
 
 interface Props {
   navigation: any;
   route: {
     params: {
-      babyId: string;
-      babyName?: string;
+      selectedBabyAge?: number;
+      selectedBabyName?: string;
+      onSelectBadge: (badge: Badge) => void;
     };
   };
 }
 
-const BadgeCollectionScreen: React.FC<Props> = ({ navigation, route }) => {
-  const { babyId, babyName } = route.params;
+const BadgeSelectionScreen: React.FC<Props> = ({ navigation, route }) => {
+  const { selectedBabyAge, selectedBabyName, onSelectBadge } = route.params;
+  const { badges, isLoading, error, loadBadges } = useBadgesForSelection();
 
-  const { badges, statistics, progress, isLoading, error, refresh, loadBadges } = useBabyBadges(babyId);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterCategory, setFilterCategory] = useState<BadgeCategory | null>(null);
+  const [filterDifficulty, setFilterDifficulty] = useState<BadgeDifficulty | null>(null);
 
-  const { activeTab, setTab, filteredCollections, tabCounts } = useBadgeCollectionTabs();
-
-  const [selectedCollection, setSelectedCollection] = useState<BadgeCollection | null>(null);
-  const [detailSheetRef, setDetailSheetRef] = useState<BottomSheetModal | null>(null);
-  const [viewMode, setViewMode] = useState<'list' | 'timeline'>('list');
-
-  const scrollY = useSharedValue(0);
-  const headerHeight = useSharedValue(200);
-
-  // Tab animation
-  const tabIndicatorPosition = useSharedValue(0);
-
-  const tabs = [
-    { key: 'all', title: 'All', count: tabCounts.all },
-    { key: 'approved', title: 'Approved', count: tabCounts.approved },
-    { key: 'pending', title: 'Pending', count: tabCounts.pending },
-    { key: 'rejected', title: 'Rejected', count: tabCounts.rejected },
-  ];
-
-  // Calculate progress percentage
-  const progressPercentage = useMemo(() => {
-    if (!progress) return 0;
-    return Math.round((progress.statistics.approvedBadges / Math.max(progress.totalCollections, 1)) * 100);
-  }, [progress]);
-
-  // Group badges by month for timeline view
-  const timelineData = useMemo(() => {
-    if (!badges.length) return [];
-
-    const grouped: Record<string, BadgeCollection[]> = {};
-    badges.forEach((badge) => {
-      const monthKey = new Date(badge.completedAt).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-      });
-      if (!grouped[monthKey]) {
-        grouped[monthKey] = [];
-      }
-      grouped[monthKey].push(badge);
+  React.useEffect(() => {
+    loadBadges({
+      isActive: true,
+      ...(selectedBabyAge && { maxAge: selectedBabyAge + 12 }), // Show badges for current age + 1 year
     });
+  }, [selectedBabyAge, loadBadges]);
 
-    return Object.entries(grouped)
-      .map(([month, collections]) => ({
-        month,
-        collections: collections.sort((a, b) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime()),
-        count: collections.length,
-      }))
-      .sort((a, b) => new Date(b.month).getTime() - new Date(a.month).getTime());
-  }, [badges]);
+  const filteredBadges = useMemo(() => {
+    return badges.filter((badge) => {
+      const matchesSearch =
+        badge.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        badge.description.toLowerCase().includes(searchQuery.toLowerCase());
 
-  // Animated header style
-  const animatedHeaderStyle = useAnimatedStyle(() => {
-    const opacity = withTiming(scrollY.value > 100 ? 0.9 : 1);
-    const translateY = withTiming(scrollY.value > 100 ? -20 : 0);
+      const matchesCategory = !filterCategory || badge.category === filterCategory;
+      const matchesDifficulty = !filterDifficulty || badge.difficulty === filterDifficulty;
 
-    return {
-      opacity,
-      transform: [{ translateY }],
-    };
-  });
+      // Age appropriateness check
+      if (selectedBabyAge) {
+        const ageAppropriate =
+          (!badge.minAge || selectedBabyAge >= badge.minAge) && (!badge.maxAge || selectedBabyAge <= badge.maxAge);
+        return matchesSearch && matchesCategory && matchesDifficulty && ageAppropriate;
+      }
 
-  // Progress circle animation
-  const progressStyle = useAnimatedStyle(() => {
-    return {
-      transform: [
-        {
-          rotate: withSpring(`${(progressPercentage / 100) * 360}deg`, {
-            damping: 15,
-            stiffness: 100,
-          }),
-        },
-      ],
-    };
-  });
+      return matchesSearch && matchesCategory && matchesDifficulty;
+    });
+  }, [badges, searchQuery, filterCategory, filterDifficulty, selectedBabyAge]);
 
-  // Handle tab change
-  const handleTabChange = useCallback(
-    (tabKey: string, index: number) => {
-      setTab(tabKey as any);
-      tabIndicatorPosition.value = withSpring(index * (width / tabs.length));
+  const categories = useMemo(() => Object.values(BadgeCategory), []);
+  const difficulties = useMemo(() => Object.values(BadgeDifficulty), []);
+
+  const handleSelectBadge = useCallback(
+    (badge: Badge) => {
+      onSelectBadge(badge);
+      navigation.goBack();
     },
-    [setTab, tabIndicatorPosition, tabs.length],
+    [onSelectBadge, navigation],
   );
 
-  // Show collection details
-  const showCollectionDetails = useCallback(
-    (collection: BadgeCollection) => {
-      setSelectedCollection(collection);
-      detailSheetRef?.present();
-    },
-    [detailSheetRef],
-  );
+  const handleClearFilters = () => {
+    setSearchQuery('');
+    setFilterCategory(null);
+    setFilterDifficulty(null);
+  };
 
-  // Render statistics cards
-  const renderStatsCard = (title: string, value: number | string, icon: string, color: string) => (
-    <Animated.View
-      entering={FadeInUp.delay(200)}
-      className={`flex-1 bg-white rounded-xl p-4 mx-1 shadow-sm border border-gray-100`}
-    >
-      <View className='flex-row items-center justify-between'>
-        <View>
-          <Text className='text-2xl font-bold text-gray-800'>{value}</Text>
-          <Text className='text-sm text-gray-500 mt-1'>{title}</Text>
-        </View>
-        <View className={`w-10 h-10 rounded-full items-center justify-center bg-${color}-100`}>
-          <Icon
-            name={icon as any}
-            iconStyle='solid'
-            size={16}
-            color={`#${color === 'blue' ? '3B82F6' : color === 'green' ? '10B981' : color === 'yellow' ? 'F59E0B' : 'EF4444'}`}
-          />
-        </View>
-      </View>
-    </Animated.View>
-  );
+  const hasFilters = searchQuery || filterCategory || filterDifficulty;
 
-  // Render badge collection item
-  const renderBadgeItem = ({ item, index }: { item: BadgeCollection; index: number }) => (
-    <Animated.View entering={FadeInDown.delay(index * 50)} className='mb-3 mx-4'>
-      <TouchableOpacity
-        onPress={() => showCollectionDetails(item)}
-        className='bg-white rounded-xl p-4 shadow-sm border border-gray-100'
-        activeOpacity={0.8}
-      >
-        <View className='flex-row items-start'>
-          {/* Badge Icon */}
-          <View className='w-12 h-12 rounded-full bg-blue-100 items-center justify-center mr-4'>
-            <Icon name='medal' iconStyle='solid' size={20} color='#3B82F6' />
-          </View>
+  const renderBadgeItem = useCallback(
+    ({ item, index }: { item: Badge; index: number }) => {
+      const categoryColor = getCategoryColor(item.category);
+      const categoryIcon = getCategoryIcon(item.category);
 
-          {/* Content */}
-          <View className='flex-1'>
-            <View className='flex-row items-start justify-between mb-2'>
-              <Text className='text-lg font-semibold text-gray-800 flex-1' numberOfLines={1}>
-                {item.badge?.title || 'Badge Title'}
-              </Text>
-              <View
-                className={`px-2 py-1 rounded-full ml-2`}
-                style={{ backgroundColor: getVerificationStatusColor(item.verificationStatus) + '20' }}
-              >
-                <Text
-                  className='text-xs font-medium'
-                  style={{ color: getVerificationStatusColor(item.verificationStatus) }}
-                >
-                  {formatVerificationStatus(item.verificationStatus)}
-                </Text>
-              </View>
-            </View>
-
-            <Text className='text-gray-600 mb-2' numberOfLines={2}>
-              {item.badge?.description || 'Badge description'}
-            </Text>
-
-            <View className='flex-row items-center justify-between'>
-              <Text className='text-sm text-gray-500'>Completed {formatCompletionDate(item.completedAt)}</Text>
-
-              {item.submissionMedia && item.submissionMedia.length > 0 && (
-                <View className='flex-row items-center'>
-                  <Icon name='image' iconStyle='solid' size={12} color='#9CA3AF' />
-                  <Text className='text-xs text-gray-500 ml-1'>{item.submissionMedia.length} media</Text>
-                </View>
-              )}
-            </View>
-
-            {item.submissionNote && (
-              <View className='mt-3 bg-gray-50 p-3 rounded-lg'>
-                <Text className='text-sm text-gray-600' numberOfLines={2}>
-                  "{item.submissionNote}"
-                </Text>
-              </View>
-            )}
-          </View>
-        </View>
-      </TouchableOpacity>
-    </Animated.View>
-  );
-
-  // Render timeline item
-  const renderTimelineItem = ({ item }: { item: (typeof timelineData)[0] }) => (
-    <View className='mb-6'>
-      <View className='flex-row items-center mb-4 px-4'>
-        <View className='w-4 h-4 rounded-full bg-blue-500 mr-3' />
-        <Text className='text-lg font-semibold text-gray-800'>{item.month}</Text>
-        <Text className='text-sm text-gray-500 ml-2'>({item.count} badges)</Text>
-      </View>
-
-      {item.collections.map((collection, index) => (
-        <View key={collection.id} className='relative'>
-          {index < item.collections.length - 1 && <View className='absolute left-6 top-16 w-0.5 h-20 bg-gray-200' />}
+      return (
+        <Animated.View entering={FadeInDown.delay(index * 50)}>
           <TouchableOpacity
-            onPress={() => showCollectionDetails(collection)}
-            className='flex-row items-center mb-4 px-4'
+            onPress={() => handleSelectBadge(item)}
+            className='bg-white rounded-xl p-4 mb-3 shadow-sm border border-gray-100'
             activeOpacity={0.8}
           >
-            <View className='w-8 h-8 rounded-full bg-white border-2 border-blue-500 items-center justify-center mr-4'>
-              <Icon name='medal' iconStyle='solid' size={12} color='#3B82F6' />
-            </View>
+            <View className='flex-row items-start'>
+              <View
+                className='w-12 h-12 rounded-full items-center justify-center mr-4'
+                style={{ backgroundColor: categoryColor + '20' }}
+              >
+                <Icon name={categoryIcon as any} iconStyle='solid' size={20} color={categoryColor} />
+              </View>
 
-            <View className='flex-1 bg-white rounded-xl p-3 shadow-sm'>
-              <Text className='font-semibold text-gray-800' numberOfLines={1}>
-                {collection.badge?.title}
-              </Text>
-              <Text className='text-sm text-gray-500 mt-1'>{formatCompletionDate(collection.completedAt)}</Text>
+              <View className='flex-1'>
+                <View className='flex-row items-start justify-between mb-2'>
+                  <Text className='text-lg font-semibold text-gray-800 flex-1' numberOfLines={1}>
+                    {item.title}
+                  </Text>
+
+                  {item.isCustom && (
+                    <View className='bg-purple-100 px-2 py-1 rounded-full ml-2'>
+                      <Text className='text-xs text-purple-600 font-medium'>Custom</Text>
+                    </View>
+                  )}
+                </View>
+
+                <Text className='text-gray-600 mb-3' numberOfLines={2}>
+                  {item.description}
+                </Text>
+
+                <View className='flex-row items-center justify-between'>
+                  <View className='flex-row items-center'>
+                    <View className='px-2 py-1 rounded-full mr-2' style={{ backgroundColor: categoryColor + '20' }}>
+                      <Text className='text-xs font-medium' style={{ color: categoryColor }}>
+                        {formatCategory(item.category)}
+                      </Text>
+                    </View>
+
+                    <View className='px-2 py-1 rounded-full bg-gray-100'>
+                      <Text className='text-xs text-gray-600 font-medium'>{formatDifficulty(item.difficulty)}</Text>
+                    </View>
+                  </View>
+
+                  {(item.minAge || item.maxAge) && (
+                    <View className='bg-blue-50 px-2 py-1 rounded-full'>
+                      <Text className='text-xs text-blue-600 font-medium'>
+                        {item.minAge && item.maxAge
+                          ? `${item.minAge}-${item.maxAge}m`
+                          : item.minAge
+                            ? `${item.minAge}m+`
+                            : `<${item.maxAge}m`}
+                      </Text>
+                    </View>
+                  )}
+                </View>
+              </View>
             </View>
           </TouchableOpacity>
-        </View>
-      ))}
+        </Animated.View>
+      );
+    },
+    [handleSelectBadge],
+  );
+
+  const renderCategoryFilter = () => (
+    <View className='mb-4'>
+      <FlatList
+        data={[null, ...categories]}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        keyExtractor={(item) => item || 'all'}
+        renderItem={({ item }) => {
+          const isSelected = filterCategory === item;
+          const categoryColor = item ? getCategoryColor(item) : '#3B82F6';
+
+          return (
+            <TouchableOpacity
+              onPress={() => setFilterCategory(isSelected ? null : item)}
+              className='px-4 py-2 rounded-full mr-2'
+              style={{
+                backgroundColor: isSelected ? categoryColor : '#F3F4F6',
+              }}
+            >
+              <Text
+                className='font-medium'
+                style={{
+                  color: isSelected ? 'white' : '#4B5563',
+                }}
+              >
+                {item ? formatCategory(item) : 'All'}
+              </Text>
+            </TouchableOpacity>
+          );
+        }}
+      />
     </View>
   );
 
-  // Empty state
+  const renderDifficultyFilter = () => (
+    <View className='mb-4'>
+      <FlatList
+        data={[null, ...difficulties]}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        keyExtractor={(item) => item || 'all'}
+        renderItem={({ item }) => {
+          const isSelected = filterDifficulty === item;
+          const difficultyColors = {
+            [BadgeDifficulty.EASY]: '#10B981',
+            [BadgeDifficulty.MEDIUM]: '#F59E0B',
+            [BadgeDifficulty.HARD]: '#EF4444',
+          };
+          const difficultyColor = item ? difficultyColors[item] : '#3B82F6';
+
+          return (
+            <TouchableOpacity
+              onPress={() => setFilterDifficulty(isSelected ? null : item)}
+              className='px-4 py-2 rounded-full mr-2'
+              style={{
+                backgroundColor: isSelected ? difficultyColor : '#F3F4F6',
+              }}
+            >
+              <Text
+                className='font-medium'
+                style={{
+                  color: isSelected ? 'white' : '#4B5563',
+                }}
+              >
+                {item ? formatDifficulty(item) : 'All'}
+              </Text>
+            </TouchableOpacity>
+          );
+        }}
+      />
+    </View>
+  );
+
   const renderEmptyState = () => (
     <View className='flex-1 items-center justify-center py-20'>
-      <Icon name='trophy' iconStyle='solid' size={64} color='#D1D5DB' />
-      <Text className='text-xl font-semibold text-gray-600 mt-4 mb-2'>No badges yet</Text>
+      <Icon name='magnifying-glass' iconStyle='solid' size={64} color='#D1D5DB' />
+      <Text className='text-xl font-semibold text-gray-600 mt-4 mb-2'>No badges found</Text>
       <Text className='text-gray-500 text-center px-8 mb-6'>
-        {babyName || 'This baby'} hasn't earned any badges yet. Start by awarding their first achievement!
+        {hasFilters
+          ? 'Try adjusting your search or filters to find more badges'
+          : 'No badges are available for selection at the moment'}
       </Text>
-      <TouchableOpacity
-        onPress={() => navigation.navigate('AwardBadge', { babyId })}
-        className='bg-blue-500 px-6 py-3 rounded-full'
-      >
-        <Text className='text-white font-semibold'>Award First Badge</Text>
+      {hasFilters && (
+        <TouchableOpacity onPress={handleClearFilters} className='bg-blue-500 px-6 py-3 rounded-full'>
+          <Text className='text-white font-semibold'>Clear Filters</Text>
+        </TouchableOpacity>
+      )}
+    </View>
+  );
+
+  const renderLoadingState = () => (
+    <View className='flex-1 items-center justify-center'>
+      <ActivityIndicator size='large' color='#3B82F6' />
+      <Text className='text-gray-500 mt-4'>Loading badges...</Text>
+    </View>
+  );
+
+  const renderErrorState = () => (
+    <View className='flex-1 items-center justify-center px-8'>
+      <Icon name='triangle-exclamation' iconStyle='solid' size={64} color='#EF4444' />
+      <Text className='text-xl font-semibold text-gray-600 mt-4 mb-2'>Something went wrong</Text>
+      <Text className='text-gray-500 text-center leading-6 mb-6'>{error}</Text>
+      <TouchableOpacity onPress={() => loadBadges({ isActive: true })} className='bg-blue-500 px-6 py-3 rounded-full'>
+        <Text className='text-white font-semibold'>Try Again</Text>
       </TouchableOpacity>
     </View>
   );
 
   return (
     <SafeAreaView className='flex-1 bg-gray-50'>
-      {/* Header with Stats */}
-      <Animated.View style={animatedHeaderStyle} className='bg-white shadow-sm'>
-        <View className='px-4 py-4'>
-          <View className='flex-row items-center justify-between mb-4'>
-            <View className='flex-1'>
-              <Text className='text-2xl font-bold text-gray-800'>{babyName || 'Baby'}'s Collection</Text>
-              <Text className='text-gray-500 mt-1'>Track achievements and milestones</Text>
-            </View>
+      {/* Header */}
+      <View className='px-4 py-4 bg-white shadow-sm'>
+        <View className='flex-row items-center justify-between mb-4'>
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            className='w-10 h-10 rounded-full items-center justify-center bg-gray-100'
+          >
+            <Icon name='arrow-left' iconStyle='solid' size={16} color='#374151' />
+          </TouchableOpacity>
 
-            <TouchableOpacity
-              onPress={() => navigation.navigate('AwardBadge', { babyId })}
-              className='bg-blue-500 px-4 py-2 rounded-full flex-row items-center'
-            >
-              <Icon name='plus' iconStyle='solid' size={14} color='white' />
-              <Text className='text-white font-medium ml-2'>Award</Text>
+          <Text className='text-xl font-bold text-gray-800'>Choose Badge</Text>
+
+          {hasFilters && (
+            <TouchableOpacity onPress={handleClearFilters} className='px-3 py-1 bg-red-100 rounded-full'>
+              <Text className='text-red-600 font-medium text-sm'>Clear</Text>
             </TouchableOpacity>
-          </View>
-
-          {/* Progress Circle and Stats */}
-          {statistics && (
-            <View className='flex-row items-center mb-4'>
-              <View className='relative mr-6'>
-                <View className='w-16 h-16 rounded-full border-4 border-gray-200'>
-                  <Animated.View
-                    style={[
-                      progressStyle,
-                      {
-                        position: 'absolute',
-                        width: 64,
-                        height: 64,
-                        borderRadius: 32,
-                        borderWidth: 4,
-                        borderColor: '#3B82F6',
-                        borderTopColor: 'transparent',
-                        borderRightColor: 'transparent',
-                      },
-                    ]}
-                  />
-                </View>
-                <View className='absolute inset-0 items-center justify-center'>
-                  <Text className='text-lg font-bold text-gray-800'>{progressPercentage}%</Text>
-                </View>
-              </View>
-
-              <View className='flex-1 flex-row'>
-                {renderStatsCard('Total', statistics.totalBadges, 'trophy', 'blue')}
-                {renderStatsCard('Approved', statistics.approvedBadges, 'check', 'green')}
-                {renderStatsCard('Pending', statistics.pendingBadges, 'clock', 'yellow')}
-              </View>
-            </View>
           )}
-
-          {/* View Mode Toggle */}
-          <View className='flex-row items-center justify-between mb-4'>
-            <View className='flex-row bg-gray-100 rounded-full p-1'>
-              {[
-                { key: 'list', title: 'List', icon: 'list' },
-                { key: 'timeline', title: 'Timeline', icon: 'clock' },
-              ].map((mode) => (
-                <TouchableOpacity
-                  key={mode.key}
-                  onPress={() => setViewMode(mode.key as any)}
-                  className={`px-4 py-2 rounded-full flex-row items-center ${
-                    viewMode === mode.key ? 'bg-white shadow-sm' : ''
-                  }`}
-                >
-                  <Icon
-                    name={mode.icon as any}
-                    iconStyle='solid'
-                    size={14}
-                    color={viewMode === mode.key ? '#3B82F6' : '#9CA3AF'}
-                  />
-                  <Text className={`ml-2 font-medium ${viewMode === mode.key ? 'text-blue-500' : 'text-gray-500'}`}>
-                    {mode.title}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          </View>
-
-          {/* Tab Navigation */}
-          <View className='relative'>
-            <View className='flex-row bg-gray-100 rounded-full p-1'>
-              {tabs.map((tab, index) => (
-                <TouchableOpacity
-                  key={tab.key}
-                  onPress={() => handleTabChange(tab.key, index)}
-                  className={`flex-1 py-2 px-3 rounded-full ${activeTab === tab.key ? 'bg-white shadow-sm' : ''}`}
-                >
-                  <View className='flex-row items-center justify-center'>
-                    <Text className={`font-medium ${activeTab === tab.key ? 'text-blue-500' : 'text-gray-500'}`}>
-                      {tab.title}
-                    </Text>
-                    {tab.count > 0 && (
-                      <View
-                        className={`ml-2 px-2 py-0.5 rounded-full ${
-                          activeTab === tab.key ? 'bg-blue-100' : 'bg-gray-200'
-                        }`}
-                      >
-                        <Text
-                          className={`text-xs font-semibold ${
-                            activeTab === tab.key ? 'text-blue-600' : 'text-gray-600'
-                          }`}
-                        >
-                          {tab.count}
-                        </Text>
-                      </View>
-                    )}
-                  </View>
-                </TouchableOpacity>
-              ))}
-            </View>
-          </View>
+          {!hasFilters && <View className='w-10' />}
         </View>
-      </Animated.View>
+
+        {selectedBabyName && selectedBabyAge && (
+          <Animated.View entering={FadeInUp} className='mb-4 bg-blue-50 p-3 rounded-xl'>
+            <Text className='text-blue-800 text-sm'>
+              Showing badges suitable for <Text className='font-semibold'>{selectedBabyName}</Text> ({selectedBabyAge}{' '}
+              months old)
+            </Text>
+          </Animated.View>
+        )}
+
+        {/* Search */}
+        <View className='bg-gray-100 rounded-full px-4 py-3 flex-row items-center mb-4'>
+          <Icon name='magnifying-glass' iconStyle='solid' size={16} color='#9CA3AF' />
+          <TextInput
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            placeholder='Search badges...'
+            className='flex-1 ml-3 text-gray-800'
+            placeholderTextColor='#9CA3AF'
+          />
+          {searchQuery.length > 0 && (
+            <TouchableOpacity onPress={() => setSearchQuery('')}>
+              <Icon name='xmark' iconStyle='solid' size={14} color='#9CA3AF' />
+            </TouchableOpacity>
+          )}
+        </View>
+
+        {renderCategoryFilter()}
+        {renderDifficultyFilter()}
+      </View>
 
       {/* Content */}
       {isLoading && badges.length === 0 ? (
-        <View className='flex-1 items-center justify-center'>
-          <ActivityIndicator size='large' color='#3B82F6' />
-          <Text className='text-gray-500 mt-4'>Loading badges...</Text>
-        </View>
-      ) : filteredCollections.length === 0 ? (
-        renderEmptyState()
-      ) : viewMode === 'timeline' ? (
-        <FlatList
-          data={timelineData}
-          renderItem={renderTimelineItem}
-          keyExtractor={(item) => item.month}
-          contentContainerClassName='pt-4 pb-20'
-          refreshControl={<RefreshControl refreshing={isLoading && badges.length > 0} onRefresh={refresh} />}
-        />
+        renderLoadingState()
+      ) : error ? (
+        renderErrorState()
       ) : (
-        <FlatList
-          data={filteredCollections}
-          renderItem={renderBadgeItem}
-          keyExtractor={(item) => item.id}
-          contentContainerClassName='pt-4 pb-20'
-          refreshControl={<RefreshControl refreshing={isLoading && badges.length > 0} onRefresh={refresh} />}
-          onScroll={(event) => {
-            scrollY.value = event.nativeEvent.contentOffset.y;
-          }}
-          scrollEventThrottle={16}
-        />
-      )}
+        <View className='flex-1'>
+          <View className='px-4 py-2 bg-white border-b border-gray-100'>
+            <Text className='text-gray-600 text-sm'>
+              {filteredBadges.length} badge{filteredBadges.length !== 1 ? 's' : ''} available
+            </Text>
+          </View>
 
-      {/* Collection Detail Bottom Sheet */}
-      <BottomSheetModal
-        ref={setDetailSheetRef}
-        index={1}
-        snapPoints={['50%', '90%']}
-        backdropComponent={({ style }) => <View style={[style, { backgroundColor: 'rgba(0,0,0,0.5)' }]} />}
-      >
-        {selectedCollection && (
-          <CollectionDetailSheet
-            collection={selectedCollection}
-            onClose={() => detailSheetRef?.close()}
-            onEdit={() => {
-              detailSheetRef?.close();
-              navigation.navigate('EditBadgeCollection', {
-                collectionId: selectedCollection.id,
-              });
-            }}
-          />
-        )}
-      </BottomSheetModal>
+          {filteredBadges.length === 0 ? (
+            renderEmptyState()
+          ) : (
+            <FlatList
+              data={filteredBadges}
+              renderItem={renderBadgeItem}
+              keyExtractor={(item) => item.id}
+              contentContainerClassName='p-4'
+              showsVerticalScrollIndicator={false}
+            />
+          )}
+        </View>
+      )}
     </SafeAreaView>
   );
 };
 
-// Collection Detail Sheet Component
-const CollectionDetailSheet: React.FC<{
-  collection: BadgeCollection;
-  onClose: () => void;
-  onEdit: () => void;
-}> = ({ collection, onClose, onEdit }) => {
-  return (
-    <ScrollView className='flex-1 p-6'>
-      <View className='flex-row items-center justify-between mb-6'>
-        <Text className='text-xl font-bold text-gray-800'>Badge Achievement</Text>
-        <TouchableOpacity onPress={onClose}>
-          <Icon name='xmark' iconStyle='solid' size={20} color='#9CA3AF' />
-        </TouchableOpacity>
-      </View>
-
-      {/* Badge Info */}
-      <View className='items-center mb-6'>
-        <View className='w-20 h-20 rounded-full bg-blue-100 items-center justify-center mb-4'>
-          <Icon name='medal' iconStyle='solid' size={32} color='#3B82F6' />
-        </View>
-        <Text className='text-2xl font-bold text-gray-800 text-center mb-2'>
-          {collection.badge?.title || 'Badge Title'}
-        </Text>
-        <View
-          className='px-3 py-1 rounded-full mb-4'
-          style={{ backgroundColor: getVerificationStatusColor(collection.verificationStatus) + '20' }}
-        >
-          <Text className='font-medium' style={{ color: getVerificationStatusColor(collection.verificationStatus) }}>
-            {formatVerificationStatus(collection.verificationStatus)}
-          </Text>
-        </View>
-      </View>
-
-      {/* Details */}
-      <View className='flex flex-col gap-4'>
-        <View>
-          <Text className='text-lg font-semibold text-gray-800 mb-2'>Description</Text>
-          <Text className='text-gray-600 leading-6'>{collection.badge?.description || 'No description available'}</Text>
-        </View>
-
-        <View>
-          <Text className='text-lg font-semibold text-gray-800 mb-2'>Completed On</Text>
-          <Text className='text-gray-600'>
-            {new Date(collection.completedAt).toLocaleDateString('en-US', {
-              weekday: 'long',
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-            })}
-          </Text>
-        </View>
-
-        {collection.submissionNote && (
-          <View>
-            <Text className='text-lg font-semibold text-gray-800 mb-2'>Note</Text>
-            <View className='bg-gray-50 p-4 rounded-xl'>
-              <Text className='text-gray-600 leading-6'>{collection.submissionNote}</Text>
-            </View>
-          </View>
-        )}
-
-        {collection.submissionMedia && collection.submissionMedia.length > 0 && (
-          <View>
-            <Text className='text-lg font-semibold text-gray-800 mb-2'>Media</Text>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              {collection.submissionMedia.map((mediaUrl, index) => (
-                <View key={index} className='w-24 h-24 rounded-xl bg-gray-100 mr-3 items-center justify-center'>
-                  <Icon name='image' iconStyle='solid' size={20} color='#9CA3AF' />
-                </View>
-              ))}
-            </ScrollView>
-          </View>
-        )}
-
-        {collection.verifiedBy && collection.verifiedAt && (
-          <View>
-            <Text className='text-lg font-semibold text-gray-800 mb-2'>Verification</Text>
-            <Text className='text-gray-600'>Verified on {new Date(collection.verifiedAt).toLocaleDateString()}</Text>
-          </View>
-        )}
-      </View>
-
-      {/* Actions */}
-      <View className='flex-row flex gap-3 mt-8'>
-        <TouchableOpacity onPress={onEdit} className='flex-1 bg-gray-100 py-4 rounded-xl items-center'>
-          <Text className='text-gray-700 font-semibold'>Edit Details</Text>
-        </TouchableOpacity>
-        <TouchableOpacity className='flex-1 bg-blue-500 py-4 rounded-xl items-center'>
-          <Text className='text-white font-semibold'>Share Achievement</Text>
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
-  );
-};
-
-export default BadgeCollectionScreen;
+export default BadgeSelectionScreen;

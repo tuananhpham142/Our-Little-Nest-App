@@ -245,7 +245,7 @@ const BabyListScreen: React.FC = () => {
               </View>
             )}
 
-            <View className='items-center'>
+            {/* <View className='items-center'>
               <View className='flex-row items-center mb-1'>
                 <Icon iconStyle='solid' name='heart-pulse' size={12} color='#6B7280' />
                 <Text className='text-xs text-gray-500 uppercase ml-1'>Health</Text>
@@ -265,12 +265,12 @@ const BabyListScreen: React.FC = () => {
                   <Icon iconStyle='solid' name='check' size={12} color='#10B981' />
                 )}
               </View>
-            </View>
+            </View> */}
           </View>
         </TouchableOpacity>
 
         {/* Quick Actions Footer */}
-        <View className='flex-row border-t border-gray-100'>
+        {/* <View className='flex-row border-t border-gray-100'>
           <TouchableOpacity
             onPress={() => navigation.navigate('BabyFamily', { babyId: baby.id })}
             className='flex-1 py-3 items-center flex-row justify-center'
@@ -294,7 +294,7 @@ const BabyListScreen: React.FC = () => {
             <Icon iconStyle='solid' name='trash' size={14} color='#EF4444' />
             <Text className='text-red-500 text-sm font-medium ml-1'>Delete</Text>
           </TouchableOpacity>
-        </View>
+        </View> */}
       </Animated.View>
     );
   };

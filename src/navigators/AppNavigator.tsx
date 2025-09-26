@@ -110,7 +110,7 @@ export const AppNavigator: React.FC = () => {
             /> */}
             {/* Badges */}
             <Stack.Screen
-              name='BadgeList'
+              name='Badges'
               component={BadgesScreen}
               options={{
                 title: 'Badges',
@@ -119,7 +119,7 @@ export const AppNavigator: React.FC = () => {
             />
             <Stack.Screen
               name='BadgeCollection'
-              component={BadgeCollectionScreen}
+              component={(props: any) => BadgeCollectionScreen(props)}
               options={{
                 title: 'Badge Collection',
                 headerShown: false,
@@ -135,26 +135,6 @@ export const AppNavigator: React.FC = () => {
                 animation: 'slide_from_bottom',
               }}
             />
-            {/* <Stack.Screen
-              name='CreateBadge'
-              component={CreateBadgeScreen}
-              options={{
-                title: 'Create Badge',
-                headerShown: false,
-                presentation: 'modal',
-                animation: 'slide_from_bottom',
-              }}
-            />
-            <Stack.Screen
-              name='EditBadgeCollection'
-              component={EditBadgeCollectionScreen}
-              options={{
-                title: 'Edit Achievement',
-                headerShown: false,
-                presentation: 'modal',
-                animation: 'slide_from_bottom',
-              }}
-            /> */}
             {/* Notifications */}
             <Stack.Screen name='Notifications' component={NotificationScreen} />
             {/* Articles */}
