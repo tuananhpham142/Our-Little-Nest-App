@@ -51,7 +51,7 @@ const UserListItem: React.FC<UserListItemProps> = ({ user, onPress, onActionPres
   return (
     <TouchableOpacity
       onPress={() => onPress?.(user)}
-      className='flex-row items-center justify-between px-6 py-4 bg-white mb-3 rounded-2xl shadow-sm border border-gray-100 active:scale-98'
+      className='flex-row items-center justify-between px-4 py-4 bg-white mb-3 rounded-2xl shadow-sm border border-gray-100 active:scale-98'
     >
       {/* User Info */}
       <View className='flex-row items-center flex-1'>

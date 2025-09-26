@@ -1,23 +1,25 @@
+import { CategoryItem } from '@/models/Category/CategoryModel';
 import { FlashList } from '@shopify/flash-list';
 import { memo, useCallback, useRef } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 
 // Category Tabs Component
 const Categories = memo<{
-  categories: string[];
+  categories: CategoryItem[];
   selectedCategory: string;
   onSelectCategory: (category: string) => void;
 }>(({ categories, selectedCategory, onSelectCategory }) => {
   const scrollViewRef = useRef(null);
 
   const renderCategory = useCallback(
-    ({ item }: { item: string }) => (
+    ({ item }: { item: CategoryItem }) => (
       <TouchableOpacity
-        onPress={() => onSelectCategory(item)}
-        className={`px-4 py-2 rounded-full mr-3 ${selectedCategory === item ? 'bg-primary-500' : 'bg-grey-light'}`}
+        key={item.id}
+        onPress={() => onSelectCategory(item.id)}
+        className={`px-4 py-2 rounded-full mr-2 ${selectedCategory === item.id ? 'bg-blue-600' : 'bg-slate-100'}`}
       >
-        <Text className={`text-base font-medium ${selectedCategory === item ? 'text-white' : 'text-grey'}`}>
-          {item}
+        <Text className={`font-semibold ${selectedCategory === item.id ? 'text-white' : 'text-slate-700'}`}>
+          {item.name}
         </Text>
       </TouchableOpacity>
     ),
@@ -31,7 +33,7 @@ const Categories = memo<{
         horizontal
         showsHorizontalScrollIndicator={false}
         data={categories}
-        keyExtractor={(item) => item}
+        keyExtractor={(item) => item.id}
         renderItem={renderCategory}
         contentContainerStyle={{ paddingHorizontal: 16, paddingVertical: 12 }}
         removeClippedSubviews={true}

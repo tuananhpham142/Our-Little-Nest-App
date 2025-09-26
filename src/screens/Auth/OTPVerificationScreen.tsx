@@ -98,7 +98,7 @@ const OTPVerificationScreen: React.FC<OTPVerificationProps> = ({
   };
 
   return (
-    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} className='flex-1 px-6 pt-16'>
+    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} className='flex-1 px-4 pt-16'>
       <View>
         {/* Illustration */}
         <View className='items-center mb-8 relative'>
@@ -122,12 +122,12 @@ const OTPVerificationScreen: React.FC<OTPVerificationProps> = ({
             <View className='absolute top-14 -left-3 w-6 h-2 bg-blue-600 rounded-full transform -rotate-45' />
             <View className='absolute top-14 -right-3 w-6 h-2 bg-blue-600 rounded-full transform rotate-45' />
             {/* Legs */}
-            <View className='flex-row justify-center space-x-1 mt-1'>
+            <View className='flex-row justify-center flex gap-1 mt-1'>
               <View className='w-2 h-10 bg-gray-800 rounded-b-lg' />
               <View className='w-2 h-10 bg-gray-800 rounded-b-lg' />
             </View>
             {/* Feet */}
-            <View className='flex-row justify-center space-x-1 -mt-2'>
+            <View className='flex-row justify-center flex gap-1 -mt-2'>
               <View className='w-4 h-2 bg-yellow-500 rounded-full' />
               <View className='w-4 h-2 bg-yellow-500 rounded-full' />
             </View>

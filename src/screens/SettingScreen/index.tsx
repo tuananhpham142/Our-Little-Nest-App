@@ -1,171 +1,144 @@
-// src/screens/settings/SettingsScreen.tsx
-import { useAuth } from '@/hooks/useAuth';
-import { useLanguage } from '@/hooks/useLanguage';
-import { useTheme } from '@/hooks/useTheme';
-import { SupportedLanguage } from '@/types/language';
-import { ThemeMode } from '@/types/theme';
+import AppLayout from '@/components/layout/AppLayout';
+import Icon from '@react-native-vector-icons/fontawesome6';
 import React from 'react';
-import { Alert, ScrollView, Switch, Text, TouchableOpacity, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Alert, Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { SectionHeader, SettingItem } from './components/CommonComponents';
 
-const SettingsScreen: React.FC = () => {
-  const { colors, mode, isDark, setMode, toggle } = useTheme();
-  const { t, currentLanguage, setLanguage, getLanguageName } = useLanguage();
-  const { logout, user } = useAuth();
+interface SettingsScreenProps {
+  navigation?: any;
+}
 
-  const handleThemeChange = (newMode: ThemeMode) => {
-    setMode(newMode);
+const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) => {
+  // Notification Settings State
+
+  // Privacy Settings State
+
+  const handleProfilePress = () => {
+    // Navigate to profile screen
+    navigation?.navigate('Profile');
   };
 
-  const handleLanguageChange = (language: SupportedLanguage) => {
-    setLanguage(language);
+  const handleChangePassword = () => {
+    Alert.alert('Change Password', 'This would open the password change screen');
   };
 
-  const handleLogout = () => {
-    Alert.alert(t('auth.logout'), 'Are you sure you want to logout?', [
-      { text: t('common.cancel'), style: 'cancel' },
-      {
-        text: t('auth.logout'),
-        style: 'destructive',
-        onPress: logout,
-      },
+  const handlePrivacyPolicy = () => {
+    Alert.alert('Privacy Policy', 'This would open the privacy policy screen');
+  };
+
+  const handleTermsOfService = () => {
+    Alert.alert('Terms of Service', 'This would open the terms of service screen');
+  };
+
+  const handleDeleteAccount = () => {
+    Alert.alert('Delete Account', 'Are you sure you want to delete your account? This action cannot be undone.', [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Delete', style: 'destructive' },
     ]);
   };
 
-  const SettingItem: React.FC<{
-    title: string;
-    subtitle?: string;
-    onPress?: () => void;
-    rightElement?: React.ReactNode;
-  }> = ({ title, subtitle, onPress, rightElement }) => (
-    <TouchableOpacity
-      className='px-6 py-4 border-b'
-      style={{ borderBottomColor: colors.border }}
-      onPress={onPress}
-      disabled={!onPress}
-    >
-      <View className='flex-row justify-between items-center'>
-        <View className='flex-1'>
-          <Text className='text-base font-medium' style={{ color: colors.text }}>
-            {title}
-          </Text>
-          {subtitle && (
-            <Text className='text-sm mt-1' style={{ color: colors.textSecondary }}>
-              {subtitle}
-            </Text>
-          )}
-        </View>
-        {rightElement}
-      </View>
-    </TouchableOpacity>
-  );
-
   return (
-    <SafeAreaView className='flex-1' style={{ backgroundColor: colors.background }}>
-      <ScrollView className='flex-1'>
-        {/* User Info */}
-        <View className='px-6 py-6 border-b' style={{ borderBottomColor: colors.border }}>
-          <Text className='text-xl font-bold' style={{ color: colors.text }}>
-            {user?.name || 'User'}
-          </Text>
-          <Text style={{ color: colors.textSecondary }}>{user?.email}</Text>
-        </View>
+    <AppLayout paddingVertical>
+      <ScrollView className='flex-1 bg-gray-50'>
+        {/* Profile Section */}
+        <SectionHeader title='Profile' />
 
-        {/* Appearance Section */}
-        <View className='mt-6'>
-          <Text
-            className='px-6 py-2 text-sm font-medium uppercase tracking-wide'
-            style={{ color: colors.textSecondary }}
-          >
-            {t('settings.appearance')}
-          </Text>
-
-          <SettingItem
-            title={t('settings.theme')}
-            subtitle={`Current: ${mode}`}
-            rightElement={
-              <Switch
-                value={isDark}
-                onValueChange={toggle}
-                trackColor={{ false: colors.border, true: colors.primary }}
-                thumbColor={isDark ? colors.surface : colors.background}
-              />
-            }
+        <TouchableOpacity
+          className='flex-row items-center px-4 py-4 bg-white border-b border-gray-100'
+          onPress={handleProfilePress}
+        >
+          <Image
+            source={{ uri: 'https://api.dicebear.com/7.x/avataaars/png?seed=user' }}
+            className='w-12 h-12 rounded-full mr-4'
           />
-        </View>
+          <View className='flex-1'>
+            <Text className='text-base font-semibold text-gray-900'>Creative Jeff</Text>
+            <Text className='text-sm text-gray-500'>creativejeff@gmail.com</Text>
+          </View>
+          <Icon iconStyle='solid' name='chevron-right' size={20} color='#9CA3AF' />
+        </TouchableOpacity>
 
-        {/* Language Section */}
-        <View className='mt-6'>
-          <Text
-            className='px-6 py-2 text-sm font-medium uppercase tracking-wide'
-            style={{ color: colors.textSecondary }}
-          >
-            {t('settings.language')}
-          </Text>
+        <SettingItem
+          title='Edit Profile'
+          subtitle='Update your personal information'
+          icon='person'
+          showArrow
+          onPress={() => Alert.alert('Edit Profile', 'Navigate to edit profile screen')}
+        />
 
-          <SettingItem
-            title={t('settings.language')}
-            subtitle={getLanguageName(currentLanguage)}
-            onPress={() => {
-              Alert.alert('Select Language', '', [
-                { text: 'English', onPress: () => handleLanguageChange('en') },
-                { text: 'Tiếng Việt', onPress: () => handleLanguageChange('vi') },
-                { text: 'Cancel', style: 'cancel' },
-              ]);
-            }}
-          />
-        </View>
+        <SettingItem
+          title='Account Settings'
+          subtitle='Manage your account preferences'
+          icon='settings'
+          showArrow
+          onPress={() => Alert.alert('Account Settings', 'Navigate to account settings')}
+        />
 
-        {/* General Section */}
-        <View className='mt-6'>
-          <Text
-            className='px-6 py-2 text-sm font-medium uppercase tracking-wide'
-            style={{ color: colors.textSecondary }}
-          >
-            General
-          </Text>
+        {/* Languages Settings */}
+        <SettingItem
+          title='Languages'
+          subtitle='Choose your languages appearance'
+          icon='language'
+          onPress={() => navigation.navigate('LanguageSettings')}
+        />
 
-          <SettingItem
-            title={t('settings.notifications')}
-            onPress={() => {
-              // Navigate to notifications settings
-            }}
-          />
+        {/* Notification Settings */}
+        <SettingItem
+          title='Notifications'
+          subtitle='Receive notifications on your device'
+          icon='notifications'
+          onPress={() => navigation.navigate('NotificationsSettings')}
+        />
 
-          <SettingItem
-            title={t('settings.privacy')}
-            onPress={() => {
-              // Navigate to privacy settings
-            }}
-          />
+        {/* Privacy & Security */}
+        <SectionHeader title='Privacy & Security' />
 
-          <SettingItem
-            title={t('settings.terms')}
-            onPress={() => {
-              // Navigate to terms
-            }}
-          />
+        <SettingItem
+          title='Privacy & Security'
+          subtitle='Make your profile visible to others'
+          icon='visibility'
+          onPress={() => navigation.navigate('PrivacySecuritySettings')}
+        />
 
-          <SettingItem
-            title={t('settings.support')}
-            onPress={() => {
-              // Navigate to support
-            }}
-          />
-        </View>
+        <SettingItem
+          title='Privacy Policy'
+          subtitle='Read our privacy policy'
+          icon='policy'
+          showArrow
+          onPress={handlePrivacyPolicy}
+        />
 
-        {/* Account Section */}
-        <View className='mt-6 mb-6'>
-          <TouchableOpacity
-            className='mx-6 py-4 rounded-lg'
-            style={{ backgroundColor: colors.error }}
-            onPress={handleLogout}
-          >
-            <Text className='text-white text-center font-semibold'>{t('auth.logout')}</Text>
-          </TouchableOpacity>
-        </View>
+        <SettingItem
+          title='Terms of Service'
+          subtitle='Read our terms of service'
+          icon='gavel'
+          showArrow
+          onPress={handleTermsOfService}
+        />
+
+        {/* Danger Zone */}
+        <SectionHeader title='Danger Zone' />
+
+        <TouchableOpacity
+          className='flex-row items-center px-4 py-4 bg-white border-b border-gray-100'
+          onPress={handleDeleteAccount}
+        >
+          <View className='w-10 h-10 bg-red-100 rounded-full items-center justify-center mr-4'>
+            <Icon iconStyle='solid' name='trash' size={20} color='#EF4444' />
+          </View>
+
+          <View className='flex-1'>
+            <Text className='text-base font-semibold text-red-600'>Delete Account</Text>
+            <Text className='text-sm text-gray-500 mt-1'>Permanently delete your account and data</Text>
+          </View>
+
+          <Icon iconStyle='solid' name='chevron-right' size={20} color='#9CA3AF' />
+        </TouchableOpacity>
+
+        {/* Bottom Spacing */}
+        <View className='h-6' />
       </ScrollView>
-    </SafeAreaView>
+    </AppLayout>
   );
 };
 

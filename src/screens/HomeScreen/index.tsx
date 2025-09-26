@@ -1,4 +1,4 @@
-import BottomNavigation from '@/components/template/Navigations/BottomNavigation';
+import AppLayout from '@/components/layout/AppLayout';
 import ProfileCard from '@/components/template/ProfileCard';
 import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
@@ -106,8 +106,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({
   };
 
   return (
-    <View className='flex-1 px-6 pt-16'>
-      {/* Scrollable Content */}
+    <AppLayout>
       <ScrollView
         className='flex-1'
         showsVerticalScrollIndicator={false}
@@ -128,15 +127,13 @@ const HomeScreen: React.FC<HomeScreenProps> = ({
         <TabNavigation activeTab={activeTab} onTabPress={handleTabPress} tabs={tabs} />
 
         {/* Friends List */}
-        <View className='pb-6'>
+        <View className=''>
           {friendsList.map((user) => (
             <UserListItem key={user.id} user={user} onPress={handleUserPress} onActionPress={handleUserActionPress} />
           ))}
         </View>
       </ScrollView>
-
-      <BottomNavigation activeTab='home' onTabPress={() => navigation.navigate('Articles' as never)} />
-    </View>
+    </AppLayout>
   );
 };
 

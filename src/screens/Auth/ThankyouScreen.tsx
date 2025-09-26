@@ -90,7 +90,7 @@ const ThankYouScreen: React.FC<ThankYouScreenProps> = ({
   });
 
   return (
-    <Animated.View className='flex-1 px-6 pt-16' style={{ opacity: fadeAnim }}>
+    <Animated.View className='flex-1 px-4 pt-16' style={{ opacity: fadeAnim }}>
       {/* Top Navigation Dot */}
       <View className='flex-row justify-start mb-8'>
         <View className='w-3 h-3 bg-blue-600 rounded-full' />

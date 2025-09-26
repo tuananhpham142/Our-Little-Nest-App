@@ -99,7 +99,7 @@ const CompleteProfileScreen: React.FC<CompleteProfileScreenProps> = ({ onComplet
   };
 
   return (
-    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} className='flex-1 px-6 pt-16'>
+    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} className='flex-1 px-4 pt-16'>
       <ScrollView
         // eslint-disable-next-line react-native/no-inline-styles
         contentContainerStyle={{ flexGrow: 1 }}
@@ -129,12 +129,12 @@ const CompleteProfileScreen: React.FC<CompleteProfileScreenProps> = ({ onComplet
               <View className='absolute top-14 -left-3 w-6 h-2 bg-blue-600 rounded-full transform -rotate-45' />
               <View className='absolute top-14 -right-3 w-6 h-2 bg-blue-600 rounded-full transform rotate-45' />
               {/* Legs */}
-              <View className='flex-row justify-center space-x-1 mt-1'>
+              <View className='flex flex-row justify-center gap-1 mt-1'>
                 <View className='w-2 h-10 bg-gray-800 rounded-b-lg' />
                 <View className='w-2 h-10 bg-gray-800 rounded-b-lg' />
               </View>
               {/* Feet */}
-              <View className='flex-row justify-center space-x-1 -mt-2'>
+              <View className='flex flex-row justify-center gap-1 -mt-2'>
                 <View className='w-4 h-2 bg-yellow-500 rounded-full' />
                 <View className='w-4 h-2 bg-yellow-500 rounded-full' />
               </View>
@@ -221,11 +221,11 @@ const CompleteProfileScreen: React.FC<CompleteProfileScreenProps> = ({ onComplet
 
             {/* Gender Selection */}
             <View className='mb-8'>
-              <View className='flex-row justify-center space-x-4'>
+              <View className='flex flex-row justify-center gap-1'>
                 {/* Male Option */}
                 <TouchableOpacity
                   onPress={() => handleGenderSelect('male')}
-                  className={`flex-1 py-4 px-6 rounded-2xl border-2 flex-row items-center justify-center active:scale-95 ${
+                  className={`flex-1 py-4 px-4 rounded-2xl border-2 flex-row items-center justify-center active:scale-95 ${
                     formData.gender === 'male'
                       ? 'bg-blue-600 border-blue-600 shadow-lg'
                       : 'bg-white border-gray-200 shadow-sm'
@@ -252,7 +252,7 @@ const CompleteProfileScreen: React.FC<CompleteProfileScreenProps> = ({ onComplet
                 {/* Female Option */}
                 <TouchableOpacity
                   onPress={() => handleGenderSelect('female')}
-                  className={`flex-1 py-4 px-6 rounded-2xl border-2 flex-row items-center justify-center active:scale-95 ${
+                  className={`flex-1 py-4 px-4 rounded-2xl border-2 flex-row items-center justify-center active:scale-95 ${
                     formData.gender === 'female'
                       ? 'bg-pink-500 border-pink-500 shadow-lg'
                       : 'bg-white border-gray-200 shadow-sm'

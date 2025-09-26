@@ -50,16 +50,15 @@ const CategoryCard = memo<{
           // defaultSource={require('./assets/placeholder.png')}
         />
         <Text className='text-sm font-semibold text-dark mb-1' numberOfLines={2}>
-          {item.title}
+          {item.name}
         </Text>
         <View className='flex-row items-center'>
-          {item.category && (
+          {item.name && (
             <>
-              <Text className='text-xs text-primary-500'>{item.category}</Text>
+              <Text className='text-xs text-primary-500'>{item.name}</Text>
               <Text className='text-xs text-grey mx-1'>•</Text>
             </>
           )}
-          <Text className='text-xs text-grey'>{item.timeAgo}</Text>
         </View>
       </TouchableOpacity>
     </Animated.View>

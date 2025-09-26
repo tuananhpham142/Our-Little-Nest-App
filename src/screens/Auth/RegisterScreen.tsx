@@ -66,7 +66,7 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({ onVerifyPhone, onNaviga
   };
 
   return (
-    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} className='flex-1 px-6 pt-16'>
+    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} className='flex-1 px-4 pt-16'>
       <ScrollView
         contentContainerStyle={{ flexGrow: 1 }}
         showsVerticalScrollIndicator={false}
@@ -96,12 +96,12 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({ onVerifyPhone, onNaviga
               <View className='absolute top-16 -left-4 w-8 h-3 bg-blue-600 rounded-full transform -rotate-45' />
               <View className='absolute top-16 -right-4 w-8 h-3 bg-blue-600 rounded-full transform rotate-45' />
               {/* Legs */}
-              <View className='flex-row justify-center space-x-1 mt-1'>
+              <View className='flex-row justify-center flex gap-1 mt-1'>
                 <View className='w-3 h-12 bg-gray-800 rounded-b-lg' />
                 <View className='w-3 h-12 bg-gray-800 rounded-b-lg' />
               </View>
               {/* Feet */}
-              <View className='flex-row justify-center space-x-1 -mt-2'>
+              <View className='flex-row justify-center flex gap-1 -mt-2'>
                 <View className='w-6 h-3 bg-yellow-500 rounded-full' />
                 <View className='w-6 h-3 bg-yellow-500 rounded-full' />
               </View>

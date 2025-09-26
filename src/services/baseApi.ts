@@ -24,7 +24,9 @@ export const baseApi: AxiosInstance = axios.create({
 baseApi.interceptors.request.use(
   async (config) => {
     try {
-      const token = await AsyncStorageService.getItem<string>('authToken');
+      const token =
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0YTFiMmMzZDRlNWY2Nzg5YWJjZGVmMyIsInJvbGUiOnsiaWQiOiIyIn0sInNlc3Npb25JZCI6IjY4Y2QxY2Q2MTZmYWVlYTYyOGUyZTNkNSIsImlhdCI6MTc1ODI3MjcyNiwiZXhwIjoxNzg5ODA4NzI2fQ.-F1-IsrODdGRgQsp9XWQN15e3ZChHeTpRjQWcR0AJ34';
+      //await AsyncStorageService.getItem<string>('authToken');
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }

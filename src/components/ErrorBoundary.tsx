@@ -44,7 +44,7 @@ export class ErrorBoundary extends Component<Props, State> {
           <Text className='text-gray-600 text-center mb-6'>
             {this.state.error?.message || 'An unexpected error occurred'}
           </Text>
-          <TouchableOpacity className='bg-blue-500 px-6 py-3 rounded-lg' onPress={this.handleReset}>
+          <TouchableOpacity className='bg-blue-500 px-4 py-3 rounded-lg' onPress={this.handleReset}>
             <Text className='text-white font-semibold'>Try Again</Text>
           </TouchableOpacity>
         </View>

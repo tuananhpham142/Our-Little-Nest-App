@@ -21,7 +21,7 @@ const Header = memo<{
   return (
     <Animated.View
       style={{ transform: [{ scale: scaleAnim }] }}
-      className='bg-primary px-4 py-2 flex-row items-center justify-between border-b border-grey-light'
+      className='bg-white px-4 py-2 flex-row items-center justify-between border-b border-grey-light'
     >
       <View className='flex-row items-center flex-1'>
         {onBack && (

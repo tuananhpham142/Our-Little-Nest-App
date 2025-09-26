@@ -1,7 +1,22 @@
 export interface CategoryItem {
   id: string;
-  title: string;
+  name: string;
   image: string;
-  timeAgo: string;
-  category?: string;
+  slug: string;
+  description?: string;
+  isActive: boolean;
+}
+
+export interface CategoryState {
+  categories: CategoryItem[];
+  currentCategory: CategoryItem | null;
+  isLoading: boolean;
+  isLoadingMore: boolean;
+  error: string | null;
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    hasNextPage: boolean;
+  };
 }

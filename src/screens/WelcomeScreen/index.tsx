@@ -22,7 +22,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({}) => {
     <SafeAreaView className='flex-1 bg-gradient-to-br from-blue-50 to-purple-100'>
       <StatusBar barStyle='dark-content' backgroundColor='transparent' translucent />
 
-      <View className='flex-1 px-6 pt-12'>
+      <View className='flex-1 px-4 pt-12'>
         {/* Top Navigation Dot */}
         <View className='flex-row justify-start mb-8'>
           <View className='w-3 h-3 bg-blue-600 rounded-full' />

@@ -1,9 +1,14 @@
 // src/types/api.ts
 export interface ApiResponse<T = any> {
   data: T;
-  message: string;
-  success: boolean;
-  statusCode: number;
+}
+export interface ApiGetByPageResponse<T = any> {
+  data: T[];
+  hasNextPage: boolean;
+  total: number;
+  limit: number;
+  page: number;
+  totalPages: number;
 }
 
 export interface ApiError {
