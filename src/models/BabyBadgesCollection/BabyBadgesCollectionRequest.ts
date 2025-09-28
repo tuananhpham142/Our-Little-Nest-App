@@ -3,7 +3,7 @@
 import { VerificationStatus } from '../Badge/BadgeEnum';
 
 // Create Badge Collection (Award Badge) Request
-export interface CreateBadgeCollectionRequest {
+export interface BadgeAwardRequest {
   babyId: string;
   badgeId: string;
   completedAt: string;
@@ -19,8 +19,8 @@ export interface UpdateBadgeCollectionRequest {
 }
 
 // Query/Filter Request
-export interface GetBadgeCollectionsRequest {
-  babyId?: string;
+export interface GetBabyBadgeCollectionsRequest {
+  babyId: string;
   badgeId?: string;
   parentId?: string;
   verificationStatus?: VerificationStatus;
@@ -41,63 +41,11 @@ export interface GetBabyBadgesRequest {
   limit?: number;
 }
 
-// Get Baby Stats Request
-export interface GetBabyStatsRequest {
-  babyId: string;
-  includeRecentBadges?: boolean;
-  includeTimeline?: boolean;
-}
-
-// Get Baby Progress Request
-export interface GetBabyProgressRequest {
-  babyId: string;
-  includeRecommendations?: boolean;
-  recommendationLimit?: number;
-}
-
-// Approve/Reject Badge Request
-export interface VerifyBadgeCollectionRequest {
-  collectionId: string;
-  action: 'approve' | 'reject';
-  verificationNote?: string;
-}
-
-// Batch Verification Request
-export interface BatchVerifyRequest {
-  collectionIds: string[];
-  action: 'approve' | 'reject';
-  verificationNote?: string;
-}
-
-// Get Pending Verifications Request
-export interface GetPendingVerificationsRequest {
-  page?: number;
-  limit?: number;
-  sortBy?: 'createdAt' | 'completedAt';
-  sortOrder?: 'asc' | 'desc';
-}
-
-// Get My Submissions Request
-export interface GetMySubmissionsRequest {
-  verificationStatus?: VerificationStatus;
-  babyId?: string;
-  page?: number;
-  limit?: number;
-}
-
 // Upload Media Request
 export interface UploadBadgeMediaRequest {
   collectionId: string;
   files: FormData;
 }
-
-// Default parameters
-export const DEFAULT_BADGE_COLLECTION_PARAMS: GetBadgeCollectionsRequest = {
-  page: 1,
-  limit: 10,
-  sortBy: 'completedAt',
-  sortOrder: 'desc',
-};
 
 // Validation helpers
 export const BADGE_COLLECTION_VALIDATION = {

@@ -1,11 +1,11 @@
-// src/models/BadgeCollection/BadgeCollectionModel.ts
+// src/models/BabyBadgesCollection/BabyBadgesCollectionModel.ts
 
 import { Baby } from '../Baby/BabyModel';
 import { VerificationStatus } from '../Badge/BadgeEnum';
 import { Badge } from '../Badge/BadgeModel';
 
-// Main BadgeCollection interface
-export interface BadgeCollection {
+// Main BabyBadgesCollection interface
+export interface BabyBadgesCollection {
   id: string;
   _id?: string; // MongoDB ID
   babyId: string;
@@ -32,7 +32,7 @@ export interface BadgeCollection {
 }
 
 // Badge Collection Statistics
-export interface BadgeCollectionStatistics {
+export interface BabyBadgesCollectionStatistics {
   totalCollections: number;
   approvedCollections: number;
   pendingCollections: number;
@@ -44,7 +44,7 @@ export interface BadgeCollectionStatistics {
     badge: Badge;
     count: number;
   }>;
-  recentActivity: BadgeCollection[];
+  recentActivity: BabyBadgesCollection[];
 }
 
 // Baby Badge Statistics
@@ -56,7 +56,7 @@ export interface BabyBadgeStatistics {
   rejectedBadges: number;
   categoryDistribution: Record<string, number>;
   difficultyDistribution: Record<string, number>;
-  recentBadges: BadgeCollection[];
+  recentBadges: BabyBadgesCollection[];
   progressPercentage: number;
   nextMilestones: Badge[];
   completionTimeline: Array<{
@@ -69,7 +69,7 @@ export interface BabyBadgeStatistics {
 export interface BabyBadgeProgress {
   babyId: string;
   babyAge: number; // in months
-  recentBadges: BadgeCollection[];
+  recentBadges: BabyBadgesCollection[];
   statistics: {
     totalBadges: number;
     approvedBadges: number;
@@ -83,7 +83,7 @@ export interface BabyBadgeProgress {
 }
 
 // Filter interface
-export interface BadgeCollectionFilters {
+export interface BabyBadgesCollectionFilters {
   babyId?: string;
   badgeId?: string;
   parentId?: string;
@@ -108,12 +108,12 @@ export interface PaginationInfo {
 }
 
 // State interface for Redux
-export interface BadgeCollectionState {
-  collections: BadgeCollection[];
-  currentCollection: BadgeCollection | null;
-  babyCollections: Record<string, BadgeCollection[]>; // Grouped by babyId
-  mySubmissions: BadgeCollection[];
-  pendingVerifications: BadgeCollection[];
+export interface BabyBadgesCollectionState {
+  collections: BabyBadgesCollection[];
+  currentCollection: BabyBadgesCollection | null;
+  babyCollections: Record<string, BabyBadgesCollection[]>; // Grouped by babyId
+  mySubmissions: BabyBadgesCollection[];
+  pendingVerifications: BabyBadgesCollection[];
   babyStatistics: Record<string, BabyBadgeStatistics>; // Cached stats by babyId
   babyProgress: Record<string, BabyBadgeProgress>; // Cached progress by babyId
   isLoading: boolean;
@@ -121,7 +121,7 @@ export interface BadgeCollectionState {
   isSubmitting: boolean;
   error: string | null;
   pagination: PaginationInfo;
-  filters: BadgeCollectionFilters;
+  filters: BabyBadgesCollectionFilters;
   // UI state
   selectedBabyId: string | null;
   activeTab: 'all' | 'pending' | 'approved' | 'rejected';
@@ -145,7 +145,7 @@ export interface BadgeVerificationAction {
 }
 
 // Badge Collection with populated data
-export interface BadgeCollectionWithDetails extends BadgeCollection {
+export interface BabyBadgesCollectionWithDetails extends BabyBadgesCollection {
   badge: Badge;
   baby: Baby;
   parent: {
@@ -166,15 +166,15 @@ export interface BadgeCollectionWithDetails extends BadgeCollection {
 // Timeline entry for baby's badge journey
 export interface BadgeTimelineEntry {
   date: string;
-  collections: BadgeCollectionWithDetails[];
+  collections: BabyBadgesCollectionWithDetails[];
   totalForDay: number;
   milestoneAchieved?: boolean;
 }
 
 // Badge collection group (for display)
-export interface BadgeCollectionGroup {
+export interface BabyBadgesCollectionGroup {
   category: string;
-  badges: BadgeCollectionWithDetails[];
+  badges: BabyBadgesCollectionWithDetails[];
   total: number;
   completionRate: number;
 }

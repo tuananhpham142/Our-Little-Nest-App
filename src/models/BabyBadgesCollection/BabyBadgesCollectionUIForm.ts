@@ -1,23 +1,15 @@
 // src/models/BadgeCollection/BadgeCollectionUIForm.ts
 
-import { VerificationStatus } from '../Badge/BadgeEnum';
-import { BADGE_COLLECTION_VALIDATION } from './BadgeCollectionRequest';
-
-// Form field validation interfaces
-export interface FormFieldError {
-  field: string;
-  message: string;
-}
-
-export interface FormValidation {
-  isValid: boolean;
-  errors: FormFieldError[];
-}
+import { Baby } from '../Baby/BabyModel';
+import { BadgeCategory, VerificationStatus } from '../Badge/BadgeEnum';
+import { FormFieldError, FormValidation } from '../Badge/BadgeFormUI';
+import { Badge } from '../Badge/BadgeModel';
+import { BADGE_COLLECTION_VALIDATION } from './BabyBadgesCollectionRequest';
 
 // Award Badge Form
 export interface AwardBadgeFormData {
-  babyId: string;
-  badgeId: string;
+  baby: Baby;
+  badge: Badge;
   completedAt: Date | string;
   submissionNote: string;
   mediaFiles: Array<{
@@ -40,17 +32,10 @@ export interface UpdateBadgeCollectionFormData {
   }>;
 }
 
-// Verification Form (Admin)
-export interface VerificationFormData {
-  action: 'approve' | 'reject';
-  verificationNote: string;
-}
-
 // Filter Form
 export interface BadgeCollectionFilterForm {
-  babyId: string;
-  badgeId: string;
-  verificationStatus: VerificationStatus | '';
+  baby: Baby;
+  category: BadgeCategory;
   completedAfter: Date | null;
   completedBefore: Date | null;
   sortBy: 'completedAt' | 'createdAt' | 'verifiedAt';
@@ -75,22 +60,6 @@ export interface UpdateBadgeCollectionFormProps {
   onCancel: () => void;
   isSubmitting?: boolean;
   errors?: FormFieldError[];
-}
-
-export interface VerificationFormProps {
-  collectionId: string;
-  collectionDetails: {
-    babyName: string;
-    badgeTitle: string;
-    submittedBy: string;
-    submittedAt: string;
-    note?: string;
-    media?: string[];
-  };
-  onApprove: () => void;
-  onReject: (note?: string) => void;
-  onCancel: () => void;
-  isSubmitting?: boolean;
 }
 
 export interface BadgeCollectionFilterFormProps {
@@ -167,12 +136,12 @@ export const BadgeCollectionFormValidation = {
   validateAwardBadgeForm: (data: AwardBadgeFormData): FormValidation => {
     const errors: FormFieldError[] = [];
 
-    const babyError = BadgeCollectionFormValidation.validateBabyId(data.babyId);
+    const babyError = BadgeCollectionFormValidation.validateBabyId(data.baby.id);
     if (babyError) {
       errors.push({ field: 'babyId', message: babyError });
     }
 
-    const badgeError = BadgeCollectionFormValidation.validateBadgeId(data.badgeId);
+    const badgeError = BadgeCollectionFormValidation.validateBadgeId(data.badge.id);
     if (badgeError) {
       errors.push({ field: 'badgeId', message: badgeError });
     }
