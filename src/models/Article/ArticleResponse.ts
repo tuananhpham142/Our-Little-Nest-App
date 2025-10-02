@@ -3,12 +3,6 @@
 import { ApiGetByPageResponse } from '@/types/api';
 import { Article } from './ArticleModel';
 
-export interface ApiResponse<T> {
-  data: T;
-  message?: string;
-  statusCode: number;
-}
-
 export interface PaginationMeta {
   page: number;
   limit: number;

@@ -2,82 +2,40 @@
 
 import { BabyBadgesCollection } from './BabyBadgesCollectionModel';
 
-// List Response
-export interface BabyBadgesCollectionListResponse {
-  data: BabyBadgesCollection[];
-  total: number;
-  page: number;
-  limit: number;
-  hasNextPage: boolean;
-  hasPrevPage?: boolean;
-  totalPages?: number;
-}
+// Based on actual API controller responses
 
-// Detail Response
-export interface BabyBadgesCollectionDetailResponse {
-  data: BabyBadgesCollection;
-}
+// Award badge response - returns BabyBadgesCollection directly
+export type BabyBadgesCollectionMutationResponse = BabyBadgesCollection;
 
-// Create Response
-export interface CreateBabyBadgesCollectionResponse {
-  data: BabyBadgesCollection;
-  message: string;
-  autoApproved: boolean;
-}
+// Get collection by ID - returns BabyBadgesCollection directly
+export type BabyBadgesCollectionDetailResponse = BabyBadgesCollection;
 
-// Update Response
-export interface UpdateBabyBadgesCollectionResponse {
-  data: BabyBadgesCollection;
-  message: string;
-}
+// Get badges for baby - returns BabyBadgesCollection[] directly
+export type BabyBadgesCollectionsByBabyResponse = BabyBadgesCollection[];
 
-// Verification Response
-export interface VerifyBabyBadgesCollectionResponse {
-  data: BabyBadgesCollection;
-  action: 'approved' | 'rejected';
-  message: string;
-}
+// Get pending verifications - returns BabyBadgesCollection[] directly
+export type PendingVerificationsResponse = BabyBadgesCollection[];
 
-// Baby Badges Response
-export interface BabyBadgesCollectionResponse {
-  babyId: string;
-  badges: BabyBadgesCollection[];
-  total: number;
-  statistics: {
-    approved: number;
-    pending: number;
-    rejected: number;
-  };
-}
-// Media Upload Response
-export interface MediaUploadResponse {
-  urls: string[];
-  message: string;
-}
+// Delete response - returns void (204 No Content)
+export type DeleteBadgeCollectionResponse = void;
 
-// Timeline Response
-export interface BadgeTimelineResponse {
-  babyId: string;
-  timeline: Array<{
-    date: string;
-    badges: BabyBadgesCollection[];
-    count: number;
-  }>;
-  totalBadges: number;
-  dateRange: {
-    start: string;
-    end: string;
+// API Error Response
+export interface ApiErrorResponse {
+  statusCode: number;
+  message: string | string[];
+  error?: string;
+  timestamp?: string;
+  path?: string;
+  details?: {
+    field?: string;
+    code?: string;
+    validation?: Record<string, string[]>;
   };
 }
 
-// Recommendations Response
-export interface BadgeRecommendationsResponse {
-  babyId: string;
-  babyAge: number;
-  recommendations: Array<{
-    badge: any; // Badge type
-    reason: string;
-    priority: 'high' | 'medium' | 'low';
-  }>;
-  total: number;
+// Success Response
+export interface SuccessResponse {
+  success: boolean;
+  message?: string;
+  data?: any;
 }

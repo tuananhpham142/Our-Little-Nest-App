@@ -8,8 +8,8 @@ import { userApi } from '../services/user/userApi';
 import appSlice from './slices/appSlice';
 import articleSlice from './slices/articleSlice';
 import authSlice from './slices/authSlice';
+import babyBadgesCollectionSlice from './slices/babyBadgesCollectionSlice';
 import babySlice from './slices/babySlice';
-import badgeCollectionReducer from './slices/badgeCollectionSlice';
 import badgeReducer from './slices/badgeSlice';
 import categorySlice from './slices/categorySlice';
 import familyMemberSlice from './slices/familyMemberSlice';
@@ -39,7 +39,7 @@ const rootReducer = combineReducers({
   pregnancyJournals: pregnancyJournalReducer,
   pregnancyCares: pregnancyCareReducer,
   badges: badgeReducer,
-  badgeCollections: badgeCollectionReducer,
+  babyBadges: babyBadgesCollectionSlice,
   notifications: notificationReducer,
   [authApi.reducerPath]: authApi.reducer,
   [userApi.reducerPath]: userApi.reducer,

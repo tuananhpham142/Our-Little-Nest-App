@@ -13,9 +13,7 @@ import BabyFamilyScreen from '@/screens/Baby/BabyFamilyScreen';
 import BabyMainScreen from '@/screens/Baby/BabyListScreen';
 import BabyProfileScreen from '@/screens/Baby/BabyProfileScreen';
 import CreateBabyScreen from '@/screens/Baby/CreateBabyScreen';
-import BadgeCollectionScreen from '@/screens/Badge/BadgeCollectionScreen';
-import BadgesScreen from '@/screens/Badge/BadgesScreen';
-import AwardBadgeScreen from '@/screens/Badge/components/AwardBadgeScreen';
+
 import InviteFamilyMemberScreen from '@/screens/FamilyMember/InviteFamilyMemberScreen';
 import ManageFamilyMemberScreen from '@/screens/FamilyMember/ManageFamilyMemberScreen';
 import NotificationScreen from '@/screens/Notification/NotificationScreen';
@@ -109,32 +107,7 @@ export const AppNavigator: React.FC = () => {
               }}
             /> */}
             {/* Badges */}
-            <Stack.Screen
-              name='Badges'
-              component={BadgesScreen}
-              options={{
-                title: 'Badges',
-                headerShown: false,
-              }}
-            />
-            <Stack.Screen
-              name='BadgeCollection'
-              component={(props: any) => BadgeCollectionScreen(props)}
-              options={{
-                title: 'Badge Collection',
-                headerShown: false,
-              }}
-            />
-            <Stack.Screen
-              name='AwardBadge'
-              component={AwardBadgeScreen}
-              options={{
-                title: 'Award Badge',
-                headerShown: false,
-                presentation: 'modal',
-                animation: 'slide_from_bottom',
-              }}
-            />
+
             {/* Notifications */}
             <Stack.Screen name='Notifications' component={NotificationScreen} />
             {/* Articles */}
