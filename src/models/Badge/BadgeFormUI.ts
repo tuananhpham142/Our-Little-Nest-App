@@ -1,258 +1,320 @@
 // src/models/Badge/BadgeUIForm.ts
 
 import { BadgeCategory, BadgeDifficulty } from './BadgeEnum';
-import { BADGE_VALIDATION } from './BadgeRequest';
+import { Badge } from './BadgeModel';
 
-// Form field validation interfaces
-export interface FormFieldError {
-  field: string;
-  message: string;
-}
-
-export interface FormValidation {
-  isValid: boolean;
-  errors: FormFieldError[];
-}
-
-// Create/Edit Badge Form
-export interface BadgeFormData {
+// Form interfaces for UI components
+export interface BadgeFormUI {
+  id?: string;
   title: string;
   description: string;
   instruction: string;
   category: BadgeCategory | '';
   iconUrl: string;
   difficulty: BadgeDifficulty | '';
-  minAge: string;
-  maxAge: string;
-  isActive: boolean;
+  minAge: string; // String for form input, will be converted to number
+  maxAge: string; // String for form input, will be converted to number
   isCustom: boolean;
+  isActive: boolean;
 }
 
-// Search/Filter Form
-export interface BadgeFilterForm {
+// Create badge form
+export interface CreateBadgeFormUI extends Omit<BadgeFormUI, 'id' | 'isActive'> {
+  // Additional form-specific fields
+  submitForReview: boolean;
+  agreeToTerms: boolean;
+}
+
+// Update badge form
+export interface UpdateBadgeFormUI extends Partial<BadgeFormUI> {
+  id: string;
+  // Form-specific update fields
+  reasonForUpdate?: string;
+}
+
+// Badge filter form for search/filter UI
+export interface BadgeFilterFormUI {
   search: string;
-  category: BadgeCategory | '';
-  difficulty: BadgeDifficulty | '';
+  category: BadgeCategory | 'all';
+  difficulty: BadgeDifficulty | 'all';
   minAge: string;
   maxAge: string;
-  isActive: boolean | null;
-  isCustom: boolean | null;
-  sortBy: string;
-  sortOrder: 'asc' | 'desc';
+  isActive: 'all' | 'true' | 'false';
+  isCustom: 'all' | 'true' | 'false';
+  showMyBadgesOnly: boolean;
 }
 
-// Badge Selection Form (for awarding badges)
-export interface BadgeSelectionForm {
-  selectedBadgeId: string;
-  selectedBabyId: string;
-  completionDate: Date | string;
-  note: string;
-  mediaFiles: Array<{
-    uri: string;
-    type: string;
-    name: string;
-  }>;
+// Badge search form
+export interface BadgeSearchFormUI {
+  searchTerm: string;
+  searchIn: 'title' | 'description' | 'instruction' | 'all';
+  category: BadgeCategory | 'all';
+  difficulty: BadgeDifficulty | 'all';
+  ageRange: {
+    min: string;
+    max: string;
+  };
+  isActive: boolean;
+  isCustom: 'all' | 'true' | 'false';
+  createdBy: 'all' | 'me' | 'others';
 }
 
-// Form Props for React Native components
-export interface BadgeFormProps {
-  initialData?: Partial<BadgeFormData>;
-  mode: 'create' | 'edit';
-  isCustomBadge?: boolean;
-  onSubmit: (data: BadgeFormData) => void;
-  onCancel: () => void;
-  isSubmitting?: boolean;
-  errors?: FormFieldError[];
-}
-
-export interface BadgeFilterFormProps {
-  initialFilters?: Partial<BadgeFilterForm>;
-  onApply: (filters: BadgeFilterForm) => void;
-  onClear: () => void;
-  showCustomFilter?: boolean;
-}
-
-export interface BadgeSelectionFormProps {
-  badges: Array<{ id: string; title: string; category: string }>;
-  babies: Array<{ id: string; name: string; age: number }>;
-  onSubmit: (data: BadgeSelectionForm) => void;
-  onCancel: () => void;
-  isSubmitting?: boolean;
-  errors?: FormFieldError[];
-}
-
-// Form validation helpers
-export const BadgeFormValidation = {
-  validateTitle: (title: string): string | null => {
-    if (!title || title.trim().length === 0) {
-      return 'Title is required';
-    }
-    if (title.length < BADGE_VALIDATION.TITLE_MIN_LENGTH) {
-      return `Title must be at least ${BADGE_VALIDATION.TITLE_MIN_LENGTH} characters`;
-    }
-    if (title.length > BADGE_VALIDATION.TITLE_MAX_LENGTH) {
-      return `Title cannot exceed ${BADGE_VALIDATION.TITLE_MAX_LENGTH} characters`;
-    }
-    return null;
-  },
-
-  validateDescription: (description: string): string | null => {
-    if (!description || description.trim().length === 0) {
-      return 'Description is required';
-    }
-    if (description.length < BADGE_VALIDATION.DESCRIPTION_MIN_LENGTH) {
-      return `Description must be at least ${BADGE_VALIDATION.DESCRIPTION_MIN_LENGTH} characters`;
-    }
-    if (description.length > BADGE_VALIDATION.DESCRIPTION_MAX_LENGTH) {
-      return `Description cannot exceed ${BADGE_VALIDATION.DESCRIPTION_MAX_LENGTH} characters`;
-    }
-    return null;
-  },
-
-  validateInstruction: (instruction: string): string | null => {
-    if (!instruction || instruction.trim().length === 0) {
-      return 'Instruction is required';
-    }
-    if (instruction.length < BADGE_VALIDATION.INSTRUCTION_MIN_LENGTH) {
-      return `Instruction must be at least ${BADGE_VALIDATION.INSTRUCTION_MIN_LENGTH} characters`;
-    }
-    if (instruction.length > BADGE_VALIDATION.INSTRUCTION_MAX_LENGTH) {
-      return `Instruction cannot exceed ${BADGE_VALIDATION.INSTRUCTION_MAX_LENGTH} characters`;
-    }
-    return null;
-  },
-
-  validateAgeRange: (minAge: string, maxAge: string): string | null => {
-    const min = parseInt(minAge, 10);
-    const max = parseInt(maxAge, 10);
-
-    if (minAge && isNaN(min)) {
-      return 'Minimum age must be a number';
-    }
-    if (maxAge && isNaN(max)) {
-      return 'Maximum age must be a number';
-    }
-
-    if (min < BADGE_VALIDATION.MIN_AGE || min > BADGE_VALIDATION.MAX_AGE) {
-      return `Minimum age must be between ${BADGE_VALIDATION.MIN_AGE} and ${BADGE_VALIDATION.MAX_AGE} months`;
-    }
-
-    if (max < BADGE_VALIDATION.MIN_AGE || max > BADGE_VALIDATION.MAX_AGE) {
-      return `Maximum age must be between ${BADGE_VALIDATION.MIN_AGE} and ${BADGE_VALIDATION.MAX_AGE} months`;
-    }
-
-    if (min && max && min > max) {
-      return 'Minimum age cannot be greater than maximum age';
-    }
-
-    // Business rule: Hard difficulty not appropriate for babies under 6 months
-    if (min < 6) {
-      return 'Badges for babies under 6 months should not be hard difficulty';
-    }
-
-    return null;
-  },
-
-  validateCategory: (category: string): string | null => {
-    if (!category) {
-      return 'Category is required';
-    }
-    if (!Object.values(BadgeCategory).includes(category as BadgeCategory)) {
-      return 'Invalid category selected';
-    }
-    return null;
-  },
-
-  validateDifficulty: (difficulty: string): string | null => {
-    if (!difficulty) {
-      return 'Difficulty is required';
-    }
-    if (!Object.values(BadgeDifficulty).includes(difficulty as BadgeDifficulty)) {
-      return 'Invalid difficulty selected';
-    }
-    return null;
-  },
-
-  validateForm: (data: BadgeFormData): FormValidation => {
-    const errors: FormFieldError[] = [];
-
-    const titleError = BadgeFormValidation.validateTitle(data.title);
-    if (titleError) {
-      errors.push({ field: 'title', message: titleError });
-    }
-
-    const descError = BadgeFormValidation.validateDescription(data.description);
-    if (descError) {
-      errors.push({ field: 'description', message: descError });
-    }
-
-    const instructionError = BadgeFormValidation.validateInstruction(data.instruction);
-    if (instructionError) {
-      errors.push({ field: 'instruction', message: instructionError });
-    }
-
-    const categoryError = BadgeFormValidation.validateCategory(data.category);
-    if (categoryError) {
-      errors.push({ field: 'category', message: categoryError });
-    }
-
-    const difficultyError = BadgeFormValidation.validateDifficulty(data.difficulty);
-    if (difficultyError) {
-      errors.push({ field: 'difficulty', message: difficultyError });
-    }
-
-    if (data.minAge || data.maxAge) {
-      const ageError = BadgeFormValidation.validateAgeRange(data.minAge, data.maxAge);
-      if (ageError) {
-        errors.push({ field: 'ageRange', message: ageError });
-      }
-    }
-
-    // Additional validation for hard difficulty
-    if (data.difficulty === BadgeDifficulty.HARD && data.minAge) {
-      const minAge = parseInt(data.minAge, 10);
-      if (minAge < 6) {
-        errors.push({
-          field: 'difficulty',
-          message: 'Hard difficulty not appropriate for babies under 6 months',
-        });
-      }
-    }
-
-    return {
-      isValid: errors.length === 0,
-      errors,
+// Badge validation form
+export interface BadgeValidationFormUI {
+  title: {
+    value: string;
+    isValid: boolean;
+    errorMessage: string;
+  };
+  description: {
+    value: string;
+    isValid: boolean;
+    errorMessage: string;
+  };
+  instruction: {
+    value: string;
+    isValid: boolean;
+    errorMessage: string;
+  };
+  category: {
+    value: BadgeCategory | '';
+    isValid: boolean;
+    errorMessage: string;
+  };
+  difficulty: {
+    value: BadgeDifficulty | '';
+    isValid: boolean;
+    errorMessage: string;
+  };
+  ageRange: {
+    minAge: {
+      value: string;
+      isValid: boolean;
+      errorMessage: string;
     };
-  },
+    maxAge: {
+      value: string;
+      isValid: boolean;
+      errorMessage: string;
+    };
+    isValidRange: boolean;
+    rangeErrorMessage: string;
+  };
+  iconUrl: {
+    value: string;
+    isValid: boolean;
+    errorMessage: string;
+  };
+  isFormValid: boolean;
+  generalErrors: string[];
+}
 
-  // Helper to check if user can create more custom badges
-  canCreateMoreCustomBadges: (currentCount: number): boolean => {
-    return currentCount < BADGE_VALIDATION.MAX_CUSTOM_BADGES_PER_USER;
-  },
+// Badge display form for read-only views
+export interface BadgeDisplayFormUI {
+  id: string;
+  title: string;
+  description: string;
+  instruction: string;
+  category: {
+    value: BadgeCategory;
+    label: string;
+    icon: string;
+    color: string;
+  };
+  iconUrl: string;
+  difficulty: {
+    value: BadgeDifficulty;
+    label: string;
+    color: string;
+    stars: number;
+  };
+  ageRange: {
+    min: number;
+    max: number;
+    display: string;
+  };
+  isCustom: boolean;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+  createdBy?: {
+    id: string;
+    name: string;
+    avatar?: string;
+  };
+  statistics?: {
+    totalAwarded: number;
+    recentlyAwarded: number;
+    popularityScore: number;
+  };
+}
 
-  getRemainingCustomBadges: (currentCount: number): number => {
-    return Math.max(0, BADGE_VALIDATION.MAX_CUSTOM_BADGES_PER_USER - currentCount);
-  },
-};
-
-// Helper to get age group from months
-export const getAgeGroupFromMonths = (months: number): string => {
-  if (months < 3) return 'Newborn (0-3 months)';
-  if (months < 12) return 'Infant (3-12 months)';
-  if (months < 36) return 'Toddler (1-3 years)';
-  if (months < 60) return 'Preschooler (3-5 years)';
-  return 'School age (5+ years)';
-};
-
-// Helper to format age display
-export const formatAgeDisplay = (months: number): string => {
-  if (months < 12) {
-    return `${months} month${months !== 1 ? 's' : ''}`;
+// Conversion utilities
+export class BadgeFormConverter {
+  /**
+   * Convert Badge model to form UI
+   */
+  static toFormUI(badge: Badge): BadgeFormUI {
+    return {
+      id: badge.id,
+      title: badge.title,
+      description: badge.description,
+      instruction: badge.instruction,
+      category: badge.category,
+      iconUrl: badge.iconUrl || '',
+      difficulty: badge.difficulty,
+      minAge: badge.minAge?.toString() || '',
+      maxAge: badge.maxAge?.toString() || '',
+      isCustom: badge.isCustom,
+      isActive: badge.isActive,
+    };
   }
-  const years = Math.floor(months / 12);
-  const remainingMonths = months % 12;
-  if (remainingMonths === 0) {
-    return `${years} year${years !== 1 ? 's' : ''}`;
+
+  /**
+   * Get empty form UI
+   */
+  static getEmptyForm(): CreateBadgeFormUI {
+    return {
+      title: '',
+      description: '',
+      instruction: '',
+      category: '',
+      iconUrl: '',
+      difficulty: '',
+      minAge: '',
+      maxAge: '',
+      isCustom: true,
+      submitForReview: false,
+      agreeToTerms: false,
+    };
   }
-  return `${years} year${years !== 1 ? 's' : ''} ${remainingMonths} month${remainingMonths !== 1 ? 's' : ''}`;
-};
+
+  /**
+   * Get default filter form
+   */
+  static getDefaultFilterForm(): BadgeFilterFormUI {
+    return {
+      search: '',
+      category: 'all',
+      difficulty: 'all',
+      minAge: '',
+      maxAge: '',
+      isActive: 'true',
+      isCustom: 'all',
+      showMyBadgesOnly: false,
+    };
+  }
+
+  /**
+   * Validate form data
+   */
+  // static validateForm(form: CreateBadgeFormUI | UpdateBadgeFormUI): BadgeValidationFormUI {
+  //   const validation: BadgeValidationFormUI = {
+  //     title: { value: form.title, isValid: true, errorMessage: '' },
+  //     description: { value: form.description, isValid: true, errorMessage: '' },
+  //     instruction: { value: form.instruction, isValid: true, errorMessage: '' },
+  //     category: { value: form.category, isValid: true, errorMessage: '' },
+  //     difficulty: { value: form.difficulty, isValid: true, errorMessage: '' },
+  //     ageRange: {
+  //       minAge: { value: form.minAge, isValid: true, errorMessage: '' },
+  //       maxAge: { value: form.maxAge, isValid: true, errorMessage: '' },
+  //       isValidRange: true,
+  //       rangeErrorMessage: '',
+  //     },
+  //     iconUrl: { value: form.iconUrl, isValid: true, errorMessage: '' },
+  //     isFormValid: true,
+  //     generalErrors: [],
+  //   };
+
+  //   // Validate title
+  //   if (!form.title || form.title.trim().length === 0) {
+  //     validation.title.isValid = false;
+  //     validation.title.errorMessage = 'Title is required';
+  //   } else if (form.title.trim().length < 3) {
+  //     validation.title.isValid = false;
+  //     validation.title.errorMessage = 'Title must be at least 3 characters';
+  //   } else if (form.title.trim().length > 100) {
+  //     validation.title.isValid = false;
+  //     validation.title.errorMessage = 'Title must be less than 100 characters';
+  //   }
+
+  //   // Validate description
+  //   if (!form.description || form.description.trim().length === 0) {
+  //     validation.description.isValid = false;
+  //     validation.description.errorMessage = 'Description is required';
+  //   } else if (form.description.trim().length < 10) {
+  //     validation.description.isValid = false;
+  //     validation.description.errorMessage = 'Description must be at least 10 characters';
+  //   } else if (form.description.trim().length > 500) {
+  //     validation.description.isValid = false;
+  //     validation.description.errorMessage = 'Description must be less than 500 characters';
+  //   }
+
+  //   // Validate instruction
+  //   if (!form.instruction || form.instruction.trim().length === 0) {
+  //     validation.instruction.isValid = false;
+  //     validation.instruction.errorMessage = 'Instruction is required';
+  //   } else if (form.instruction.trim().length < 10) {
+  //     validation.instruction.isValid = false;
+  //     validation.instruction.errorMessage = 'Instruction must be at least 10 characters';
+  //   } else if (form.instruction.trim().length > 1000) {
+  //     validation.instruction.isValid = false;
+  //     validation.instruction.errorMessage = 'Instruction must be less than 1000 characters';
+  //   }
+
+  //   // Validate category
+  //   if (!form.category) {
+  //     validation.category.isValid = false;
+  //     validation.category.errorMessage = 'Category is required';
+  //   }
+
+  //   // Validate difficulty
+  //   if (!form.difficulty) {
+  //     validation.difficulty.isValid = false;
+  //     validation.difficulty.errorMessage = 'Difficulty is required';
+  //   }
+
+  //   // Validate age range
+  //   const minAge = form.minAge ? parseInt(form.minAge, 10) : null;
+  //   const maxAge = form.maxAge ? parseInt(form.maxAge, 10) : null;
+
+  //   if (form.minAge && (isNaN(minAge!) || minAge! < 0)) {
+  //     validation.ageRange.minAge.isValid = false;
+  //     validation.ageRange.minAge.errorMessage = 'Minimum age must be a valid number';
+  //   }
+
+  //   if (form.maxAge && (isNaN(maxAge!) || maxAge! < 0)) {
+  //     validation.ageRange.maxAge.isValid = false;
+  //     validation.ageRange.maxAge.errorMessage = 'Maximum age must be a valid number';
+  //   }
+
+  //   if (minAge !== null && maxAge !== null && minAge > maxAge) {
+  //     validation.ageRange.isValidRange = false;
+  //     validation.ageRange.rangeErrorMessage = 'Minimum age cannot be greater than maximum age';
+  //   }
+
+  //   // Validate icon URL (optional)
+  //   if (form.iconUrl && form.iconUrl.trim()) {
+  //     try {
+  //       new URL(form.iconUrl);
+  //     } catch {
+  //       validation.iconUrl.isValid = false;
+  //       validation.iconUrl.errorMessage = 'Icon URL must be a valid URL';
+  //     }
+  //   }
+
+  //   // Check overall form validity
+  //   validation.isFormValid =
+  //     validation.title.isValid &&
+  //     validation.description.isValid &&
+  //     validation.instruction.isValid &&
+  //     validation.category.isValid &&
+  //     validation.difficulty.isValid &&
+  //     validation.ageRange.minAge.isValid &&
+  //     validation.ageRange.maxAge.isValid &&
+  //     validation.ageRange.isValidRange &&
+  //     validation.iconUrl.isValid;
+
+  //   return validation;
+  // }
+}

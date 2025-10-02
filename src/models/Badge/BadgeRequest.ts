@@ -1,100 +1,27 @@
 // src/models/Badge/BadgeRequest.ts
 
-import { BadgeCategory, BadgeDifficulty, BadgeSortBy, SortOrder } from './BadgeEnum';
+import { BadgeCategory, BadgeDifficulty } from './BadgeEnum';
 
-// Query/Filter Request
+// Request for searching badges
 export interface GetBadgesRequest {
-  category?: BadgeCategory;
-  difficulty?: BadgeDifficulty;
-  minAge?: number;
-  maxAge?: number;
-  isActive?: boolean;
-  isCustom?: boolean;
-  createdBy?: string;
+  page?: number;
+  limit?: number;
   search?: string;
-  page?: number;
-  limit?: number;
-  sortBy?: BadgeSortBy;
-  sortOrder?: SortOrder;
-}
-
-// Create Badge Request
-export interface CreateBadgeRequest {
-  title: string;
-  description: string;
-  instruction: string;
-  category: BadgeCategory;
-  iconUrl?: string;
-  difficulty: BadgeDifficulty;
+  category?: BadgeCategory;
+  difficulty?: BadgeDifficulty;
   minAge?: number;
   maxAge?: number;
   isActive?: boolean;
   isCustom?: boolean;
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
 }
 
-// Update Badge Request
-export interface UpdateBadgeRequest {
-  title?: string;
-  description?: string;
-  instruction?: string;
-  category?: BadgeCategory;
-  iconUrl?: string;
-  difficulty?: BadgeDifficulty;
-  minAge?: number;
-  maxAge?: number;
-  isActive?: boolean;
-}
-
-// Badge by Category Request
-export interface GetBadgesByCategoryRequest {
-  category: BadgeCategory;
-  isActive?: boolean;
-  page?: number;
-  limit?: number;
-}
-
-// Badge by Age Request
-export interface GetBadgesByAgeRequest {
-  ageInMonths: number;
-  category?: BadgeCategory;
-  difficulty?: BadgeDifficulty;
-  isActive?: boolean;
-  page?: number;
-  limit?: number;
-}
-
-// Badge Recommendation Request
-export interface GetBadgeRecommendationsRequest {
-  babyAgeInMonths: number;
-  excludeBadgeIds?: string[];
-  category?: BadgeCategory;
-  limit?: number;
-}
-
-// Activate/Deactivate Request
-export interface ChangeBadgeStatusRequest {
-  badgeId: string;
-  isActive: boolean;
-}
-
-// Default parameters
+// Default parameters for search
 export const DEFAULT_BADGE_PARAMS: GetBadgesRequest = {
   page: 1,
-  limit: 10,
-  sortBy: BadgeSortBy.CREATED_AT,
-  sortOrder: SortOrder.DESC,
+  limit: 20,
   isActive: true,
-};
-
-// Validation helpers
-export const BADGE_VALIDATION = {
-  TITLE_MIN_LENGTH: 3,
-  TITLE_MAX_LENGTH: 100,
-  DESCRIPTION_MIN_LENGTH: 10,
-  DESCRIPTION_MAX_LENGTH: 500,
-  INSTRUCTION_MIN_LENGTH: 10,
-  INSTRUCTION_MAX_LENGTH: 1000,
-  MIN_AGE: 0,
-  MAX_AGE: 60, // 5 years
-  MAX_CUSTOM_BADGES_PER_USER: 50,
+  sortBy: 'createdAt',
+  sortOrder: 'desc',
 };

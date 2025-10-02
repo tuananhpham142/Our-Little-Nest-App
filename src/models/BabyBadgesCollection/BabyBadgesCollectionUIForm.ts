@@ -1,276 +1,437 @@
-// src/models/BadgeCollection/BadgeCollectionUIForm.ts
+// src/models/BabyBadgesCollection/BabyBadgesCollectionUIForm.ts
 
-import { Baby } from '../Baby/BabyModel';
-import { BadgeCategory, VerificationStatus } from '../Badge/BadgeEnum';
-import { FormFieldError, FormValidation } from '../Badge/BadgeFormUI';
-import { Badge } from '../Badge/BadgeModel';
-import { BADGE_COLLECTION_VALIDATION } from './BabyBadgesCollectionRequest';
+import { VerificationStatus } from './BabyBadgesCollectionEnum';
+import { BabyBadgesCollection } from './BabyBadgesCollectionModel';
 
-// Award Badge Form
-export interface AwardBadgeFormData {
-  baby: Baby;
-  badge: Badge;
-  completedAt: Date | string;
+// Form interfaces for UI components
+export interface BabyBadgesCollectionFormUI {
+  id?: string;
+  babyId: string;
+  badgeId: string;
+  completedAt: string; // String for form input, will be converted to Date
   submissionNote: string;
-  mediaFiles: Array<{
-    uri: string;
-    type: string;
+  submissionMedia: Array<{
+    id: string;
+    url: string;
+    type: 'image' | 'video' | 'audio';
     name: string;
-    size: number;
+    size?: number;
+    isNew?: boolean; // For tracking new uploads
   }>;
+  verificationStatus?: VerificationStatus;
 }
 
-// Update Badge Collection Form
-export interface UpdateBadgeCollectionFormData {
-  completedAt: Date | string;
+// Award badge form
+export interface AwardBadgeFormUI {
+  babyId: string;
+  badgeId: string;
+  completedAt: string;
   submissionNote: string;
-  mediaFiles: Array<{
-    uri: string;
-    type: string;
+  submissionMedia: Array<{
+    id: string;
+    file?: File;
+    url?: string;
+    type: 'image' | 'video' | 'audio';
     name: string;
-    size: number;
+    size?: number;
+    preview?: string;
   }>;
+  agreeToTerms: boolean;
+  notifyFamilyMembers: boolean;
+  customNotificationMessage: string;
 }
 
-// Filter Form
-export interface BadgeCollectionFilterForm {
-  baby: Baby;
-  category: BadgeCategory;
-  completedAfter: Date | null;
-  completedBefore: Date | null;
+// Update collection form
+export interface UpdateBabyBadgesCollectionFormUI extends Partial<BabyBadgesCollectionFormUI> {
+  id: string;
+  reasonForUpdate?: string;
+  keepExistingMedia: boolean;
+}
+
+// Verification form
+export interface VerifyBadgeCollectionFormUI {
+  collectionId: string;
+  action: 'approve' | 'reject' | '';
+  verificationNote: string;
+  requiresAdditionalInfo: boolean;
+  additionalInfoRequested: string;
+  notifyParent: boolean;
+  customNotificationMessage: string;
+}
+
+// Filter form for badge collections
+export interface BabyBadgesCollectionFilterFormUI {
+  search: string;
+  babyId: string | 'all';
+  badgeId: string | 'all';
+  verificationStatus: VerificationStatus | 'all';
+  completedAfter: string;
+  completedBefore: string;
   sortBy: 'completedAt' | 'createdAt' | 'verifiedAt';
+  sortOrder: 'asc' | 'desc';
+  showMySubmissions: boolean;
+  showPendingOnly: boolean;
+}
+
+// Search form
+export interface SearchBadgeCollectionsFormUI {
+  searchTerm: string;
+  searchIn: 'note' | 'badge' | 'baby' | 'all';
+  babyId: string | 'all';
+  badgeCategory: string | 'all';
+  verificationStatus: VerificationStatus | 'all';
+  dateRange: {
+    start: string;
+    end: string;
+  };
+  hasMedia: 'all' | 'yes' | 'no';
+  sortBy: 'relevance' | 'completedAt' | 'createdAt';
   sortOrder: 'asc' | 'desc';
 }
 
-// Form Props for React Native components
-export interface AwardBadgeFormProps {
-  babies: Array<{ id: string; name: string; age: number }>;
-  badges: Array<{ id: string; title: string; category: string; difficulty: string }>;
-  onSubmit: (data: AwardBadgeFormData) => void;
-  onCancel: () => void;
-  isSubmitting?: boolean;
-  errors?: FormFieldError[];
-  defaultBabyId?: string;
-  defaultBadgeId?: string;
+// Validation form
+export interface BabyBadgesCollectionValidationFormUI {
+  babyId: {
+    value: string;
+    isValid: boolean;
+    errorMessage: string;
+  };
+  badgeId: {
+    value: string;
+    isValid: boolean;
+    errorMessage: string;
+  };
+  completedAt: {
+    value: string;
+    isValid: boolean;
+    errorMessage: string;
+  };
+  submissionNote: {
+    value: string;
+    isValid: boolean;
+    errorMessage: string;
+    characterCount: number;
+    maxCharacters: number;
+  };
+  submissionMedia: {
+    files: Array<{
+      id: string;
+      isValid: boolean;
+      errorMessage: string;
+      size: number;
+      type: string;
+    }>;
+    totalSize: number;
+    maxTotalSize: number;
+    maxFiles: number;
+    isValid: boolean;
+    errorMessage: string;
+  };
+  isFormValid: boolean;
+  generalErrors: string[];
+  warnings: string[];
 }
 
-export interface UpdateBadgeCollectionFormProps {
-  initialData?: Partial<UpdateBadgeCollectionFormData>;
-  onSubmit: (data: UpdateBadgeCollectionFormData) => void;
-  onCancel: () => void;
-  isSubmitting?: boolean;
-  errors?: FormFieldError[];
-}
-
-export interface BadgeCollectionFilterFormProps {
-  initialFilters?: Partial<BadgeCollectionFilterForm>;
-  babies: Array<{ id: string; name: string }>;
-  badges: Array<{ id: string; title: string }>;
-  onApply: (filters: BadgeCollectionFilterForm) => void;
-  onClear: () => void;
-}
-
-// Form validation helpers
-export const BadgeCollectionFormValidation = {
-  validateBabyId: (babyId: string): string | null => {
-    if (!babyId || babyId.trim().length === 0) {
-      return 'Please select a baby';
-    }
-    return null;
-  },
-
-  validateBadgeId: (badgeId: string): string | null => {
-    if (!badgeId || badgeId.trim().length === 0) {
-      return 'Please select a badge';
-    }
-    return null;
-  },
-
-  validateCompletedAt: (completedAt: Date | string): string | null => {
-    const date = new Date(completedAt);
-    const now = new Date();
-
-    if (isNaN(date.getTime())) {
-      return 'Invalid date';
-    }
-
-    if (date > now) {
-      return 'Completion date cannot be in the future';
-    }
-
-    // Check if date is not too far in the past (e.g., 5 years)
-    const fiveYearsAgo = new Date();
-    fiveYearsAgo.setFullYear(fiveYearsAgo.getFullYear() - 5);
-    if (date < fiveYearsAgo) {
-      return 'Completion date seems too far in the past';
-    }
-
-    return null;
-  },
-
-  validateSubmissionNote: (note?: string): string | null => {
-    if (note && note.length > BADGE_COLLECTION_VALIDATION.NOTE_MAX_LENGTH) {
-      return `Note cannot exceed ${BADGE_COLLECTION_VALIDATION.NOTE_MAX_LENGTH} characters`;
-    }
-    return null;
-  },
-
-  validateMediaFiles: (files: Array<{ size: number; type: string }>): string | null => {
-    if (files.length > BADGE_COLLECTION_VALIDATION.MAX_MEDIA_FILES) {
-      return `Maximum ${BADGE_COLLECTION_VALIDATION.MAX_MEDIA_FILES} files allowed`;
-    }
-
-    for (const file of files) {
-      if (file.size > BADGE_COLLECTION_VALIDATION.MAX_FILE_SIZE) {
-        return 'File size cannot exceed 10MB';
-      }
-
-      if (!BADGE_COLLECTION_VALIDATION.ALLOWED_FILE_TYPES.includes(file.type)) {
-        return 'Invalid file type. Only images and videos are allowed';
-      }
-    }
-
-    return null;
-  },
-
-  validateAwardBadgeForm: (data: AwardBadgeFormData): FormValidation => {
-    const errors: FormFieldError[] = [];
-
-    const babyError = BadgeCollectionFormValidation.validateBabyId(data.baby.id);
-    if (babyError) {
-      errors.push({ field: 'babyId', message: babyError });
-    }
-
-    const badgeError = BadgeCollectionFormValidation.validateBadgeId(data.badge.id);
-    if (badgeError) {
-      errors.push({ field: 'badgeId', message: badgeError });
-    }
-
-    const dateError = BadgeCollectionFormValidation.validateCompletedAt(data.completedAt);
-    if (dateError) {
-      errors.push({ field: 'completedAt', message: dateError });
-    }
-
-    const noteError = BadgeCollectionFormValidation.validateSubmissionNote(data.submissionNote);
-    if (noteError) {
-      errors.push({ field: 'submissionNote', message: noteError });
-    }
-
-    if (data.mediaFiles && data.mediaFiles.length > 0) {
-      const mediaError = BadgeCollectionFormValidation.validateMediaFiles(data.mediaFiles);
-      if (mediaError) {
-        errors.push({ field: 'mediaFiles', message: mediaError });
-      }
-    }
-
-    return {
-      isValid: errors.length === 0,
-      errors,
+// Display form for read-only views
+export interface BabyBadgesCollectionDisplayFormUI {
+  id: string;
+  baby: {
+    id: string;
+    name: string;
+    avatar?: string;
+    ageAtCompletion: string;
+  };
+  badge: {
+    id: string;
+    title: string;
+    description: string;
+    category: string;
+    difficulty: string;
+    iconUrl?: string;
+  };
+  completedAt: {
+    date: string;
+    formatted: string;
+    timeAgo: string;
+  };
+  submissionNote: string;
+  submissionMedia: Array<{
+    id: string;
+    url: string;
+    type: 'image' | 'video' | 'audio';
+    name: string;
+    size?: number;
+    thumbnail?: string;
+  }>;
+  verificationStatus: {
+    status: VerificationStatus;
+    label: string;
+    color: string;
+    icon: string;
+  };
+  verificationDetails?: {
+    verifiedAt: string;
+    verifiedBy: {
+      id: string;
+      name: string;
+      avatar?: string;
     };
-  },
-
-  // Helper to check if can submit more badges today
-  canSubmitMoreToday: (todaySubmissions: number): boolean => {
-    return todaySubmissions < BADGE_COLLECTION_VALIDATION.MAX_BADGES_PER_DAY;
-  },
-
-  getRemainingSubmissionsToday: (todaySubmissions: number): number => {
-    return Math.max(0, BADGE_COLLECTION_VALIDATION.MAX_BADGES_PER_DAY - todaySubmissions);
-  },
-};
-
-// Helper functions for display
-export const formatVerificationStatus = (status: VerificationStatus): string => {
-  const statusMap = {
-    [VerificationStatus.PENDING]: 'Pending Review',
-    [VerificationStatus.APPROVED]: 'Approved',
-    [VerificationStatus.REJECTED]: 'Rejected',
-    [VerificationStatus.AUTO_APPROVED]: 'Auto-Approved',
+    verificationNote?: string;
   };
-  return statusMap[status] || status;
-};
-
-export const getVerificationStatusColor = (status: VerificationStatus): string => {
-  const colorMap = {
-    [VerificationStatus.PENDING]: '#FFA500', // Orange
-    [VerificationStatus.APPROVED]: '#4CAF50', // Green
-    [VerificationStatus.REJECTED]: '#F44336', // Red
-    [VerificationStatus.AUTO_APPROVED]: '#4CAF50', // Green
+  submittedBy: {
+    id: string;
+    name: string;
+    avatar?: string;
+    relation: string;
   };
-  return colorMap[status] || '#999999';
-};
+  createdAt: string;
+  updatedAt: string;
+}
 
-export const getVerificationStatusIcon = (status: VerificationStatus): string => {
-  const iconMap = {
-    [VerificationStatus.PENDING]: '⏳',
-    [VerificationStatus.APPROVED]: '✅',
-    [VerificationStatus.REJECTED]: '❌',
-    [VerificationStatus.AUTO_APPROVED]: '✅',
+// Bulk operation forms
+export interface BulkAwardBadgesFormUI {
+  awards: Array<{
+    id: string;
+    babyId: string;
+    babyName: string;
+    badgeId: string;
+    badgeTitle: string;
+    completedAt: string;
+    submissionNote: string;
+    isValid: boolean;
+    errors: string[];
+  }>;
+  globalSettings: {
+    autoApprove: boolean;
+    notifyFamilyMembers: boolean;
+    defaultNote: string;
   };
-  return iconMap[status] || '❓';
-};
+  isFormValid: boolean;
+  totalItems: number;
+  validItems: number;
+}
 
-// Helper to format date for display
-export const formatCompletionDate = (date: string | Date): string => {
-  const d = new Date(date);
-  const now = new Date();
-  const diffDays = Math.floor((now.getTime() - d.getTime()) / (1000 * 60 * 60 * 24));
+export interface BulkVerifyBadgesFormUI {
+  verifications: Array<{
+    collectionId: string;
+    babyName: string;
+    badgeTitle: string;
+    submittedAt: string;
+    action: 'approve' | 'reject' | '';
+    verificationNote: string;
+    isValid: boolean;
+    errors: string[];
+  }>;
+  globalSettings: {
+    defaultAction: 'approve' | 'reject' | '';
+    defaultNote: string;
+    notifyParents: boolean;
+  };
+  isFormValid: boolean;
+  totalItems: number;
+  completedItems: number;
+}
 
-  if (diffDays === 0) return 'Today';
-  if (diffDays === 1) return 'Yesterday';
-  if (diffDays < 7) return `${diffDays} days ago`;
-  if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`;
-  if (diffDays < 365) return `${Math.floor(diffDays / 30)} months ago`;
+// Conversion utilities
+export class BabyBadgesCollectionFormConverter {
+  /**
+   * Convert collection model to form UI
+   */
+  static toFormUI(collection: BabyBadgesCollection): BabyBadgesCollectionFormUI {
+    return {
+      id: collection.id,
+      babyId: collection.babyId,
+      badgeId: collection.badgeId,
+      completedAt: new Date(collection.completedAt).toISOString().split('T')[0],
+      submissionNote: collection.submissionNote || '',
+      submissionMedia: (collection.submissionMedia || []).map((url, index) => ({
+        id: `media-${index}`,
+        url,
+        type: this.detectMediaType(url),
+        name: this.extractFileName(url),
+      })),
+    };
+  }
 
-  return d.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  });
-};
+  /**
+   * Get empty award form UI
+   */
+  static getEmptyAwardForm(): AwardBadgeFormUI {
+    return {
+      babyId: '',
+      badgeId: '',
+      completedAt: new Date().toISOString().split('T')[0],
+      submissionNote: '',
+      submissionMedia: [],
+      agreeToTerms: false,
+      notifyFamilyMembers: true,
+      customNotificationMessage: '',
+    };
+  }
 
-// Helper to group collections by month
-export const groupCollectionsByMonth = (
-  collections: Array<{ completedAt: string }>,
-): Record<string, typeof collections> => {
-  const grouped: Record<string, typeof collections> = {};
+  /**
+   * Get default filter form
+   */
+  static getDefaultFilterForm(): BabyBadgesCollectionFilterFormUI {
+    return {
+      search: '',
+      babyId: 'all',
+      badgeId: 'all',
+      verificationStatus: 'all',
+      completedAfter: '',
+      completedBefore: '',
+      sortBy: 'completedAt',
+      sortOrder: 'desc',
+      showMySubmissions: false,
+      showPendingOnly: false,
+    };
+  }
 
-  collections.forEach((collection) => {
-    const month = new Date(collection.completedAt).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
+  /**
+   * Validate award form data
+   */
+  static validateAwardForm(form: AwardBadgeFormUI): BabyBadgesCollectionValidationFormUI {
+    const validation: BabyBadgesCollectionValidationFormUI = {
+      babyId: { value: form.babyId, isValid: true, errorMessage: '' },
+      badgeId: { value: form.badgeId, isValid: true, errorMessage: '' },
+      completedAt: { value: form.completedAt, isValid: true, errorMessage: '' },
+      submissionNote: {
+        value: form.submissionNote,
+        isValid: true,
+        errorMessage: '',
+        characterCount: form.submissionNote.length,
+        maxCharacters: 1000,
+      },
+      submissionMedia: {
+        files: [],
+        totalSize: 0,
+        maxTotalSize: 50 * 1024 * 1024, // 50MB
+        maxFiles: 10,
+        isValid: true,
+        errorMessage: '',
+      },
+      isFormValid: true,
+      generalErrors: [],
+      warnings: [],
+    };
+
+    // Validate baby ID
+    if (!form.babyId) {
+      validation.babyId.isValid = false;
+      validation.babyId.errorMessage = 'Baby selection is required';
+    }
+
+    // Validate badge ID
+    if (!form.badgeId) {
+      validation.badgeId.isValid = false;
+      validation.badgeId.errorMessage = 'Badge selection is required';
+    }
+
+    // Validate completion date
+    if (!form.completedAt) {
+      validation.completedAt.isValid = false;
+      validation.completedAt.errorMessage = 'Completion date is required';
+    } else {
+      const completedDate = new Date(form.completedAt);
+      const today = new Date();
+
+      if (isNaN(completedDate.getTime())) {
+        validation.completedAt.isValid = false;
+        validation.completedAt.errorMessage = 'Valid completion date is required';
+      } else if (completedDate > today) {
+        validation.completedAt.isValid = false;
+        validation.completedAt.errorMessage = 'Completion date cannot be in the future';
+      }
+    }
+
+    // Validate submission note
+    if (form.submissionNote.length > validation.submissionNote.maxCharacters) {
+      validation.submissionNote.isValid = false;
+      validation.submissionNote.errorMessage = `Note cannot exceed ${validation.submissionNote.maxCharacters} characters`;
+    }
+
+    // Validate submission media
+    let totalSize = 0;
+    form.submissionMedia.forEach((media, index) => {
+      const mediaValidation = {
+        id: media.id,
+        isValid: true,
+        errorMessage: '',
+        size: media.size || 0,
+        type: media.type,
+      };
+
+      if (media.size) {
+        totalSize += media.size;
+
+        // Check individual file size (10MB limit)
+        if (media.size > 10 * 1024 * 1024) {
+          mediaValidation.isValid = false;
+          mediaValidation.errorMessage = 'File size cannot exceed 10MB';
+        }
+      }
+
+      // Check file type
+      if (!['image', 'video', 'audio'].includes(media.type)) {
+        mediaValidation.isValid = false;
+        mediaValidation.errorMessage = 'Invalid file type';
+      }
+
+      validation.submissionMedia.files.push(mediaValidation);
     });
 
-    if (!grouped[month]) {
-      grouped[month] = [];
+    validation.submissionMedia.totalSize = totalSize;
+
+    // Check total file count
+    if (form.submissionMedia.length > validation.submissionMedia.maxFiles) {
+      validation.submissionMedia.isValid = false;
+      validation.submissionMedia.errorMessage = `Cannot upload more than ${validation.submissionMedia.maxFiles} files`;
     }
-    grouped[month].push(collection);
-  });
 
-  return grouped;
-};
+    // Check total file size
+    if (totalSize > validation.submissionMedia.maxTotalSize) {
+      validation.submissionMedia.isValid = false;
+      validation.submissionMedia.errorMessage = 'Total file size cannot exceed 50MB';
+    }
 
-// Media file helpers
-export const isImageFile = (type: string): boolean => {
-  return type.startsWith('image/');
-};
+    // Check terms agreement
+    if (!form.agreeToTerms) {
+      validation.generalErrors.push('You must agree to the terms and conditions');
+    }
 
-export const isVideoFile = (type: string): boolean => {
-  return type.startsWith('video/');
-};
+    // Check overall form validity
+    validation.isFormValid =
+      validation.babyId.isValid &&
+      validation.badgeId.isValid &&
+      validation.completedAt.isValid &&
+      validation.submissionNote.isValid &&
+      validation.submissionMedia.isValid &&
+      validation.submissionMedia.files.every((file) => file.isValid) &&
+      form.agreeToTerms &&
+      validation.generalErrors.length === 0;
 
-export const formatFileSize = (bytes: number): string => {
-  if (bytes === 0) return '0 Bytes';
+    return validation;
+  }
 
-  const k = 1024;
-  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  /**
+   * Detect media type from URL
+   */
+  private static detectMediaType(url: string): 'image' | 'video' | 'audio' {
+    const extension = url.split('.').pop()?.toLowerCase();
 
-  return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
-};
+    if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'].includes(extension || '')) {
+      return 'image';
+    } else if (['mp4', 'webm', 'ogg', 'avi', 'mov'].includes(extension || '')) {
+      return 'video';
+    } else {
+      return 'audio';
+    }
+  }
 
-export const getFileIcon = (type: string): string => {
-  if (isImageFile(type)) return '🖼️';
-  if (isVideoFile(type)) return '🎥';
-  return '📎';
-};
+  /**
+   * Extract file name from URL
+   */
+  private static extractFileName(url: string): string {
+    return url.split('/').pop()?.split('?')[0] || 'media';
+  }
+}
