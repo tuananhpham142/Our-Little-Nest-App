@@ -62,6 +62,9 @@ export type RootStackParamList = AuthStackParamList & {
     collectionId: string;
     babyId: string;
   };
+  AwardBadge: {
+    badgeId: string;
+  };
 
   // Badge Collection Screens
   BadgeCollection: {
@@ -70,10 +73,6 @@ export type RootStackParamList = AuthStackParamList & {
   };
   CollectionDetail: {
     collectionId: string;
-  };
-  AwardBadge: {
-    babyId?: string;
-    badgeId?: string;
   };
   EditBadgeCollection: {
     collectionId: string;

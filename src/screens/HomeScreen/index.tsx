@@ -1,8 +1,10 @@
 import AppLayout from '@/components/layout/AppLayout';
 import ProfileCard from '@/components/template/ProfileCard';
-import { useNavigation } from '@react-navigation/native';
+import { useToast } from '@/components/Toast/useToast';
+import { RootStackNavigationProp, RouteProps } from '@/types/navigation';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import React, { useState } from 'react';
-import { RefreshControl, ScrollView, View } from 'react-native';
+import { RefreshControl, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import TabNavigation from './TabNavigation';
 import UserListItem from './UserListItem';
 
@@ -33,7 +35,9 @@ const HomeScreen: React.FC<HomeScreenProps> = ({
   onNavigateToRanking,
   onNavigateToBooster,
 }) => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<RootStackNavigationProp>();
+  const route = useRoute<RouteProps<'BadgeDetail'>>();
+  const { showToast, showNotification, clearAll } = useToast();
 
   const [activeTab, setActiveTab] = useState('Selected');
   const [activeBottomTab, setActiveBottomTab] = useState('social');
@@ -132,6 +136,52 @@ const HomeScreen: React.FC<HomeScreenProps> = ({
             <UserListItem key={user.id} user={user} onPress={handleUserPress} onActionPress={handleUserActionPress} />
           ))}
         </View>
+        <TouchableOpacity
+          onPress={() => {
+            showToast({
+              type: 'success',
+              title: 'Hoàn thành!',
+              message: 'Đã lưu cân nặng của bé thành công',
+            });
+          }}
+          className={`items-center justify-center p-3 rounded-2xl active:scale-95`}
+          style={{
+            shadowColor: '#A855F7',
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: 0.3,
+            shadowRadius: 8,
+          }}
+        >
+          <Text>Show toast</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => navigation.navigate('Badges' as any)}
+          className={`items-center justify-center p-3 rounded-2xl active:scale-95`}
+          style={{
+            shadowColor: '#A855F7',
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: 0.3,
+            shadowRadius: 8,
+          }}
+        >
+          <Text>Badges Screen</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() =>
+            navigation.navigate('BabyBadges' as any, {
+              babyId: '64f1a2b3c4d5e6f789abcde2',
+            })
+          }
+          className={`items-center justify-center p-3 rounded-2xl active:scale-95`}
+          style={{
+            shadowColor: '#A855F7',
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: 0.3,
+            shadowRadius: 8,
+          }}
+        >
+          <Text>Baby badges</Text>
+        </TouchableOpacity>
       </ScrollView>
     </AppLayout>
   );

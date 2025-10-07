@@ -1,7 +1,6 @@
-// src/screens/Badge/BabyBadgesScreen/index.tsx
+import { FlashList } from '@shopify/flash-list'; // src/screens/Badge/BabyBadgesScreen/index.tsx
 
 import AppLayout from '@/components/layout/AppLayout';
-import { BabyBadgesCollection } from '@/models/BabyBadgesCollection/BabyBadgesCollectionModel';
 import { Badge } from '@/models/Badge/BadgeModel';
 import { fetchBabyBadges } from '@/store/slices/babyBadgesCollectionSlice';
 import { searchBadges } from '@/store/slices/badgeSlice';
@@ -10,12 +9,10 @@ import { RootStackNavigationProp, RouteProps } from '@/types/navigation';
 import BottomSheet from '@gorhom/bottom-sheet';
 import Icon from '@react-native-vector-icons/fontawesome6';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { FlashList } from '@shopify/flash-list';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Image, RefreshControl, Text, TouchableOpacity, View } from 'react-native';
+import { Dimensions, Image, RefreshControl, Text, TouchableOpacity, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import AwardBadgeBottomSheet from './components/AwardBadge';
-import BabyBadgeCard from './components/BabyBadgeCard';
+import BadgeCard from './components/BadgeCard';
 
 const BabyBadgesScreen: React.FC = () => {
   const navigation = useNavigation<RootStackNavigationProp>();
@@ -27,8 +24,9 @@ const BabyBadgesScreen: React.FC = () => {
   const { badges: allBadges } = useAppSelector((state) => state.badges);
 
   const [refreshing, setRefreshing] = useState(false);
-  const [selectedTab, setSelectedTab] = useState<'earned' | 'available'>('earned');
   const awardBottomSheetRef = useRef<BottomSheet>(null);
+
+  const { width } = Dimensions.get('window');
 
   useEffect(() => {
     loadData();
@@ -47,153 +45,89 @@ const BabyBadgesScreen: React.FC = () => {
   }, [loadData]);
 
   const handleBadgePress = useCallback(
-    (collection: BabyBadgesCollection) => {
-      navigation.navigate('BabyBadgeDetail', {
-        collectionId: collection.id,
-        babyId,
-      });
+    (badge: Badge, isEarned: boolean) => {
+      if (isEarned) {
+        const collection = babyBadges.find((c) => c.badgeId === badge.id);
+        if (collection) {
+          navigation.navigate('BabyBadgeDetail', {
+            collectionId: collection.id,
+            babyId,
+          });
+        }
+      } else {
+        navigation.navigate('BadgeDetail', {
+          badgeId: badge.id,
+          babyId,
+        });
+      }
     },
-    [navigation, babyId],
+    [navigation, babyId, babyBadges],
   );
 
-  const handleAvailableBadgePress = useCallback(
-    (badge: Badge) => {
-      navigation.navigate('BadgeDetail', {
-        badgeId: badge.id,
-        babyId,
-      });
-    },
-    [navigation, babyId],
-  );
-
-  // Filter available badges (not yet earned)
-  const earnedBadgeIds = babyBadges.map((collection) => collection.badgeId);
-  const availableBadges = allBadges.filter((badge) => !earnedBadgeIds.includes(badge.id));
-
-  const renderHeader = () => (
-    <View className='bg-gradient-to-br from-amber-100 to-orange-100 px-4 pb-6'>
-      {/* Baby Info Card */}
-      <View className='bg-white rounded-3xl p-5 shadow-lg mb-4'>
-        <View className='flex-row items-center mb-4'>
-          <View className='w-20 h-20 rounded-full bg-gradient-to-br from-pink-200 to-purple-200 items-center justify-center mr-4'>
-            {babyAvatar ? (
-              <Image source={{ uri: babyAvatar }} className='w-full h-full rounded-full' />
-            ) : (
-              <Icon iconStyle='solid' name='baby' size={32} color='#EC4899' />
-            )}
-          </View>
-          <View className='flex-1'>
-            <Text className='text-2xl font-bold text-gray-900 mb-1'>{babyName || 'Baby'}'s Badges</Text>
-            <View className='flex-row items-center'>
-              <Icon iconStyle='solid' name='trophy' size={14} color='#F59E0B' />
-              <Text className='ml-2 text-sm font-semibold text-amber-600'>{babyBadges.length} badges earned</Text>
-            </View>
-          </View>
-        </View>
-
-        {/* Stats Grid */}
-        <View className='flex-row justify-around pt-4 border-t border-gray-100'>
-          <View className='items-center'>
-            <Text className='text-2xl font-bold text-amber-600'>{babyBadges.length}</Text>
-            <Text className='text-xs text-gray-600 mt-1'>Earned</Text>
-          </View>
-          <View className='w-px bg-gray-200' />
-          <View className='items-center'>
-            <Text className='text-2xl font-bold text-blue-600'>{availableBadges.length}</Text>
-            <Text className='text-xs text-gray-600 mt-1'>Available</Text>
-          </View>
-          <View className='w-px bg-gray-200' />
-          <View className='items-center'>
-            <Text className='text-2xl font-bold text-green-600'>
-              {Math.round((babyBadges.length / (babyBadges.length + availableBadges.length)) * 100)}%
-            </Text>
-            <Text className='text-xs text-gray-600 mt-1'>Progress</Text>
-          </View>
-        </View>
-      </View>
-
-      {/* Tab Switcher */}
-      <View className='flex-row bg-white rounded-full p-1 shadow-sm'>
-        <TouchableOpacity
-          onPress={() => setSelectedTab('earned')}
-          className={`flex-1 py-3 rounded-full ${selectedTab === 'earned' ? 'bg-amber-500' : 'bg-transparent'}`}
-        >
-          <Text className={`text-center font-semibold ${selectedTab === 'earned' ? 'text-white' : 'text-gray-600'}`}>
-            Earned ({babyBadges.length})
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => setSelectedTab('available')}
-          className={`flex-1 py-3 rounded-full ${selectedTab === 'available' ? 'bg-amber-500' : 'bg-transparent'}`}
-        >
-          <Text className={`text-center font-semibold ${selectedTab === 'available' ? 'text-white' : 'text-gray-600'}`}>
-            Available ({availableBadges.length})
-          </Text>
-        </TouchableOpacity>
-      </View>
-    </View>
-  );
-
-  const renderEarnedBadge = useCallback(
-    ({ item }: { item: BabyBadgesCollection }) => (
-      <BabyBadgeCard collection={item} onPress={() => handleBadgePress(item)} />
+  const renderBadgeItem = useCallback(
+    ({ item }: { item: Badge & { isEarned: boolean } }) => (
+      <BadgeCard badge={item} isEarned={item.isEarned} onPress={() => handleBadgePress(item, item.isEarned)} />
     ),
     [handleBadgePress],
   );
 
-  const renderAvailableBadge = useCallback(
-    ({ item }: { item: Badge }) => (
-      <TouchableOpacity
-        onPress={() => handleAvailableBadgePress(item)}
-        className='bg-white rounded-2xl p-4 mb-3 mx-4 shadow-sm flex-row items-center'
-      >
-        <View className='w-16 h-16 rounded-full bg-gray-100 items-center justify-center mr-4'>
-          {item.iconUrl ? (
-            <Image source={{ uri: item.iconUrl }} className='w-12 h-12' />
-          ) : (
-            <Icon iconStyle='solid' name='trophy' size={28} color='#9CA3AF' />
-          )}
-        </View>
-        <View className='flex-1'>
-          <Text className='text-base font-semibold text-gray-900 mb-1'>{item.title}</Text>
-          <Text className='text-sm text-gray-600' numberOfLines={2}>
-            {item.description}
-          </Text>
-        </View>
-        <Icon iconStyle='solid' name='chevron-right' size={16} color='#9CA3AF' />
-      </TouchableOpacity>
-    ),
-    [handleAvailableBadgePress],
-  );
-
   const renderEmpty = () => (
-    <View className='flex-1 items-center justify-center py-20 px-8'>
-      <View className='w-24 h-24 bg-amber-100 rounded-full items-center justify-center mb-4'>
-        <Icon
-          iconStyle='solid'
-          name={selectedTab === 'earned' ? 'trophy' : ('sparkles' as any)}
-          size={40}
-          color='#F59E0B'
-        />
-      </View>
-      <Text className='text-xl font-bold text-gray-900 mb-2 text-center'>
-        {selectedTab === 'earned' ? 'No badges earned yet' : 'All badges earned!'}
-      </Text>
-      <Text className='text-base text-gray-600 text-center mb-6'>
-        {selectedTab === 'earned'
-          ? 'Start earning badges by completing milestones and activities'
-          : 'Amazing! Your baby has earned all available badges!'}
-      </Text>
-      {selectedTab === 'earned' && (
-        <TouchableOpacity
-          onPress={() => awardBottomSheetRef.current?.snapToIndex(0)}
-          className='bg-amber-500 px-6 py-3 rounded-full'
-        >
-          <Text className='text-white font-semibold'>Award First Badge</Text>
-        </TouchableOpacity>
-      )}
+    <View className='py-20 items-center'>
+      <Icon iconStyle='solid' name='trophy' size={48} color='#D1D5DB' />
+      <Text className='text-lg font-semibold text-gray-500 mt-4'>No badges available</Text>
     </View>
   );
+
+  const renderHeader = () => (
+    <>
+      {/* Character Display Area */}
+      <View
+        className='items-center justify-center py-8'
+        style={{
+          backgroundColor: '#FFE4B5',
+          minHeight: 280,
+        }}
+      >
+        {/* Baby Avatar/Character */}
+        <View className='items-center mb-4'>
+          <View className='w-40 h-40 rounded-full bg-white items-center justify-center shadow-lg mb-4'>
+            {babyAvatar ? (
+              <Image source={{ uri: babyAvatar }} className='w-full h-full rounded-full' />
+            ) : (
+              <Icon iconStyle='solid' name='baby' size={80} color='#F59E0B' />
+            )}
+          </View>
+          <Text className='text-2xl font-bold' style={{ color: '#78350F' }}>
+            {babyName || 'Baby'}'s Collection
+          </Text>
+        </View>
+
+        {/* Progress Stats */}
+        <View className='flex-row items-center bg-white rounded-full px-6 py-3 shadow-md'>
+          <Icon iconStyle='solid' name='trophy' size={20} color='#F59E0B' />
+          <Text className='ml-2 text-lg font-bold' style={{ color: '#78350F' }}>
+            {earnedBadgeIds.length} / {allBadges.length} Badges
+          </Text>
+        </View>
+      </View>
+
+      {/* Category Tabs */}
+      <View className='px-4 pt-6 pb-4'>
+        <View className='flex-1 bg-amber-400 rounded-full py-4'>
+          <Text className='text-center text-white font-semibold'>All Badges</Text>
+        </View>
+      </View>
+    </>
+  );
+
+  // Get earned badge IDs
+  const earnedBadgeIds = babyBadges.map((collection) => collection.badgeId);
+
+  // Merge all badges with earned status
+  const allBadgesWithStatus = allBadges.map((badge) => ({
+    ...badge,
+    isEarned: earnedBadgeIds.includes(badge.id),
+  }));
 
   if (error && babyBadges.length === 0) {
     return (
@@ -215,14 +149,15 @@ const BabyBadgesScreen: React.FC = () => {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <AppLayout>
-        <View className='flex-1 bg-white'>
+        <View className='flex-1' style={{ backgroundColor: '#FFF8DC' }}>
           <FlashList
-            //@ts-ignore
-            data={selectedTab === 'earned' ? babyBadges : availableBadges}
-            //@ts-ignore
-            renderItem={selectedTab === 'earned' ? renderEarnedBadge : renderAvailableBadge}
+            data={allBadgesWithStatus}
+            renderItem={renderBadgeItem}
             keyExtractor={(item) => item.id}
-            estimatedItemSize={120}
+            numColumns={3}
+            masonry
+            showsVerticalScrollIndicator={false}
+            // estimatedItemSize={90}
             ListHeaderComponent={renderHeader}
             ListEmptyComponent={!isLoading ? renderEmpty : null}
             refreshControl={
@@ -233,26 +168,36 @@ const BabyBadgesScreen: React.FC = () => {
                 tintColor='#F59E0B'
               />
             }
-            contentContainerStyle={{ paddingBottom: 80 }}
+            contentContainerStyle={{ paddingBottom: 100, paddingHorizontal: 16 }}
           />
 
           {/* Floating Action Button */}
-          <TouchableOpacity
-            onPress={() => awardBottomSheetRef.current?.snapToIndex(0)}
-            className='absolute bottom-6 right-6 w-16 h-16 bg-amber-500 rounded-full items-center justify-center shadow-lg'
-            style={{
-              shadowColor: '#F59E0B',
-              shadowOffset: { width: 0, height: 4 },
-              shadowOpacity: 0.3,
-              shadowRadius: 8,
-              elevation: 8,
-            }}
-          >
-            <Icon iconStyle='solid' name='plus' size={24} color='#FFFFFF' />
-          </TouchableOpacity>
+          {/* <View className='absolute bottom-0 left-0 right-0 bg-gradient-to-t from-white to-transparent pt-8 pb-6 px-6'>
+            <TouchableOpacity
+              onPress={() => awardBottomSheetRef.current?.snapToIndex(0)}
+              className='bg-amber-500 py-4 rounded-full flex-row items-center justify-center shadow-lg'
+              style={{
+                shadowColor: '#F59E0B',
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: 0.3,
+                shadowRadius: 8,
+                elevation: 8,
+              }}
+            >
+              <Icon iconStyle='solid' name='plus' size={20} color='#FFFFFF' />
+              <Text className='ml-2 text-base font-bold text-white'>Award New Badge</Text>
+            </TouchableOpacity>
+          </View> */}
 
           {/* Award Badge Bottom Sheet */}
-          <AwardBadgeBottomSheet ref={awardBottomSheetRef} babyId={babyId} onSuccess={handleRefresh} />
+          {/* <AwardBadgeBottomSheet
+            ref={awardBottomSheetRef}
+            onSuccess={handleRefresh}
+            visible={false}
+            onClose={function (): void {
+              throw new Error('Function not implemented.');
+            }}
+          /> */}
         </View>
       </AppLayout>
     </GestureHandlerRootView>

@@ -23,6 +23,7 @@ import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import BootSplash from 'react-native-bootsplash';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { ToastProvider } from './components/Toast/ToastProvider';
 import { useAppIntro } from './hooks/useAppIntro';
 import { useSplashScreen } from './hooks/useSplashScreen';
 import OnboardingSlider from './screens/AppIntro/OnboardingSlider';
@@ -134,7 +135,9 @@ function App() {
 
       <GestureHandlerRootView style={{ flex: 1 }}>
         <BottomSheetModalProvider>
-          <AppNavigator />
+          <ToastProvider>
+            <AppNavigator />
+          </ToastProvider>
         </BottomSheetModalProvider>
       </GestureHandlerRootView>
     </Provider>

@@ -1,6 +1,6 @@
 // src/screens/Badge/components/BadgeCard.tsx
 
-import { getBadgeCategoryInfo, getBadgeDifficultyInfo } from '@/models/Badge/BadgeEnum';
+import { getBadgeCategoryInfo } from '@/models/Badge/BadgeEnum';
 import { Badge } from '@/models/Badge/BadgeModel';
 import Icon from '@react-native-vector-icons/fontawesome6';
 import React from 'react';
@@ -9,100 +9,112 @@ import { Image, Text, TouchableOpacity, View } from 'react-native';
 interface BadgeCardProps {
   badge: Badge;
   onPress: () => void;
+  isEarned?: boolean;
 }
 
-const BadgeCard: React.FC<BadgeCardProps> = ({ badge, onPress }) => {
+const BadgeCard: React.FC<BadgeCardProps> = ({ badge, onPress, isEarned = false }) => {
   const categoryInfo = getBadgeCategoryInfo(badge.category);
-  const difficultyInfo = getBadgeDifficultyInfo(badge.difficulty);
+
+  const bgColor = isEarned ? '#E0F9F5' : '#F3F4F6';
 
   return (
     <TouchableOpacity
       onPress={onPress}
-      className='bg-white rounded-3xl p-5 mx-4 mb-4 shadow-lg'
+      className='relative mb-3'
       style={{
-        shadowColor: categoryInfo.color,
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.15,
-        shadowRadius: 12,
-        elevation: 5,
+        flex: 1,
+        height: '100%',
+        paddingHorizontal: 4,
+        width: 'auto',
       }}
+      activeOpacity={0.7}
     >
-      <View className='flex-row items-start'>
-        {/* Badge Icon */}
+      {/* Card Background with Pastel Color */}
+      <View
+        className='w-full h-full rounded-3xl items-center justify-center py-4'
+        style={{
+          backgroundColor: bgColor,
+        }}
+      >
+        {/* Circular Icon Container */}
         <View
-          className='w-20 h-20 rounded-2xl items-center justify-center mr-4'
-          style={{ backgroundColor: `${categoryInfo.color}20` }}
+          className='rounded-full items-center justify-center mb-3'
+          style={{
+            width: 80,
+            height: 80,
+            backgroundColor: isEarned ? 'rgba(255, 255, 255, 0.7)' : 'rgba(255, 255, 255, 0.5)',
+            shadowColor: isEarned ? '#000' : 'transparent',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.1,
+            shadowRadius: 8,
+            elevation: 3,
+          }}
         >
           {badge.iconUrl ? (
-            <Image source={{ uri: badge.iconUrl }} className='w-16 h-16' resizeMode='contain' />
+            <Image
+              source={{ uri: 'https://i.pinimg.com/1200x/05/ad/11/05ad113ccb60629835d19dc0e013c5e4.jpg' }}
+              // source={{ uri: badge.iconUrl }}
+              className='rounded-2xl w-full h-full'
+              // style={{ width: 80, height: 80 }}
+              resizeMode='cover'
+            />
           ) : (
-            <Icon name={categoryInfo.icon as any} size={36} color={categoryInfo.color} />
+            <Icon name={categoryInfo.icon as any} size={40} color={isEarned ? categoryInfo.color : '#9CA3AF'} />
           )}
         </View>
 
-        {/* Badge Info */}
-        <View className='flex-1'>
-          {/* Title */}
-          <Text className='text-lg font-bold text-gray-900 mb-1'>{badge.title}</Text>
-
-          {/* Description */}
-          <Text className='text-sm text-gray-600 mb-3' numberOfLines={2}>
-            {badge.description}
-          </Text>
-
-          {/* Metadata */}
-          <View className='flex-row items-center flex-wrap'>
-            {/* Category */}
-            <View
-              className='flex-row items-center px-3 py-1 rounded-full mr-2 mb-2'
-              style={{ backgroundColor: `${categoryInfo.color}15` }}
-            >
-              <Icon name={categoryInfo.icon as any} size={12} color={categoryInfo.color} />
-              <Text className='ml-1 text-xs font-semibold' style={{ color: categoryInfo.color }}>
-                {categoryInfo.label}
-              </Text>
-            </View>
-
-            {/* Difficulty */}
-            <View
-              className='flex-row items-center px-3 py-1 rounded-full mr-2 mb-2'
-              style={{ backgroundColor: `${difficultyInfo.color}15` }}
-            >
-              {Array.from({ length: difficultyInfo.stars }).map((_, index) => (
-                <Icon
-                  key={index}
-                  name='star'
-                  iconStyle='solid'
-                  size={10}
-                  color={difficultyInfo.color}
-                  style={{ marginRight: 2 }}
-                />
-              ))}
-              <Text className='ml-1 text-xs font-semibold' style={{ color: difficultyInfo.color }}>
-                {difficultyInfo.label}
-              </Text>
-            </View>
-
-            {/* Age Range */}
-            {badge.minAge !== undefined && badge.maxAge !== undefined && (
-              <View className='flex-row items-center px-3 py-1 rounded-full bg-blue-50 mb-2'>
-                <Icon iconStyle='solid' name='baby' size={12} color='#3B82F6' />
-                <Text className='ml-1 text-xs font-semibold text-blue-600'>
-                  {Math.floor(badge.minAge / 12)}-{Math.floor(badge.maxAge / 12)}y
-                </Text>
-              </View>
-            )}
-
-            {/* Custom Badge */}
-            {badge.isCustom && (
-              <View className='flex-row items-center px-3 py-1 rounded-full bg-purple-50 mb-2'>
-                <Icon iconStyle='solid' name='wand-magic-sparkles' size={12} color='#A855F7' />
-                <Text className='ml-1 text-xs font-semibold text-purple-600'>Custom</Text>
-              </View>
-            )}
-          </View>
-        </View>
+        {/* Badge Name */}
+        <Text
+          className='text-center font-semibold text-sm px-1.5'
+          style={{
+            // color: isEarned ? '#1F2937' : '#9CA3AF',
+            maxWidth: '100%',
+          }}
+          numberOfLines={2}
+        >
+          {badge.title}
+        </Text>
       </View>
+
+      {/* Checkmark Indicator for Earned Badges */}
+      {isEarned && (
+        <View
+          className='absolute rounded-full items-center justify-center'
+          style={{
+            top: 8,
+            right: 8,
+            width: 28,
+            height: 28,
+            backgroundColor: '#10B981',
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.2,
+            shadowRadius: 4,
+            elevation: 4,
+          }}
+        >
+          <Icon name='check' size={14} color='#FFFFFF' iconStyle='solid' />
+        </View>
+      )}
+
+      {/* Locked Overlay for Unearned */}
+      {!isEarned && (
+        <View
+          className='absolute inset-0 rounded-3xl items-center justify-center'
+          style={{ backgroundColor: 'rgba(255, 255, 255, 0.4)' }}
+        >
+          {/* <View
+            className='rounded-full items-center justify-center'
+            style={{
+              width: 40,
+              height: 40,
+              backgroundColor: 'rgba(156, 163, 175, 0.3)',
+            }}
+          >
+            <Icon name='lock' size={20} color='#6B7280' iconStyle='solid' />
+          </View> */}
+        </View>
+      )}
     </TouchableOpacity>
   );
 };

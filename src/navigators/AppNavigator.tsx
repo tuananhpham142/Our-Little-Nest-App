@@ -14,6 +14,7 @@ import BabyMainScreen from '@/screens/Baby/BabyListScreen';
 import BabyProfileScreen from '@/screens/Baby/BabyProfileScreen';
 import CreateBabyScreen from '@/screens/Baby/CreateBabyScreen';
 
+import AwardBadgeScreen from '@/screens/Badges/AwardBadgeScreen';
 import BabyBadgesScreen from '@/screens/Badges/BabyBadgesScreen';
 import BadgeDetailScreen from '@/screens/Badges/BadgeDetailScreen';
 import BadgesScreen from '@/screens/Badges/BadgesScreen';
@@ -116,7 +117,7 @@ export const AppNavigator: React.FC = () => {
               component={BadgesScreen}
               options={{
                 title: 'Badges',
-                headerShown: true,
+                headerShown: false,
               }}
             />
             <Stack.Screen
@@ -124,7 +125,7 @@ export const AppNavigator: React.FC = () => {
               component={BabyBadgesScreen}
               options={{
                 title: 'Baby Badges',
-                headerShown: true,
+                headerShown: false,
               }}
             />
             <Stack.Screen
@@ -132,7 +133,15 @@ export const AppNavigator: React.FC = () => {
               component={BadgeDetailScreen}
               options={{
                 title: 'Badge Details',
-                headerShown: true,
+                headerShown: false,
+              }}
+            />
+            <Stack.Screen
+              name='AwardBadge'
+              component={AwardBadgeScreen}
+              options={{
+                title: 'Collect Badge',
+                headerShown: false,
               }}
             />
             {/* Notifications */}

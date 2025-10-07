@@ -242,8 +242,7 @@ const NotificationScreen: React.FC = () => {
 
   return (
     <AppLayout>
-      <View className='flex-1'>
-        {/* <Animated.View className='border-b border-gray-100 shadow-sm'>
+      {/* <Animated.View className='border-b border-gray-100 shadow-sm'>
         <NotificationHeader
           unreadCount={unreadCount}
           onBack={() => navigation.goBack()}
@@ -258,41 +257,40 @@ const NotificationScreen: React.FC = () => {
         />
       </Animated.View> */}
 
-        <View className='flex-1'>
-          <FlashList
-            ref={flashListRef}
-            data={mockNotifications}
-            renderItem={renderNotification}
-            keyExtractor={keyExtractor}
-            contentContainerStyle={contentContainerStyle}
-            ListEmptyComponent={renderEmptyState}
-            refreshControl={
-              <RefreshControl
-                refreshing={isRefreshing}
-                onRefresh={handleRefresh}
-                colors={['#8B7AB8']}
-                tintColor='#8B7AB8'
-              />
-            }
-            onEndReached={handleLoadMore}
-            onEndReachedThreshold={0.5}
-            ListFooterComponent={renderFooter}
-            onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], { useNativeDriver: false })}
-            scrollEventThrottle={16}
-            showsVerticalScrollIndicator={false}
-            removeClippedSubviews={Platform.OS === 'android'}
-            drawDistance={200}
-            overrideItemLayout={(layout, item) => {
-              layout.span = ESTIMATED_ITEM_SIZE;
-            }}
-          />
-        </View>
-        <NotificationFilterBottomSheet
-          visible={isFilterModalVisible}
-          onClose={() => setIsFilterModalVisible(false)}
-          currentFilters={filters}
+      <View className='flex-1'>
+        <FlashList
+          ref={flashListRef}
+          data={mockNotifications}
+          renderItem={renderNotification}
+          keyExtractor={keyExtractor}
+          contentContainerStyle={contentContainerStyle}
+          ListEmptyComponent={renderEmptyState}
+          refreshControl={
+            <RefreshControl
+              refreshing={isRefreshing}
+              onRefresh={handleRefresh}
+              colors={['#8B7AB8']}
+              tintColor='#8B7AB8'
+            />
+          }
+          onEndReached={handleLoadMore}
+          onEndReachedThreshold={0.5}
+          ListFooterComponent={renderFooter}
+          onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], { useNativeDriver: false })}
+          scrollEventThrottle={16}
+          showsVerticalScrollIndicator={false}
+          removeClippedSubviews={Platform.OS === 'android'}
+          drawDistance={200}
+          overrideItemLayout={(layout, item) => {
+            layout.span = ESTIMATED_ITEM_SIZE;
+          }}
         />
       </View>
+      <NotificationFilterBottomSheet
+        visible={isFilterModalVisible}
+        onClose={() => setIsFilterModalVisible(false)}
+        currentFilters={filters}
+      />
     </AppLayout>
   );
 };

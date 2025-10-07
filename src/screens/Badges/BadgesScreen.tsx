@@ -11,8 +11,7 @@ import Icon from '@react-native-vector-icons/fontawesome6';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, RefreshControl, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { ActivityIndicator, RefreshControl, Text, TouchableOpacity, View } from 'react-native';
 import BadgeCard from './components/BadgeCard';
 import BadgeFilterBottomSheet from './components/BadgeFilter';
 
@@ -22,7 +21,6 @@ const BadgesScreen: React.FC = () => {
   const dispatch = useAppDispatch();
 
   const { badges, isLoading, error, pagination, filters } = useAppSelector((state) => state.badges);
-
   const [searchText, setSearchText] = useState('');
   const [refreshing, setRefreshing] = useState(false);
   const filterBottomSheetRef = useRef<BottomSheet>(null);
@@ -96,30 +94,7 @@ const BadgesScreen: React.FC = () => {
   );
 
   const renderHeader = () => (
-    <View className='bg-gradient-to-br from-amber-50 to-orange-50 px-4 pb-4'>
-      {/* Search Bar */}
-      <View className='flex-row items-center bg-white rounded-full px-4 py-3 shadow-sm mb-4'>
-        <Icon iconStyle='solid' name='magnifying-glass' size={18} color='#9CA3AF' />
-        <TextInput
-          className='flex-1 ml-3 text-base text-gray-900'
-          placeholder='Search badges...'
-          value={searchText}
-          onChangeText={setSearchText}
-          onSubmitEditing={handleSearch}
-          placeholderTextColor='#9CA3AF'
-        />
-        {searchText.length > 0 && (
-          <TouchableOpacity
-            onPress={() => {
-              setSearchText('');
-              handleSearch();
-            }}
-          >
-            <Icon iconStyle='solid' name='xmark' size={18} color='#9CA3AF' />
-          </TouchableOpacity>
-        )}
-      </View>
-
+    <View className='pb-4'>
       {/* Filter Button */}
       <View className='flex-row justify-between items-center mb-3'>
         <Text className='text-xl font-bold text-gray-900'>Discover Badges</Text>
@@ -178,35 +153,35 @@ const BadgesScreen: React.FC = () => {
   }
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <AppLayout>
-        <View className='flex-1 bg-white'>
-          <FlashList
-            data={badges}
-            renderItem={renderBadgeItem}
-            keyExtractor={(item) => item.id}
-            // estimatedItemSize={120}
-            ListHeaderComponent={renderHeader}
-            ListEmptyComponent={!isLoading ? renderEmpty : null}
-            ListFooterComponent={renderFooter}
-            refreshControl={
-              <RefreshControl
-                refreshing={refreshing}
-                onRefresh={handleRefresh}
-                colors={['#F59E0B']}
-                tintColor='#F59E0B'
-              />
-            }
-            onEndReached={handleLoadMore}
-            onEndReachedThreshold={0.5}
-            contentContainerStyle={{ paddingBottom: 20 }}
-          />
+    <AppLayout>
+      <View className='flex-1 px-4'>
+        <FlashList
+          data={badges}
+          masonry
+          renderItem={renderBadgeItem}
+          keyExtractor={(item) => item.id}
+          numColumns={3}
+          ListHeaderComponent={renderHeader}
+          ListEmptyComponent={!isLoading ? renderEmpty : null}
+          ListFooterComponent={renderFooter}
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={handleRefresh}
+              colors={['#F59E0B']}
+              tintColor='#F59E0B'
+            />
+          }
+          onEndReached={handleLoadMore}
+          onEndReachedThreshold={0.5}
+          contentContainerStyle={{ paddingBottom: 20 }}
+        />
 
-          {/* Filter Bottom Sheet */}
-          <BadgeFilterBottomSheet ref={filterBottomSheetRef} onApply={handleSearch} />
-        </View>
-      </AppLayout>
-    </GestureHandlerRootView>
+        {/* Filter Bottom Sheet */}
+        <BadgeFilterBottomSheet ref={filterBottomSheetRef} onApply={handleSearch} />
+      </View>
+    </AppLayout>
   );
 };
 

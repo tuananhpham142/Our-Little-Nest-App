@@ -1,7 +1,6 @@
 // src/screens/Badge/BabyBadgeDetailScreen/index.tsx
 
 import AppLayout from '@/components/layout/AppLayout';
-import { getVerificationStatusInfo } from '@/models/BabyBadgesCollection/BabyBadgesCollectionEnum';
 import { getBadgeCategoryInfo } from '@/models/Badge/BadgeEnum';
 import { useAppSelector } from '@/store/store';
 import { RootStackNavigationProp, RouteProps } from '@/types/navigation';
@@ -14,7 +13,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 const BabyBadgeDetailScreen: React.FC = () => {
   const navigation = useNavigation<RootStackNavigationProp>();
   const route = useRoute<RouteProps<'BabyBadgeDetail'>>();
-  const { collectionId, babyId } = route.params;
+  const { collectionId } = route.params;
 
   const { babyBadges } = useAppSelector((state) => state.babyBadges);
   const { badges } = useAppSelector((state) => state.badges);
@@ -38,7 +37,6 @@ const BabyBadgeDetailScreen: React.FC = () => {
     );
   }
 
-  const statusInfo = getVerificationStatusInfo(collection.verificationStatus);
   const categoryInfo = badge ? getBadgeCategoryInfo(badge.category) : null;
 
   // Format date
@@ -56,15 +54,15 @@ const BabyBadgeDetailScreen: React.FC = () => {
       <AppLayout>
         <ScrollView className='flex-1 bg-white'>
           {/* Hero Section */}
-          <View className='px-6 pt-12 pb-8' style={{ backgroundColor: `${statusInfo.color}10` }}>
+          <View className='px-6 pt-12 pb-8' style={{ backgroundColor: `#10B98110` }}>
             {/* Badge Icon with Status */}
             <View className='items-center mb-6'>
               <View className='relative'>
                 <View
                   className='w-32 h-32 rounded-3xl items-center justify-center shadow-lg'
                   style={{
-                    backgroundColor: `${statusInfo.color}30`,
-                    shadowColor: statusInfo.color,
+                    backgroundColor: `#10B98130`,
+                    shadowColor: '#10B981',
                     shadowOffset: { width: 0, height: 8 },
                     shadowOpacity: 0.3,
                     shadowRadius: 16,
@@ -72,9 +70,9 @@ const BabyBadgeDetailScreen: React.FC = () => {
                   }}
                 >
                   {categoryInfo ? (
-                    <Icon iconStyle='solid' name={categoryInfo.icon as any} size={80} color={statusInfo.color} />
+                    <Icon iconStyle='solid' name={categoryInfo.icon as any} size={80} color={'#10B981'} />
                   ) : (
-                    <Icon iconStyle='solid' name='trophy' size={80} color={statusInfo.color} />
+                    <Icon iconStyle='solid' name='trophy' size={80} color={'#10B981'} />
                   )}
                 </View>
 
@@ -82,15 +80,15 @@ const BabyBadgeDetailScreen: React.FC = () => {
                 <View
                   className='absolute -top-2 -right-2 w-12 h-12 rounded-full items-center justify-center'
                   style={{
-                    backgroundColor: statusInfo.color,
-                    shadowColor: statusInfo.color,
+                    backgroundColor: '#10B981',
+                    shadowColor: '#10B981',
                     shadowOffset: { width: 0, height: 4 },
                     shadowOpacity: 0.4,
                     shadowRadius: 8,
                     elevation: 5,
                   }}
                 >
-                  <Icon iconStyle='solid' name={statusInfo.icon as any} size={24} color='#FFFFFF' />
+                  <Icon iconStyle='solid' name={'check'} size={24} color='#FFFFFF' />
                 </View>
               </View>
             </View>
@@ -99,13 +97,13 @@ const BabyBadgeDetailScreen: React.FC = () => {
             <Text className='text-3xl font-bold text-gray-900 text-center mb-2'>{badge?.title || 'Badge Earned'}</Text>
 
             {/* Status Badge */}
-            <View className='items-center mb-4'>
-              <View className='px-6 py-2 rounded-full' style={{ backgroundColor: `${statusInfo.color}20` }}>
-                <Text className='text-sm font-semibold' style={{ color: statusInfo.color }}>
+            {/* <View className='items-center mb-4'>
+              <View className='px-6 py-2 rounded-full' style={{ backgroundColor: `#10B98120` }}>
+                <Text className='text-sm font-semibold' style={{ color: '#10B981' }}>
                   {statusInfo.label}
                 </Text>
               </View>
-            </View>
+            </View> */}
 
             {/* Completion Date */}
             <View className='flex-row items-center justify-center'>
@@ -173,38 +171,6 @@ const BabyBadgeDetailScreen: React.FC = () => {
                       </View>
                     </View>
                   ))}
-                </View>
-              </View>
-            )}
-
-            {/* Verification Details */}
-            {collection.verifiedAt && collection.verifiedBy && (
-              <View className='mb-8'>
-                <View className='flex-row items-center mb-3'>
-                  <View
-                    className='w-10 h-10 rounded-full items-center justify-center mr-3'
-                    style={{ backgroundColor: `${statusInfo.color}15` }}
-                  >
-                    <Icon iconStyle='solid' name='shield-halved' size={20} color={statusInfo.color} />
-                  </View>
-                  <Text className='text-xl font-bold text-gray-900'>Verification Details</Text>
-                </View>
-                <View className='rounded-2xl p-5' style={{ backgroundColor: `${statusInfo.color}10` }}>
-                  <View className='flex-row items-center mb-2'>
-                    <Icon iconStyle='solid' name='calendar-check' size={16} color={statusInfo.color} />
-                    <Text className='ml-2 text-sm text-gray-700'>
-                      Verified on{' '}
-                      {new Date(collection.verifiedAt).toLocaleDateString('en-US', {
-                        month: 'long',
-                        day: 'numeric',
-                        year: 'numeric',
-                      })}
-                    </Text>
-                  </View>
-                  <View className='flex-row items-center'>
-                    <Icon iconStyle='solid' name='user-check' size={16} color={statusInfo.color} />
-                    <Text className='ml-2 text-sm text-gray-700'>Verified by: {collection.verifiedBy}</Text>
-                  </View>
                 </View>
               </View>
             )}

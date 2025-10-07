@@ -4,6 +4,7 @@ import { Badge } from '@/models/Badge/BadgeModel';
 import { GetBadgesRequest } from '@/models/Badge/BadgeRequest';
 import { BadgeService } from '@/services/badges/badgeService';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { badges_data } from './badges_data';
 
 // Simplified state - only what's needed
 interface BadgeState {
@@ -21,7 +22,8 @@ interface BadgeState {
 }
 
 const initialState: BadgeState = {
-  badges: [],
+  //@ts-ignore
+  badges: badges_data,
   currentBadge: null,
   isLoading: false,
   error: null,
