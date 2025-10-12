@@ -1,6 +1,5 @@
 // src/models/BabyBadgesCollection/BabyBadgesCollectionModel.ts
 
-import { VerificationStatus } from './BabyBadgesCollectionEnum';
 
 // Main BabyBadgesCollection interface
 export interface BabyBadgesCollection {
@@ -11,9 +10,6 @@ export interface BabyBadgesCollection {
   completedAt: Date | string;
   submissionNote?: string;
   submissionMedia?: string[];
-  verificationStatus: VerificationStatus;
-  verifiedBy?: string;
-  verifiedAt?: Date | string;
   createdAt: Date | string;
   updatedAt: Date | string;
   deletedAt?: Date | string;

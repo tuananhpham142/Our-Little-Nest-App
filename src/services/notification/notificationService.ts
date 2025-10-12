@@ -1,28 +1,32 @@
 // src/services/notification/notificationService.ts
 
+import { useToast } from '@/components/Toast/useToast';
 import { Notification, NotificationPreferences, NotificationStatistics } from '@/models/Notification/NotificationModel';
 import {
-    ClearNotificationsRequest,
-    DEFAULT_NOTIFICATION_PARAMS,
-    DeleteBulkNotificationsRequest,
-    GetNotificationsRequest,
-    MarkAllAsReadRequest,
-    UpdatePreferencesRequest,
+  ClearNotificationsRequest,
+  DEFAULT_NOTIFICATION_PARAMS,
+  DeleteBulkNotificationsRequest,
+  GetNotificationsRequest,
+  MarkAllAsReadRequest,
+  UpdatePreferencesRequest,
 } from '@/models/Notification/NotificationRequest';
 import {
-    ClearNotificationsResponse,
-    DeleteNotificationResponse,
-    MarkAllAsReadResponse,
-    MarkAsReadResponse,
-    NotificationDetailResponse,
-    NotificationGroupedResponse,
-    NotificationListResponse,
-    NotificationPreferencesResponse,
-    NotificationStatisticsResponse,
-    UnreadCountResponse,
+  ClearNotificationsResponse,
+  DeleteNotificationResponse,
+  MarkAllAsReadResponse,
+  MarkAsReadResponse,
+  NotificationDetailResponse,
+  NotificationGroupedResponse,
+  NotificationListResponse,
+  NotificationPreferencesResponse,
+  NotificationStatisticsResponse,
+  UnreadCountResponse,
 } from '@/models/Notification/NotificationResponse';
 import { ApiResponse } from '@/types/api';
+import { RootStackNavigationProp } from '@/types/navigation';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import messaging from '@react-native-firebase/messaging';
+import { useNavigation } from '@react-navigation/native';
 import { baseApi } from '../baseApi';
 
 export class NotificationService {
@@ -456,3 +460,23 @@ export class NotificationService {
     }
   }
 }
+
+export const setupNotificationHandler = () => {
+  // Handle foreground notifications
+  messaging().onMessage(async (remoteMessage) => {
+    const { showNotification } = useToast();
+    const navigation = useNavigation<RootStackNavigationProp>();
+    // Show toast in app
+    showNotification(
+      remoteMessage.notification?.title || 'Thông báo mới',
+      remoteMessage.notification?.body || '',
+      () => {
+        // Navigate based on notification data
+        if (remoteMessage.data?.screen) {
+          navigation.navigate(remoteMessage.data.screen as any);
+        }
+      },
+      remoteMessage.notification?.android?.imageUrl || remoteMessage.notification?.image,
+    );
+  });
+};

@@ -14,6 +14,10 @@ import BabyMainScreen from '@/screens/Baby/BabyListScreen';
 import BabyProfileScreen from '@/screens/Baby/BabyProfileScreen';
 import CreateBabyScreen from '@/screens/Baby/CreateBabyScreen';
 
+import AwardBadgeScreen from '@/screens/Badges/AwardBadgeScreen';
+import BabyBadgesScreen from '@/screens/Badges/BabyBadgesScreen';
+import BadgeDetailScreen from '@/screens/Badges/BadgeDetailScreen';
+import BadgesScreen from '@/screens/Badges/BadgesScreen';
 import InviteFamilyMemberScreen from '@/screens/FamilyMember/InviteFamilyMemberScreen';
 import ManageFamilyMemberScreen from '@/screens/FamilyMember/ManageFamilyMemberScreen';
 import NotificationScreen from '@/screens/Notification/NotificationScreen';
@@ -108,6 +112,38 @@ export const AppNavigator: React.FC = () => {
             /> */}
             {/* Badges */}
 
+            <Stack.Screen
+              name='Badges'
+              component={BadgesScreen}
+              options={{
+                title: 'Badges',
+                headerShown: false,
+              }}
+            />
+            <Stack.Screen
+              name='BabyBadges'
+              component={BabyBadgesScreen}
+              options={{
+                title: 'Baby Badges',
+                headerShown: false,
+              }}
+            />
+            <Stack.Screen
+              name='BadgeDetail'
+              component={BadgeDetailScreen}
+              options={{
+                title: 'Badge Details',
+                headerShown: false,
+              }}
+            />
+            <Stack.Screen
+              name='AwardBadge'
+              component={AwardBadgeScreen}
+              options={{
+                title: 'Collect Badge',
+                headerShown: false,
+              }}
+            />
             {/* Notifications */}
             <Stack.Screen name='Notifications' component={NotificationScreen} />
             {/* Articles */}

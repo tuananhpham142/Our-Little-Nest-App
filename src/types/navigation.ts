@@ -1,10 +1,8 @@
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import type { NativeStackNavigationProp, NativeStackScreenProps } from '@react-navigation/native-stack';
 
 // import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
-import { Badge, BadgeFilters } from '@/models/Badge/BadgeModel';
 import { PregnancyJournal } from '@/models/PregnancyJournal/PregnancyJournalModel';
-import { CompositeNavigationProp } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
+import { CompositeNavigationProp, RouteProp } from '@react-navigation/native';
 
 export type RootStackParamList = AuthStackParamList & {
   Auth: undefined;
@@ -50,23 +48,21 @@ export type RootStackParamList = AuthStackParamList & {
     week?: number;
   };
   // Badge// Main Badge Screens
-  Badges: undefined;
+  Badges: { babyId?: string };
+  BabyBadges: {
+    babyId: string;
+    babyName?: string;
+    babyAvatar?: string;
+  };
   BadgeDetail: {
     badgeId: string;
+    babyId?: string;
   };
-  BadgeFilter: {
-    currentFilters: BadgeFilters;
-    onApply: (filters: BadgeFilters) => void;
+  BabyBadgeDetail: {
+    collectionId: string;
+    babyId: string;
   };
-  BadgeSelection: {
-    selectedBabyAge?: number;
-    selectedBabyName?: string;
-    onSelectBadge: (badge: Badge) => void;
-  };
-  CreateBadge: {
-    initialData?: Partial<Badge>;
-  };
-  EditBadge: {
+  AwardBadge: {
     badgeId: string;
   };
 
@@ -77,10 +73,6 @@ export type RootStackParamList = AuthStackParamList & {
   };
   CollectionDetail: {
     collectionId: string;
-  };
-  AwardBadge: {
-    babyId?: string;
-    badgeId?: string;
   };
   EditBadgeCollection: {
     collectionId: string;
@@ -127,8 +119,9 @@ export type MainTabParamList = {
   Settings: undefined;
 };
 
-export type RootStackNavigationProp = StackNavigationProp<RootStackParamList>;
-export type AuthStackNavigationProp = StackNavigationProp<AuthStackParamList>;
+export type RootStackNavigationProp = NativeStackNavigationProp<RootStackParamList>;
+export type RouteProps<T extends keyof RootStackParamList> = RouteProp<RootStackParamList, T>;
+export type AuthStackNavigationProp = NativeStackNavigationProp<AuthStackParamList>;
 // export type MainTabNavigationProp = BottomTabNavigationProp<MainTabParamList>;
 
 export type AuthScreenNavigationProp = CompositeNavigationProp<AuthStackNavigationProp, RootStackNavigationProp>;
